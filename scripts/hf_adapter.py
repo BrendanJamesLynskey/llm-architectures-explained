@@ -1077,6 +1077,35 @@ def opt(c: Cfg) -> dict[str, Any]:
     return a
 
 
+def llama4(c: Cfg) -> dict[str, Any]:
+    """Llama 4 (transformers llama4, Llama4TextModel). Three of every
+    ``no_rope_layer_interval`` (default 4) layers use RoPE and attend only
+    within their ``attention_chunk_size``-token chunk; the rest are global
+    NoPE layers. Every ``interleave_moe_layer_step``-th layer is an MoE block
+    (routed experts plus one shared expert, both of ``intermediate_size``);
+    the others are dense MLPs of ``intermediate_size_mlp``."""
+    a = base(c)
+    full = attn_mixer(c)
+    chunked = attn_mixer(c, extra={"chunk": c.f("attention_chunk_size")})
+    a["mixers"] = {"full": full, "chunked": chunked}
+    moe = moe_ffn(c, experts=("num_local_experts",), active=("num_experts_per_tok",), d_expert=("intermediate_size",))
+    moe["shared"] = code(1, f"{TF} llama4: Llama4TextMoe.shared_expert, one Llama4TextMLP of intermediate_size")
+    moe["d_shared"] = c.f("intermediate_size")
+    a["ffns"] = {"dense": dense_ffn(c, key="intermediate_size_mlp"), "moe": moe}
+    n = n_layers(c)
+    interval = int(c.get("no_rope_layer_interval", 4))
+    step = int(c.get("interleave_moe_layer_step", 1))
+    moe_layers = set(c.get("moe_layers") or range(step - 1, n, step))
+    per = [{"mixer": "chunked" if (i + 1) % interval != 0 else "full", "ffn": "moe" if i in moe_layers else "dense"}
+           for i in range(n)]
+    a["layout"] = code(
+        rle(per),
+        f"{TF} llama4: no_rope_layers default (layer i uses RoPE and chunked_attention unless (i + 1) % "
+        f"no_rope_layer_interval == 0; interval {interval}); moe_layers default range(interleave_moe_layer_step - 1, "
+        f"num_hidden_layers, interleave_moe_layer_step) with {c.prefix}interleave_moe_layer_step = {step}")
+    return a
+
+
 def mixtral(c: Cfg) -> dict[str, Any]:
     a = base(c)
     window = c.f("sliding_window") if c.get("sliding_window") else None
@@ -1247,7 +1276,7 @@ HANDLERS: dict[str, Callable[[Cfg], dict[str, Any]]] = {
     "rwkv": rwkv, "rwkv6": rwkv,
     "falcon": falcon, "RefinedWeb": falcon, "RefinedWebModel": falcon,
     "bloom": bloom, "gpt_neox": neox, "gptj": gptj, "opt": opt,
-    "mixtral": mixtral, "jamba": jamba,
+    "mixtral": mixtral, "jamba": jamba, "llama4_text": llama4,
     "t5": t5, "switch_transformers": t5, "bert": bert,
     "minimax": minimax_text01,
     "olmoe": olmoe, "granitemoehybrid": granite_hybrid,

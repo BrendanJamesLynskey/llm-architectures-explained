@@ -76,6 +76,16 @@ describe("features from data", () => {
     expect(f("deepseek-v4.1-flash").has("ced")).toBe(true);
     expect(f("gemini-3-pro").has("moe")).toBe(true);
     expect(f("llama-4-maverick").has("moe")).toBe(true);
+    expect(f("llama-4-maverick").has("shared-expert")).toBe(true);
+    expect(f("llama-4-maverick").has("chunked")).toBe(true);
+    expect(f("llama-4-maverick").has("nope")).toBe(true);
+    expect(f("llama-4-maverick").has("sliding")).toBe(false);
+    // Dense layers interleaved with MoE layers are not a dense prefix.
+    expect(f("llama-4-maverick").has("dense-prefix")).toBe(false);
+    expect(f("glam").has("dense-prefix")).toBe(false);
+    expect(f("jamba").has("dense-prefix")).toBe(false);
+    expect(f("step-3.5-flash").has("dense-prefix")).toBe(true);
+    expect(f("deepseek-moe-16b").has("dense-prefix")).toBe(true);
     expect(f("gpt-4").size).toBe(0);
   });
 
@@ -101,6 +111,10 @@ describe("features from data", () => {
     expect(attentionSummary(getModel("gpt-2-xl")!)).toBe("MHA 25q/25kv");
     expect(attentionSummary(getModel("motif-3-beta")!)).toContain("window");
     expect(attentionSummary(getModel("gpt-4")!)).toBe("not disclosed");
+    expect(attentionSummary(getModel("llama-4-maverick")!)).toBe(
+      "36× GQA 40q/8kv, chunks of 8192 + 12× GQA 40q/8kv",
+    );
+    expect(layerCount(specOf(getModel("llama-4-maverick")!)!)).toBe(48);
     expect(layerCount(specOf(getModel("llama-3-8b")!)!)).toBe(32);
   });
 

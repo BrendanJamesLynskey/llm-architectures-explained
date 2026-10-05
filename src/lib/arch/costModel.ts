@@ -29,6 +29,7 @@ export type Mixer = {
   head_dim?: number;
   v_head_dim?: number | null;
   window?: number | null;
+  chunk?: number | null;
   gate?: string | null;
   k_eq_v?: boolean;
   bias?: boolean;
@@ -106,6 +107,19 @@ export function expandLayout(
 export function sumMin(n: number, w: number): number {
   if (w <= 0 || n <= w) return (n * (n + 1.0)) / 2.0;
   return (w * (w + 1.0)) / 2.0 + (n - w) * w;
+}
+
+/** Tokens the query at position t (1-based) reads under chunked attention:
+ * those of its own c-token chunk up to and including itself. */
+export function inChunk(t: number, c: number): number {
+  return t - c * Math.floor((t - 1.0) / c);
+}
+
+/** sum_{t=1..n} inChunk(t, c), in closed form. */
+export function sumChunked(n: number, c: number): number {
+  const q = Math.floor(n / c);
+  const r = n - q * c;
+  return q * ((c * (c + 1.0)) / 2.0) + (r * (r + 1.0)) / 2.0;
 }
 
 // ---------------------------------------------------------------------------
@@ -419,6 +433,8 @@ export function windowOf(spec: Spec, run: LayerRun): number {
   if (run.mixer === "none") return 0.0;
   const m = spec.mixers[run.mixer]!;
   if (m.type === "csa") return 0.0;
+  // A chunked layer keeps at most one chunk (the cache it reserves).
+  if (m.chunk) return m.chunk;
   return num(m.window);
 }
 
@@ -526,6 +542,7 @@ export function attended(spec: Spec, run: LayerRun, t: number): number {
   if (m.type === "attn") {
     const ix = m.indexer;
     if (ix) return Math.min(t, ix.topk);
+    if (m.chunk) return inChunk(t, m.chunk);
     const w = num(m.window);
     return w > 0 ? Math.min(t, w) : t;
   }
@@ -603,6 +620,7 @@ function sumAttended(spec: Spec, run: LayerRun, n: number): number {
   if (m.type === "attn") {
     const ix = m.indexer;
     if (ix) return sumMin(n, ix.topk);
+    if (m.chunk) return sumChunked(n, m.chunk);
     return sumMin(n, num(m.window));
   }
   if (m.type === "mla") {
@@ -703,6 +721,7 @@ export function attendedStored(spec: Spec, run: LayerRun, t: number): number {
     const ratio = num(run.ratio);
     return ratio > 0 ? t / ratio : 0.0;
   }
+  if (m.chunk) return inChunk(t, m.chunk);
   const w = num(m.window);
   return w > 0 ? Math.min(t, w) : t;
 }

@@ -34,7 +34,7 @@
    total: [270.0e6, name, "model name gemma-3-270m"]}
 - {id: mistral-small-3.1, gallery: "Mistral Small 3.1 (24B)", name: Mistral Small 3.1, lab: Mistral AI, family: Mistral Small, hf: mistralai/Mistral-Small-3.1-24B-Base-2503,
    total: [24.0e9, name, "model name Mistral-Small-3.1-24B"], multimodal: true}
-- {id: llama-4-maverick, gallery: "Llama 4 Maverick (400B)", name: Llama 4 Maverick, lab: Meta, family: Llama 4, hf: meta-llama/Llama-4-Maverick-17B-128E-Instruct, no_arch: "config.json is gated on Hugging Face and no ungated primary source gives the layer dimensions",
+- {id: llama-4-maverick, gallery: "Llama 4 Maverick (400B)", name: Llama 4 Maverick, lab: Meta, family: Llama 4, hf: meta-llama/Llama-4-Maverick-17B-128E-Instruct, multimodal: true,
    total: [400.0e9, card, "README table: 400B (Total)"], active: [17.0e9, card, "README table: 17B (Activated)"], context: [1.0e6, card, "README table: context length 1M"],
    experts: [128, card, "README: Llama 4 Maverick (17Bx128E)"], blog: "https://ai.meta.com/blog/llama-4-multimodal-intelligence/"}
 - {id: qwen3-0.6b, gallery: "Qwen3 (0.6B)", name: Qwen3 0.6B, lab: Alibaba Cloud (Qwen), family: Qwen3, hf: Qwen/Qwen3-0.6B-Base, paper: "2505.09388",

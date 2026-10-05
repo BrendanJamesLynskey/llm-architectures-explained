@@ -65,7 +65,7 @@ PRE_CHECKED = {
     "deepseek_v2", "deepseek_v3", "kimi_k2", "deepseek_v32", "deepseek_v4", "glm4_moe", "glm_moe_dsa", "gpt_oss",
     "qwen3_next", "qwen3_5_text", "qwen3_5_moe_text", "minimax_m2", "minimax_text_01", "minimax", "kimi_linear",
     "mimo_v2_flash", "mimo_v2", "naive_n05_flash", "mistral4", "laguna", "zaya", "hy_v3", "hy_v4", "mellum",
-    "solar_open2", "mixtral", "olmoe", "sarvam_moe", "sarvam_mla", "step3p5", "nanbeige", "Motif", "bailing_hybrid",
+    "solar_open2", "mixtral", "llama4_text", "olmoe", "sarvam_moe", "sarvam_mla", "step3p5", "nanbeige", "Motif", "bailing_hybrid",
     "glm5_next_text", "granitemoehybrid", "jamba", "afmoe",
 }
 
@@ -179,6 +179,9 @@ def position_facts(mt: str, cfg: dict[str, Any] | None, arch: dict[str, Any] | N
     if isinstance(tc.get("layer_rope_theta"), list) and 0 in tc["layer_rope_theta"]:
         nope = "global (full-attention) layers have no RoPE"
         ref, st = "layer_rope_theta (0 on global layers)", "config"
+    if mt == "llama4_text" and not tc.get("no_rope_layer_interval"):
+        nope = "every 4th layer has no RoPE (global attention); the others use RoPE within their attention chunk"
+        ref, st = f"{TF} llama4: no_rope_layer_interval default 4; RoPE layers are chunked_attention", "code"
     if mt in ("cohere2", "cohere2_moe"):
         nope = "full-attention layers have no RoPE; sliding-window layers use it"
         ref, st = f"{TF} {mt}: RoPE applied only when the layer has a sliding window", "code"
