@@ -1,0 +1,28 @@
+{
+ "_source": {
+  "id": "card",
+  "type": "card",
+  "url": "https://huggingface.co/fdtn-ai/antares-1b/blob/10417eb/README.md",
+  "title": "Antares-1B model card"
+ },
+ "_status": "disclosed",
+ "_refs": {
+  "hidden_size": "model card: hidden dim 2048",
+  "num_hidden_layers": "model card: 40 layers",
+  "num_attention_heads": "model card: 16 attention heads",
+  "num_key_value_heads": "model card: 4 KV heads (GQA)",
+  "max_position_embeddings": "model card: 128K context window",
+  "vocab_size": "model card: 100,352 vocab",
+  "intermediate_size": "Granite 4.0 1B backbone config (ibm-granite/granite-4.0-1b@6a7381b): shared_intermediate_size 4096",
+  "tie_word_embeddings": "published weights (fdtn-ai/antares-1b@10417eb safetensors, 1,837,271,040 parameters) hold a separate output head; the Granite 4.0 1B backbone ties it"
+ },
+ "model_type": "llama",
+ "hidden_size": 2048,
+ "num_hidden_layers": 40,
+ "num_attention_heads": 16,
+ "num_key_value_heads": 4,
+ "max_position_embeddings": 131072,
+ "vocab_size": 100352,
+ "intermediate_size": 4096,
+ "tie_word_embeddings": false
+}

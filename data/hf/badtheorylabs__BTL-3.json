@@ -1,0 +1,13 @@
+{
+ "api": {
+  "createdAt": "2026-07-20T18:01:25.000Z",
+  "gated": false,
+  "license": "apache-2.0",
+  "safetensors": null
+ },
+ "config": null,
+ "fetched": "2026-10-05",
+ "file": null,
+ "repo": "badtheorylabs/BTL-3",
+ "revision": "f76b519995d69090b754f22b7f45d0d406076c42"
+}

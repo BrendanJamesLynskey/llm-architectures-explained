@@ -1,0 +1,321 @@
+{
+ "checked": "2026-10-05",
+ "source": "export.arxiv.org",
+ "papers": {
+  "1706.03762": {
+   "title": "Attention Is All You Need",
+   "first_author": "Vaswani, Ashish",
+   "submitted": "12 Jun 2017"
+  },
+  "1810.04805": {
+   "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+   "first_author": "Devlin, Jacob",
+   "submitted": "11 Oct 2018"
+  },
+  "1910.10683": {
+   "title": "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer",
+   "first_author": "Raffel, Colin",
+   "submitted": "23 Oct 2019"
+  },
+  "2005.14165": {
+   "title": "Language Models are Few-Shot Learners",
+   "first_author": "Brown, Tom B.",
+   "submitted": "28 May 2020"
+  },
+  "2101.03961": {
+   "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
+   "first_author": "Fedus, William",
+   "submitted": "11 Jan 2021"
+  },
+  "2112.06905": {
+   "title": "GLaM: Efficient Scaling of Language Models with Mixture-of-Experts",
+   "first_author": "Du, Nan",
+   "submitted": "13 Dec 2021"
+  },
+  "2112.11446": {
+   "title": "Scaling Language Models: Methods, Analysis & Insights from Training Gopher",
+   "first_author": "Rae, Jack W.",
+   "submitted": "8 Dec 2021"
+  },
+  "2203.15556": {
+   "title": "Training Compute-Optimal Large Language Models",
+   "first_author": "Hoffmann, Jordan",
+   "submitted": "29 Mar 2022"
+  },
+  "2204.02311": {
+   "title": "PaLM: Scaling Language Modeling with Pathways",
+   "first_author": "Chowdhery, Aakanksha",
+   "submitted": "5 Apr 2022"
+  },
+  "2204.06745": {
+   "title": "GPT-NeoX-20B: An Open-Source Autoregressive Language Model",
+   "first_author": "Black, Sid",
+   "submitted": "14 Apr 2022"
+  },
+  "2205.01068": {
+   "title": "OPT: Open Pre-trained Transformer Language Models",
+   "first_author": "Zhang, Susan",
+   "submitted": "2 May 2022"
+  },
+  "2211.05100": {
+   "title": "BLOOM: A 176B-Parameter Open-Access Multilingual Language Model",
+   "first_author": "Workshop, BigScience",
+   "submitted": "9 Nov 2022"
+  },
+  "2302.13971": {
+   "title": "LLaMA: Open and Efficient Foundation Language Models",
+   "first_author": "Touvron, Hugo",
+   "submitted": "27 Feb 2023"
+  },
+  "2303.08774": {
+   "title": "GPT-4 Technical Report",
+   "first_author": "OpenAI",
+   "submitted": "15 Mar 2023"
+  },
+  "2305.13048": {
+   "title": "RWKV: Reinventing RNNs for the Transformer Era",
+   "first_author": "Peng, Bo",
+   "submitted": "22 May 2023"
+  },
+  "2307.09288": {
+   "title": "Llama 2: Open Foundation and Fine-Tuned Chat Models",
+   "first_author": "Touvron, Hugo",
+   "submitted": "18 Jul 2023"
+  },
+  "2310.06825": {
+   "title": "Mistral 7B",
+   "first_author": "Jiang, Albert Q.",
+   "submitted": "10 Oct 2023"
+  },
+  "2311.16867": {
+   "title": "The Falcon Series of Open Language Models",
+   "first_author": "Almazrouei, Ebtesam",
+   "submitted": "28 Nov 2023"
+  },
+  "2312.00752": {
+   "title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces",
+   "first_author": "Gu, Albert",
+   "submitted": "1 Dec 2023"
+  },
+  "2312.11805": {
+   "title": "Gemini: A Family of Highly Capable Multimodal Models",
+   "first_author": "Gemini Team",
+   "submitted": "19 Dec 2023"
+  },
+  "2401.04088": {
+   "title": "Mixtral of Experts",
+   "first_author": "Jiang, Albert Q.",
+   "submitted": "8 Jan 2024"
+  },
+  "2401.06066": {
+   "title": "DeepSeekMoE: Towards Ultimate Expert Specialization in Mixture-of-Experts Language Models",
+   "first_author": "Dai, Damai",
+   "submitted": "11 Jan 2024"
+  },
+  "2403.05530": {
+   "title": "Gemini 1.5: Unlocking multimodal understanding across millions of tokens of context",
+   "first_author": "Gemini Team",
+   "submitted": "8 Mar 2024"
+  },
+  "2403.19887": {
+   "title": "Jamba: A Hybrid Transformer-Mamba Language Model",
+   "first_author": "Lieber, Opher",
+   "submitted": "28 Mar 2024"
+  },
+  "2404.05892": {
+   "title": "Eagle and Finch: RWKV with Matrix-Valued States and Dynamic Recurrence",
+   "first_author": "Peng, Bo",
+   "submitted": "8 Apr 2024"
+  },
+  "2404.14219": {
+   "title": "Phi-3 Technical Report: A Highly Capable Language Model Locally on Your Phone",
+   "first_author": "Abdin, Marah",
+   "submitted": "22 Apr 2024"
+  },
+  "2405.04434": {
+   "title": "DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model",
+   "first_author": "DeepSeek-AI",
+   "submitted": "7 May 2024"
+  },
+  "2405.21060": {
+   "title": "Transformers are SSMs: Generalized Models and Efficient Algorithms Through Structured State Space Duality",
+   "first_author": "Dao, Tri",
+   "submitted": "31 May 2024"
+  },
+  "2407.21783": {
+   "title": "The Llama 3 Herd of Models",
+   "first_author": "Grattafiori, Aaron",
+   "submitted": "31 Jul 2024"
+  },
+  "2408.00118": {
+   "title": "Gemma 2: Improving Open Language Models at a Practical Size",
+   "first_author": "Gemma Team",
+   "submitted": "31 Jul 2024"
+  },
+  "2409.02060": {
+   "title": "OLMoE: Open Mixture-of-Experts Language Models",
+   "first_author": "Muennighoff, Niklas",
+   "submitted": "3 Sep 2024"
+  },
+  "2412.08905": {
+   "title": "Phi-4 Technical Report",
+   "first_author": "Abdin, Marah",
+   "submitted": "12 Dec 2024"
+  },
+  "2412.15115": {
+   "title": "Qwen2.5 Technical Report",
+   "first_author": "Qwen",
+   "submitted": "19 Dec 2024"
+  },
+  "2412.19260": {
+   "title": "MEDEC: A Benchmark for Medical Error Detection and Correction in Clinical Notes",
+   "first_author": "Abacha, Asma Ben",
+   "submitted": "26 Dec 2024"
+  },
+  "2412.19437": {
+   "title": "DeepSeek-V3 Technical Report",
+   "first_author": "DeepSeek-AI",
+   "submitted": "27 Dec 2024"
+  },
+  "2501.00656": {
+   "title": "2 OLMo 2 Furious",
+   "first_author": "OLMo, Team",
+   "submitted": "31 Dec 2024"
+  },
+  "2501.08313": {
+   "title": "MiniMax-01: Scaling Foundation Models with Lightning Attention",
+   "first_author": "MiniMax",
+   "submitted": "14 Jan 2025"
+  },
+  "2501.12948": {
+   "title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning",
+   "first_author": "DeepSeek-AI",
+   "submitted": "22 Jan 2025"
+  },
+  "2503.13427": {
+   "title": "xLSTM 7B: A Recurrent LLM for Fast and Efficient Inference",
+   "first_author": "Beck, Maximilian",
+   "submitted": "17 Mar 2025"
+  },
+  "2503.19786": {
+   "title": "Gemma 3 Technical Report",
+   "first_author": "Gemma Team",
+   "submitted": "25 Mar 2025"
+  },
+  "2505.09388": {
+   "title": "Qwen3 Technical Report",
+   "first_author": "Yang, An",
+   "submitted": "14 May 2025"
+  },
+  "2507.06261": {
+   "title": "Gemini 2.5: Pushing the Frontier with Advanced Reasoning, Multimodality, Long Context, and Next Generation Agentic Capabilities",
+   "first_author": "Comanici, Gheorghe",
+   "submitted": "7 Jul 2025"
+  },
+  "2507.20534": {
+   "title": "Kimi K2: Open Agentic Intelligence",
+   "first_author": "Kimi Team",
+   "submitted": "28 Jul 2025"
+  },
+  "2508.06471": {
+   "title": "GLM-4.5: Agentic, Reasoning, and Coding (ARC) Foundation Models",
+   "first_author": " 5 Team",
+   "submitted": "8 Aug 2025"
+  },
+  "2508.10925": {
+   "title": "gpt-oss-120b & gpt-oss-20b Model Card",
+   "first_author": "OpenAI",
+   "submitted": "8 Aug 2025"
+  },
+  "2510.25741": {
+   "title": "Scaling Latent Reasoning via Looped Language Models",
+   "first_author": "Zhu, Rui-Jie",
+   "submitted": "29 Oct 2025"
+  },
+  "2510.26692": {
+   "title": "Kimi Linear: An Expressive, Efficient Attention Architecture",
+   "first_author": "Kimi Team",
+   "submitted": "30 Oct 2025"
+  },
+  "2512.02556": {
+   "title": "DeepSeek-V3.2: Pushing the Frontier of Open Large Language Models",
+   "first_author": "DeepSeek-AI",
+   "submitted": "2 Dec 2025"
+  },
+  "2512.13961": {
+   "title": "Olmo 3",
+   "first_author": "Olmo, Team",
+   "submitted": "15 Dec 2025"
+  },
+  "2601.02780": {
+   "title": "MiMo-V2-Flash Technical Report",
+   "first_author": "Core Team",
+   "submitted": "6 Jan 2026"
+  },
+  "2601.21204": {
+   "title": "Scaling Embeddings Outperforms Scaling Experts in Language Models",
+   "first_author": "Liu, Hong",
+   "submitted": "29 Jan 2026"
+  },
+  "2602.02276": {
+   "title": "Kimi K2.5: Visual Agentic Intelligence",
+   "first_author": "Kimi Team",
+   "submitted": "2 Feb 2026"
+  },
+  "2602.10604": {
+   "title": "Step 3.5 Flash: Open Frontier-Level Intelligence with 11B Active Parameters",
+   "first_author": "Huang, Ailin",
+   "submitted": "11 Feb 2026"
+  },
+  "2602.13367": {
+   "title": "Nanbeige4.1-3B: A Small General Model that Reasons, Aligns, and Acts",
+   "first_author": "Yang, Chen",
+   "submitted": "13 Feb 2026"
+  },
+  "2602.15763": {
+   "title": "GLM-5: from Vibe Coding to Agentic Engineering",
+   "first_author": "GLM-5-Team",
+   "submitted": "17 Feb 2026"
+  },
+  "2602.17004": {
+   "title": "Arcee Trinity Large Technical Report",
+   "first_author": "Singh, Varun",
+   "submitted": "19 Feb 2026"
+  },
+  "2603.11510": {
+   "title": "Tiny Aya: Bridging Scale and Multilingual Depth",
+   "first_author": "Salamanca, Alejandro R.",
+   "submitted": "12 Mar 2026"
+  },
+  "2605.05365": {
+   "title": "ZAYA1-8B Technical Report",
+   "first_author": "Washbourne, Robert",
+   "submitted": "6 May 2026"
+  },
+  "2605.31268": {
+   "title": "Mellum2 Technical Report",
+   "first_author": "Kojic, Marko",
+   "submitted": "29 May 2026"
+  },
+  "2606.13392": {
+   "title": "MiniMax Sparse Attention",
+   "first_author": "Lai, Xunhao",
+   "submitted": "11 Jun 2026"
+  },
+  "2606.16140": {
+   "title": "VibeThinker-3B: Exploring the Frontier of Verifiable Reasoning in Small Language Models",
+   "first_author": "Xu, Sen",
+   "submitted": "15 Jun 2026"
+  },
+  "2607.09424": {
+   "title": "A Sovereign, Open-Source Foundation Model for German and English",
+   "first_author": "Soofi-Team",
+   "submitted": "10 Jul 2026"
+  },
+  "2609.19969": {
+   "title": "DeepSeek-V4.1-Flash: Pushing the Limits of KV Cache Compression",
+   "first_author": "DeepSeek-AI",
+   "submitted": "17 Sep 2026"
+  }
+ }
+}

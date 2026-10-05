@@ -1,0 +1,38 @@
+{
+ "api": {
+  "createdAt": "2024-07-21T05:31:33.000Z",
+  "gated": false,
+  "license": "apache-2.0",
+  "safetensors": null
+ },
+ "config": {
+  "architectures": [
+   "Rwkv6ForCausalLM"
+  ],
+  "attention_hidden_size": 4096,
+  "auto_map": {
+   "AutoConfig": "configuration_rwkv6.Rwkv6Config",
+   "AutoModelForCausalLM": "modeling_rwkv6.Rwkv6ForCausalLM"
+  },
+  "bos_token_id": 0,
+  "eos_token_id": 0,
+  "head_size": 64,
+  "head_size_divisor": 8,
+  "hidden_size": 4096,
+  "intermediate_size": null,
+  "layer_norm_epsilon": 1e-05,
+  "model_type": "rwkv6",
+  "num_attention_heads": 64,
+  "num_hidden_layers": 61,
+  "rescale_every": 6,
+  "tie_word_embeddings": false,
+  "transformers_version": "4.34.0",
+  "use_cache": true,
+  "vocab_size": 65536
+ },
+ "config_canonical_sha256": "97cd8c81fdc412a697b288ad3dd9725340ca2df148bbd01fd83a586733bf113b",
+ "fetched": "2026-10-05",
+ "file": "config.json",
+ "repo": "RWKV/v6-Finch-14B-HF",
+ "revision": "ad7133e8ef33a291da2447731f04ac49bc593a0d"
+}

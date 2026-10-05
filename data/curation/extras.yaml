@@ -1,0 +1,142 @@
+# Models beyond the gallery checklist: the landmark history the gallery skips,
+# and closed frontier models. Same keys as gallery.yaml, plus:
+#   open: false          closed weights
+#   no_arch: reason      no primary source gives the layer dimensions
+#   estimates: [...]     third-party reported estimates; each names a source in
+#                        `estimate_sources` below and is always shown labelled,
+#                        and never used by the calculator unless the reader
+#                        switches estimates on.
+
+estimate_sources:
+  medec-2024:
+    publisher: "Ben Abacha, Yim, Fu, Sun, Yetisgen, Xia and Lin, MEDEC (arXiv 2412.19260v1)"
+    url: "https://arxiv.org/abs/2412.19260"
+    date: "2024-12-26"
+    where: "§4 (p. 6): model sizes listed in the experiments section"
+    confidence: >-
+      Low. The authors write that the sizes are estimates mined from public
+      articles, that they cannot vouch for their accuracy, and that they are
+      given only to help place the results.
+
+models:
+# --- Landmark history -------------------------------------------------------
+- {id: transformer-base, name: Transformer (base), lab: Google, family: Transformer, kind: encoder-decoder, tx: transformer-base, paper: "1706.03762",
+   released: ["2017-06", paper, "arXiv v1, June 2017"], total: [65.0e6, paper, "Table 3: base model, 65 x 10^6 parameters"]}
+- {id: bert-large, name: BERT-Large, lab: Google, family: BERT, kind: encoder, hf: google-bert/bert-large-uncased, paper: "1810.04805",
+   released: ["2018-10", paper, "arXiv v1, October 2018"], total: [340.0e6, paper, "§3: BERT-LARGE (L=24, H=1024, A=16, total parameters=340M)"]}
+- {id: t5-11b, name: T5 11B, lab: Google, family: T5, kind: encoder-decoder, hf: google-t5/t5-11b, paper: "1910.10683",
+   released: ["2019-10", paper, "arXiv v1, October 2019"], total: [11.0e9, card, "README: T5-11B is the checkpoint with 11 billion parameters"]}
+- {id: gpt-3, name: GPT-3 175B, lab: OpenAI, family: GPT-3, open: false, tx: gpt-3, paper: "2005.14165",
+   released: ["2020-05", paper, "arXiv v1, May 2020"], total: [175.0e9, paper, "Table 2.1: GPT-3 175B, 175.0B parameters"],
+   notes: ["§2.1: alternating dense and locally banded sparse attention patterns, as in the Sparse Transformer (not modelled here)"]}
+- {id: switch-c, name: Switch-C, lab: Google, family: Switch Transformer, kind: encoder-decoder, tx: switch-c-2048, hf: google/switch-c-2048, paper: "2101.03961",
+   released: ["2021-01", paper, "arXiv v1, January 2021"], total: [1571.0e9, paper, "Table 9: Switch-C, 1571B parameters"]}
+- {id: gpt-j-6b, name: GPT-J 6B, lab: EleutherAI, family: GPT-J, hf: EleutherAI/gpt-j-6b,
+   released: ["2021-06", card, "README citation: GPT-J-6B, June 2021"], total: [6.0e9, card, "README: GPT-J-6B: A 6 Billion Parameter Autoregressive Language Model"]}
+- {id: glam, name: GLaM (64B/64E), lab: Google, family: GLaM, open: false, tx: glam-64b-64e, paper: "2112.06905",
+   released: ["2021-12", paper, "arXiv v1, December 2021"], total: [1.2e12, paper, "Table 4: 64B/64E, 1.2T parameters"], active: [96.6e9, paper, "Table 4: 96.6B activated"]}
+- {id: chinchilla, name: Chinchilla 70B, lab: Google DeepMind, family: Chinchilla, open: false, tx: chinchilla-70b, paper: "2203.15556",
+   released: ["2022-03", paper, "arXiv v1, March 2022"], total: [70.0e9, paper, "Table 4 / abstract: Chinchilla, 70B parameters"]}
+- {id: palm-540b, name: PaLM 540B, lab: Google, family: PaLM, open: false, tx: palm-540b, paper: "2204.02311",
+   released: ["2022-04", paper, "arXiv v1, April 2022"], total: [540.35e9, paper, "Table 1: 540.35B parameters"]}
+- {id: gpt-neox-20b, name: GPT-NeoX-20B, lab: EleutherAI, family: GPT-NeoX, hf: EleutherAI/gpt-neox-20b, paper: "2204.06745",
+   released: ["2022-04", paper, "arXiv v1, April 2022"], total: [20.0e9, card, "README: a 20 billion parameter autoregressive language model"]}
+- {id: opt-66b, name: OPT-66B, lab: Meta, family: OPT, hf: facebook/opt-66b, paper: "2205.01068",
+   released: ["2022-05", paper, "arXiv v1, May 2022"], total: [66.0e9, name, "model name opt-66b"]}
+- {id: bloom, name: BLOOM, lab: BigScience, family: BLOOM, hf: bigscience/bloom, paper: "2211.05100",
+   released: ["2022-11", paper, "arXiv v1, November 2022"], total: [176.0e9, card, "README: BLOOM, a 176B parameter language model"]}
+- {id: llama-65b, name: LLaMA 65B, lab: Meta, family: Llama, tx: llama-65b, paper: "2302.13971",
+   released: ["2023-02", paper, "arXiv v1, February 2023"], total: [65.2e9, paper, "Table 2: 65.2B params"]}
+- {id: rwkv-4-14b, name: RWKV-4 14B, lab: RWKV, family: RWKV, hf: RWKV/rwkv-4-14b-pile, paper: "2305.13048",
+   released: ["2023-05", paper, "arXiv v1, May 2023"], total: [14.0e9, name, "model name rwkv-4-14b"]}
+- {id: falcon-7b, name: Falcon-7B, lab: TII, family: Falcon, hf: tiiuae/falcon-7b, paper: "2311.16867",
+   released: ["2023-05", card, "HF repository created 2023-04; paper Nov 2023"], total: [7.0e9, card, "README: Falcon-7B is a 7B parameters causal decoder-only model"]}
+- {id: falcon-40b, name: Falcon-40B, lab: TII, family: Falcon, hf: tiiuae/falcon-40b, paper: "2311.16867",
+   total: [40.0e9, card, "README: Falcon-40B is a 40B parameters causal decoder-only model"]}
+- {id: llama-2-70b, name: Llama 2 70B, lab: Meta, family: Llama, hf: meta-llama/Llama-2-70b-hf, tx: llama-2-70b, paper: "2307.09288",
+   released: ["2023-07", paper, "arXiv v1, July 2023"], total: [70.0e9, name, "model name Llama-2-70b"]}
+- {id: mistral-7b, name: Mistral 7B, lab: Mistral AI, family: Mistral, hf: mistralai/Mistral-7B-v0.1, paper: "2310.06825",
+   released: ["2023-09", card, "HF repository created September 2023"], total: [7.0e9, name, "model name Mistral-7B"]}
+- {id: mamba-2.8b, name: Mamba 2.8B, lab: Carnegie Mellon / Princeton, family: Mamba, hf: state-spaces/mamba-2.8b-hf, paper: "2312.00752",
+   released: ["2023-12", paper, "arXiv v1, December 2023"], total: [2.8e9, name, "model name mamba-2.8b"]}
+- {id: mixtral-8x7b, name: Mixtral 8x7B, lab: Mistral AI, family: Mixtral, hf: mistralai/Mixtral-8x7B-v0.1, paper: "2401.04088",
+   released: ["2023-12", card, "HF repository created December 2023"], total: [47.0e9, paper, "abstract: 47B parameters, 13B active"], active: [13.0e9, paper, "abstract: 13B active parameters"]}
+- {id: deepseek-moe-16b, name: DeepSeekMoE 16B, lab: DeepSeek, family: DeepSeekMoE, hf: deepseek-ai/deepseek-moe-16b-base, paper: "2401.06066",
+   released: ["2024-01", paper, "arXiv v1, January 2024"], total: [16.0e9, paper, "abstract: we scale up DeepSeekMoE to 16B parameters"]}
+- {id: qwen1.5-moe-a2.7b, name: Qwen1.5-MoE-A2.7B, lab: Alibaba Cloud (Qwen), family: Qwen MoE, hf: Qwen/Qwen1.5-MoE-A2.7B,
+   total: [14.3e9, card, "README: 14.3B parameters in total and 2.7B activated"], active: [2.7e9, card, "README: 2.7B activated"]}
+- {id: grok-1, name: Grok-1, lab: xAI, family: Grok, hf: xai-org/grok-1, tx: grok-1,
+   released: ["2024-03", code, "GitHub release of the open weights, March 2024"], total: [314.0e9, card, "README: Grok-1 ... 314B parameters"]}
+- {id: jamba, name: Jamba v0.1, lab: AI21 Labs, family: Jamba, hf: ai21labs/Jamba-v0.1, paper: "2403.19887",
+   total: [52.0e9, card, "README: 12B active parameters and a total of 52B parameters"], active: [12.0e9, card, "README: 12B active"]}
+- {id: mixtral-8x22b, name: Mixtral 8x22B, lab: Mistral AI, family: Mixtral, hf: mistralai/Mixtral-8x22B-v0.1}
+- {id: rwkv-6-14b, name: RWKV-6 Finch 14B, lab: RWKV, family: RWKV, hf: RWKV/v6-Finch-14B-HF, paper: "2404.05892", total: [14.0e9, name, "model name v6-Finch-14B"]}
+- {id: phi-3-mini, name: Phi-3-mini, lab: Microsoft, family: Phi, hf: microsoft/Phi-3-mini-4k-instruct, paper: "2404.14219",
+   total: [3.8e9, card, "README: has 3.8B parameters"], context: [4096, card, "README: Context length: 4K tokens"]}
+- {id: deepseek-v2, name: DeepSeek-V2, lab: DeepSeek, family: DeepSeek V2, hf: deepseek-ai/DeepSeek-V2, paper: "2405.04434",
+   total: [236.0e9, card, "README: 236B total parameters, of which 21B are activated"], active: [21.0e9, card, "README: 21B activated"]}
+- {id: mamba2-2.7b, name: Mamba-2 2.7B, lab: Carnegie Mellon / Princeton, family: Mamba, hf: state-spaces/mamba2-2.7b, paper: "2405.21060", total: [2.7e9, name, "model name mamba2-2.7b"]}
+- {id: gemma-2-27b, name: Gemma 2 27B, lab: Google, family: Gemma 2, hf: google/gemma-2-27b, tx: gemma-2-27b, paper: "2408.00118", total: [27.0e9, name, "model name gemma-2-27b"]}
+- {id: llama-3.1-405b, name: Llama 3.1 405B, lab: Meta, family: Llama 3, tx: llama-3.1-405b, paper: "2407.21783",
+   released: ["2024-07", paper, "arXiv v1, July 2024"], total: [405.0e9, paper, "abstract: a dense Transformer with 405B parameters"]}
+- {id: olmoe-1b-7b, name: OLMoE-1B-7B, lab: Ai2, family: OLMo, hf: allenai/OLMoE-1B-7B-0924, paper: "2409.02060",
+   total: [7.0e9, card, "README: 1B active and 7B total parameters"], active: [1.0e9, card, "README: 1B active"]}
+- {id: qwen2.5-72b, name: Qwen2.5 72B, lab: Alibaba Cloud (Qwen), family: Qwen2.5, hf: Qwen/Qwen2.5-72B, paper: "2412.15115",
+   total: [72.7e9, card, "README: Number of Parameters: 72.7B"], context: [131072, card, "README: Context Length: 131,072 tokens"]}
+- {id: minimax-text-01, name: MiniMax-Text-01, lab: MiniMax, family: MiniMax-01, hf: MiniMaxAI/MiniMax-Text-01, paper: "2501.08313",
+   total: [456.0e9, card, "README: 456 billion total parameters, of which 45.9 billion are activated"], active: [45.9e9, card, "README: 45.9 billion activated"]}
+
+# --- Closed frontier models ----------------------------------------------------
+- {id: gpt-3.5-turbo, name: GPT-3.5 Turbo (ChatGPT), lab: OpenAI, family: GPT-3.5, open: false, no_arch: "OpenAI has not disclosed the architecture or size",
+   doc: "https://developers.openai.com/api/docs/models/gpt-3.5-turbo", context: [16385, doc, "model page: 16,385 context window"],
+   released: ["2023-03", doc, "snapshot list includes gpt-3.5-turbo-0301 (March 2023)"],
+   estimates: [{field: total_params, value: 175.0e9, source: medec-2024, quote: "ChatGPT (≈175B)"}]}
+- {id: gpt-4, name: GPT-4, lab: OpenAI, family: GPT-4, open: false, paper: "2303.08774", no_arch: "the GPT-4 Technical Report states that it gives no details of the architecture or model size",
+   doc: "https://developers.openai.com/api/docs/models/gpt-4", context: [8192, doc, "model page: 8,192 context window"],
+   released: ["2023-03", doc, "snapshot gpt-4-0314"],
+   estimates: [{field: total_params, value: 1.76e12, source: medec-2024, quote: "GPT-4 (≈1.76T)"}]}
+- {id: gpt-4o, name: GPT-4o, lab: OpenAI, family: GPT-4o, open: false, no_arch: "OpenAI has not disclosed the architecture or size",
+   doc: "https://developers.openai.com/api/docs/models/gpt-4o", context: [128000, doc, "model page: 128,000 context window"],
+   released: ["2024-05", doc, "snapshot gpt-4o-2024-05-13"],
+   estimates: [{field: total_params, value: 200.0e9, source: medec-2024, quote: "GPT-4o (≈200B)"}]}
+- {id: gpt-4o-mini, name: GPT-4o mini, lab: OpenAI, family: GPT-4o, open: false, no_arch: "OpenAI has not disclosed the architecture or size",
+   doc: "https://developers.openai.com/api/docs/models/gpt-4o-mini", context: [128000, doc, "model page: 128,000 context window"],
+   released: ["2024-07", doc, "snapshot gpt-4o-mini-2024-07-18"],
+   estimates: [{field: total_params, value: 8.0e9, source: medec-2024, quote: "GPT-4o-mini ... (≈8B parameters)"}]}
+- {id: o1-preview, name: o1-preview, lab: OpenAI, family: o1, open: false, no_arch: "OpenAI has not disclosed the architecture or size",
+   doc: "https://developers.openai.com/api/docs/models/o1-preview", context: [128000, doc, "model page: 128,000 context window"],
+   released: ["2024-09", doc, "snapshot o1-preview-2024-09-12"],
+   estimates: [{field: total_params, value: 300.0e9, source: medec-2024, quote: "o1-preview ... (≈300B)"}]}
+- {id: gpt-5, name: GPT-5, lab: OpenAI, family: GPT-5, open: false, no_arch: "OpenAI has not disclosed the architecture or size",
+   doc: "https://developers.openai.com/api/docs/models/gpt-5", context: [400000, doc, "model page: 400,000 context window"],
+   released: ["2025-08", doc, "snapshot gpt-5-2025-08-07"]}
+- {id: gpt-6-astra, name: GPT-6 Astra, lab: OpenAI, family: GPT-6, open: false, no_arch: "OpenAI has not disclosed the architecture or size",
+   doc: "https://developers.openai.com/api/docs/models/gpt-6-astra", context: [1050000, doc, "model page: 1,050,000 context window"],
+   released: ["2026-09", doc, "listed as the current flagship (September 2026)"]}
+- {id: claude-3-opus, name: Claude 3 Opus, lab: Anthropic, family: Claude 3, open: false, no_arch: "Anthropic has not disclosed the architecture or size",
+   doc: "https://www.anthropic.com/news/claude-3-family", context: [200000, doc, "announcement: a 200K context window upon launch"],
+   released: ["2024-03", doc, "announcement dated Mar 4, 2024"]}
+- {id: claude-3.5-sonnet, name: Claude 3.5 Sonnet, lab: Anthropic, family: Claude 3.5, open: false, no_arch: "Anthropic has not disclosed the architecture or size",
+   doc: "https://www.anthropic.com/news/claude-3-5-sonnet", context: [200000, doc, "announcement: a 200K token context window"],
+   released: ["2024-06", doc, "announcement dated Jun 21, 2024"],
+   estimates: [{field: total_params, value: 175.0e9, source: medec-2024, quote: "Claude 3.5 Sonnet (2024-10-22) ... (≈175B parameters)"}]}
+- {id: claude-opus-5, name: Claude Opus 5, lab: Anthropic, family: Claude 5, open: false, no_arch: "Anthropic has not disclosed the architecture or size",
+   doc: "https://www.anthropic.com/news/claude-opus-5", released: ["2026-07", doc, "announcement dated Jul 24, 2026"]}
+- {id: claude-opus-5.5, name: Claude Opus 5.5, lab: Anthropic, family: Claude 5, open: false, no_arch: "Anthropic has not disclosed the architecture or size",
+   doc: "https://platform.claude.com/docs/en/models/opus-5-5/overview", context: [1.0e6, doc, "model page: context window 1M tokens"],
+   released: ["2026-09", doc, "model page: released September 22, 2026"]}
+- {id: claude-fable-5.1, name: Claude Fable 5.1, lab: Anthropic, family: Claude 5, open: false, no_arch: "Anthropic has not disclosed the architecture or size",
+   doc: "https://platform.claude.com/docs/en/models/fable-5-1/overview", context: [1.0e6, doc, "model page: context window 1M tokens"],
+   released: ["2026-09", doc, "model page: released September 1, 2026"]}
+- {id: gemini-1.0-ultra, name: Gemini 1.0 Ultra, lab: Google, family: Gemini, open: false, paper: "2312.11805", no_arch: "the Gemini report does not give the size or layer dimensions",
+   released: ["2023-12", paper, "arXiv v1, December 2023"]}
+- {id: gemini-1.5-pro, name: Gemini 1.5 Pro, lab: Google, family: Gemini, open: false, paper: "2403.05530", no_arch: "the report states the model is a sparse MoE but gives no dimensions",
+   released: ["2024-02", paper, "report, February 2024 (arXiv March 2024)"], moe: [true, paper, "§2: a sparse mixture-of-experts (MoE) Transformer-based model"]}
+- {id: gemini-2.5-pro, name: Gemini 2.5 Pro, lab: Google, family: Gemini, open: false, paper: "2507.06261", no_arch: "the report states the model is a sparse MoE but gives no dimensions",
+   released: ["2025-03", blog, "Google blog, March 2025"], blog: "https://blog.google/technology/google-deepmind/gemini-model-thinking-updates-march-2025/",
+   moe: [true, paper, "§2.1: sparse mixture-of-experts (MoE) transformers"]}
+- {id: gemini-3-pro, name: Gemini 3 Pro, lab: Google, family: Gemini, open: false, no_arch: "the model card states the model is a sparse MoE but gives no dimensions",
+   doc: "https://storage.googleapis.com/deepmind-media/Model-Cards/Gemini-3-Pro-Model-Card.pdf", released: ["2025-11", doc, "model card: Model Release November 2025"],
+   context: [1.0e6, doc, "model card p.1: a token context window of up to 1M"], moe: [true, doc, "model card p.2: a sparse mixture-of-experts (MoE) transformer-based model"]}
+- {id: grok-4, name: Grok 4, lab: xAI, family: Grok, open: false, no_arch: "xAI has not disclosed the architecture or size",
+   doc: "https://x.ai/news/grok-4", context: [256000, doc, "announcement: 256,000 context window"], released: ["2025-07", doc, "announcement dated July 9, 2025"]}

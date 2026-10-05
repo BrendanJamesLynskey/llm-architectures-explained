@@ -1,0 +1,46 @@
+{
+ "api": {
+  "createdAt": "2026-06-12T11:43:29.000Z",
+  "gated": false,
+  "license": "mit",
+  "safetensors": {
+   "parameters": {
+    "BF16": 3085938688
+   },
+   "total": 3085938688
+  }
+ },
+ "config": {
+  "architectures": [
+   "Qwen2ForCausalLM"
+  ],
+  "attention_dropout": 0.0,
+  "bos_token_id": 151643,
+  "eos_token_id": 151643,
+  "hidden_act": "silu",
+  "hidden_size": 2048,
+  "initializer_range": 0.02,
+  "intermediate_size": 11008,
+  "max_position_embeddings": 131072,
+  "max_window_layers": 36,
+  "model_type": "qwen2",
+  "num_attention_heads": 16,
+  "num_hidden_layers": 36,
+  "num_key_value_heads": 2,
+  "rms_norm_eps": 1e-06,
+  "rope_scaling": null,
+  "rope_theta": 1000000.0,
+  "sliding_window": 32768,
+  "tie_word_embeddings": true,
+  "torch_dtype": "bfloat16",
+  "transformers_version": "4.51.3",
+  "use_cache": false,
+  "use_sliding_window": false,
+  "vocab_size": 151936
+ },
+ "config_canonical_sha256": "feaade2121ce93c15bc7672cccea23b3b5f744245453ba18f96ae6079029eba2",
+ "fetched": "2026-10-05",
+ "file": "config.json",
+ "repo": "WeiboAI/VibeThinker-3B",
+ "revision": "77bd2cced09193c8b9a59a32bd8577bbd1f3e01c"
+}

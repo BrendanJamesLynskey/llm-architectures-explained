@@ -1,0 +1,18 @@
+{
+ "api": {
+  "createdAt": "2024-04-17T09:35:16.000Z",
+  "gated": "manual",
+  "license": "llama3",
+  "safetensors": {
+   "parameters": {
+    "BF16": 8030261248
+   },
+   "total": 8030261248
+  }
+ },
+ "config": null,
+ "fetched": "2026-10-05",
+ "file": null,
+ "repo": "meta-llama/Meta-Llama-3-8B",
+ "revision": "8cde5ca8380496c9a6cc7ef3a8b46a0372a1d920"
+}

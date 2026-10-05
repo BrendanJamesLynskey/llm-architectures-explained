@@ -1,0 +1,18 @@
+{
+ "api": {
+  "createdAt": "2026-02-13T02:47:42.000Z",
+  "gated": "auto",
+  "license": "cc-by-nc-4.0",
+  "safetensors": {
+   "parameters": {
+    "BF16": 3349227520
+   },
+   "total": 3349227520
+  }
+ },
+ "config": null,
+ "fetched": "2026-10-05",
+ "file": null,
+ "repo": "CohereLabs/tiny-aya-base",
+ "revision": "d62ac17e241c871fc52e9a95d7b0e2615189d7d5"
+}

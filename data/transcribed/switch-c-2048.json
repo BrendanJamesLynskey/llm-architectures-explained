@@ -1,0 +1,33 @@
+{
+ "_source": {
+  "id": "paper",
+  "type": "paper",
+  "url": "https://arxiv.org/abs/2101.03961",
+  "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity"
+ },
+ "_status": "paper",
+ "_refs": {
+  "d_model": "Table 9: d_model 2080",
+  "d_ff": "Table 9: d_ff 6144",
+  "d_kv": "Table 9: d_kv 64",
+  "num_heads": "Table 9: 32 heads",
+  "num_layers": "Table 9: 15 layers",
+  "num_decoder_layers": "Table 9: 15 layers",
+  "num_experts": "Table 9: 2048 experts",
+  "expert_freq": "Table 9: expert frequency 1 (every layer)",
+  "vocab_size": "google/switch-c-2048 config: vocab_size 32128 (T5 vocabulary)",
+  "feed_forward_proj": "Table 9: no GEGLU (ReLU)"
+ },
+ "model_type": "switch_transformers",
+ "d_model": 2080,
+ "d_ff": 6144,
+ "d_kv": 64,
+ "num_heads": 32,
+ "num_layers": 15,
+ "num_decoder_layers": 15,
+ "num_experts": 2048,
+ "encoder_sparse_step": 1,
+ "decoder_sparse_step": 1,
+ "vocab_size": 32128,
+ "feed_forward_proj": "relu"
+}

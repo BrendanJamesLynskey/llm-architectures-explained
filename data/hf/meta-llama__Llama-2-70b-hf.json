@@ -1,0 +1,19 @@
+{
+ "api": {
+  "createdAt": "2023-07-11T08:56:34.000Z",
+  "gated": "manual",
+  "license": "llama2",
+  "safetensors": {
+   "parameters": {
+    "F16": 68976648192,
+    "F32": 5120
+   },
+   "total": 68976653312
+  }
+ },
+ "config": null,
+ "fetched": "2026-10-05",
+ "file": null,
+ "repo": "meta-llama/Llama-2-70b-hf",
+ "revision": "3aba440b59558f995867ba6e1f58f21d0336b5bb"
+}

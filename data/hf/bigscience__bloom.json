@@ -1,0 +1,42 @@
+{
+ "api": {
+  "createdAt": "2022-05-19T11:53:33.000Z",
+  "gated": false,
+  "license": "bigscience-bloom-rail-1.0",
+  "safetensors": {
+   "parameters": {
+    "BF16": 176247271424
+   },
+   "total": 176247271424
+  }
+ },
+ "config": {
+  "apply_residual_connection_post_layernorm": false,
+  "architectures": [
+   "BloomForCausalLM"
+  ],
+  "attention_dropout": 0.0,
+  "attention_softmax_in_fp32": true,
+  "bos_token_id": 1,
+  "eos_token_id": 2,
+  "hidden_dropout": 0.0,
+  "initializer_range": 0.02,
+  "layer_norm_epsilon": 1e-05,
+  "masked_softmax_fusion": true,
+  "model_type": "bloom",
+  "n_embed": 14336,
+  "n_layer": 70,
+  "num_attention_heads": 112,
+  "pad_token_id": 3,
+  "pretraining_tp": 4,
+  "slow_but_exact": false,
+  "transformers_version": "4.21.0",
+  "use_cache": true,
+  "vocab_size": 250880
+ },
+ "config_canonical_sha256": "9f2932e29024ef1a1df4c2d94b66fbc96e9a3b20e11a9d742e2c0e4c31bb8491",
+ "fetched": "2026-10-05",
+ "file": "config.json",
+ "repo": "bigscience/bloom",
+ "revision": "7f10a99ce7c08f03c7719a586cb2cbda1433ac05"
+}

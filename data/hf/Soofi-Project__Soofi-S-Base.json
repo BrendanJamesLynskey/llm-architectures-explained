@@ -1,0 +1,19 @@
+{
+ "api": {
+  "createdAt": "2026-07-01T16:30:40.000Z",
+  "gated": "manual",
+  "license": "other",
+  "safetensors": {
+   "parameters": {
+    "BF16": 31577937344,
+    "F32": 2944
+   },
+   "total": 31577937344
+  }
+ },
+ "config": null,
+ "fetched": "2026-10-05",
+ "file": null,
+ "repo": "Soofi-Project/Soofi-S-Base",
+ "revision": "dfd04e8209fc28be4c996211151192b1122a1f35"
+}

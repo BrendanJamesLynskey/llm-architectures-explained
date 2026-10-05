@@ -1,0 +1,29 @@
+{
+ "api": {
+  "createdAt": "2024-05-28T06:23:28.000Z",
+  "gated": false,
+  "license": "apache-2.0",
+  "safetensors": null
+ },
+ "config": {
+  "attn_cfg": {},
+  "attn_layer_idx": [],
+  "d_intermediate": 0,
+  "d_model": 2560,
+  "fused_add_norm": true,
+  "n_layer": 64,
+  "pad_vocab_size_multiple": 16,
+  "residual_in_fp32": true,
+  "rms_norm": true,
+  "ssm_cfg": {
+   "layer": "Mamba2"
+  },
+  "tie_embeddings": true,
+  "vocab_size": 50277
+ },
+ "config_canonical_sha256": "bc62905b3a7c1250ad3aa55b7244edfee8e86933bec96255f032b8bb2a0c54e7",
+ "fetched": "2026-10-05",
+ "file": "config.json",
+ "repo": "state-spaces/mamba2-2.7b",
+ "revision": "99b226cc377d131cccc610ed4346db564f381f1e"
+}

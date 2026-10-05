@@ -1,0 +1,21 @@
+node_modules
+.next
+out
+build
+coverage
+dist
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+playwright-report
+test-results
+.vercel
+
+# Generated data (scripts/build_models.py, scripts/make_fixtures.py) and the
+# pinned upstream snapshots.
+tests/fixtures/
+src/data/
+public/data/
+data/
+.lighthouseci/
+.venv/

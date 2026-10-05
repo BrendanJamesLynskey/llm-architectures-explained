@@ -1,0 +1,28 @@
+{
+ "_source": {
+  "id": "meta-github",
+  "type": "code",
+  "url": "https://github.com/meta-llama/llama-models/blob/0e0b8c519242d5833d8c11bffc1232b77ad7f301/models/sku_list.py",
+  "title": "meta-llama/llama-models sku_list.py (pinned)"
+ },
+ "_status": "disclosed",
+ "_refs": {
+  "hidden_size": "sku_list.py arch_args_1b: dim",
+  "num_hidden_layers": "sku_list.py arch_args_1b: n_layers",
+  "num_attention_heads": "sku_list.py arch_args_1b: n_heads",
+  "num_key_value_heads": "sku_list.py arch_args_1b: n_kv_heads",
+  "vocab_size": "sku_list.py: LLAMA3_VOCAB_SIZE",
+  "intermediate_size": "llama3/model.py FeedForward: int(2*4*dim/3), x ffn_dim_multiplier 1.5, rounded up to multiple_of 256",
+  "tie_word_embeddings": "model card: shared embeddings",
+  "max_position_embeddings": "model card (README): context length 128k"
+ },
+ "model_type": "llama",
+ "hidden_size": 2048,
+ "num_hidden_layers": 16,
+ "num_attention_heads": 32,
+ "num_key_value_heads": 8,
+ "vocab_size": 128256,
+ "intermediate_size": 8192,
+ "tie_word_embeddings": true,
+ "max_position_embeddings": 131072
+}

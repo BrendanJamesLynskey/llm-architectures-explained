@@ -1,0 +1,18 @@
+{
+ "api": {
+  "createdAt": "2026-07-21T08:33:35.000Z",
+  "gated": "auto",
+  "license": "apache-2.0",
+  "safetensors": {
+   "parameters": {
+    "BF16": 1837271040
+   },
+   "total": 1837271040
+  }
+ },
+ "config": null,
+ "fetched": "2026-10-05",
+ "file": null,
+ "repo": "fdtn-ai/antares-1b",
+ "revision": "10417eb35641b32e7141157db19c76eb545193b6"
+}

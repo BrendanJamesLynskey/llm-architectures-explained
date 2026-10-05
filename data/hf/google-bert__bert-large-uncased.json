@@ -1,0 +1,41 @@
+{
+ "api": {
+  "createdAt": "2022-03-02T23:29:04.000Z",
+  "gated": false,
+  "license": "apache-2.0",
+  "safetensors": {
+   "parameters": {
+    "F32": 336226108
+   },
+   "total": 336226108
+  }
+ },
+ "config": {
+  "architectures": [
+   "BertForMaskedLM"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "gradient_checkpointing": false,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 1024,
+  "initializer_range": 0.02,
+  "intermediate_size": 4096,
+  "layer_norm_eps": 1e-12,
+  "max_position_embeddings": 512,
+  "model_type": "bert",
+  "num_attention_heads": 16,
+  "num_hidden_layers": 24,
+  "pad_token_id": 0,
+  "position_embedding_type": "absolute",
+  "transformers_version": "4.6.0.dev0",
+  "type_vocab_size": 2,
+  "use_cache": true,
+  "vocab_size": 30522
+ },
+ "config_canonical_sha256": "5945668e8f7902e22d3eb2a97ecb1338de8971b21de6d0417221f4f0c73a193a",
+ "fetched": "2026-10-05",
+ "file": "config.json",
+ "repo": "google-bert/bert-large-uncased",
+ "revision": "6da4b6a26a1877e173fca3225479512db81a5e5b"
+}

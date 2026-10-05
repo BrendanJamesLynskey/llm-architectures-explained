@@ -1,0 +1,30 @@
+{
+ "_source": {
+  "id": "paper",
+  "type": "paper",
+  "url": "https://arxiv.org/abs/2204.02311",
+  "title": "PaLM: Scaling Language Modeling with Pathways"
+ },
+ "_status": "paper",
+ "_refs": {
+  "hidden_size": "Table 1: d_model 18432",
+  "num_hidden_layers": "Table 1: layers 118",
+  "num_attention_heads": "Table 1: 48 heads",
+  "head_dim": "Table 1 caption: head size always 256",
+  "num_key_value_heads": "\u00a72: multi-query attention (one key/value head)",
+  "intermediate_size": "Table 1 caption: d_ff always 4 x d_model",
+  "vocab_size": "\u00a72: SentencePiece vocabulary with 256k tokens (256,000 assumed)",
+  "tie_word_embeddings": "\u00a72: shared input-output embeddings",
+  "max_position_embeddings": "\u00a73: sequence length 2048"
+ },
+ "model_type": "palm",
+ "hidden_size": 18432,
+ "num_hidden_layers": 118,
+ "num_attention_heads": 48,
+ "head_dim": 256,
+ "num_key_value_heads": 1,
+ "intermediate_size": 73728,
+ "vocab_size": 256000,
+ "tie_word_embeddings": true,
+ "max_position_embeddings": 2048
+}

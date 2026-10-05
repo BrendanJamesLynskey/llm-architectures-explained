@@ -1,0 +1,51 @@
+{
+ "api": {
+  "createdAt": "2023-05-24T12:08:30.000Z",
+  "gated": false,
+  "license": "apache-2.0",
+  "safetensors": {
+   "parameters": {
+    "BF16": 41835970560
+   },
+   "total": 41835970560
+  }
+ },
+ "config": {
+  "alibi": false,
+  "apply_residual_connection_post_layernorm": false,
+  "architectures": [
+   "FalconForCausalLM"
+  ],
+  "attention_dropout": 0.0,
+  "auto_map": {
+   "AutoConfig": "configuration_falcon.FalconConfig",
+   "AutoModel": "modeling_falcon.FalconModel",
+   "AutoModelForCausalLM": "modeling_falcon.FalconForCausalLM",
+   "AutoModelForQuestionAnswering": "modeling_falcon.FalconForQuestionAnswering",
+   "AutoModelForSequenceClassification": "modeling_falcon.FalconForSequenceClassification",
+   "AutoModelForTokenClassification": "modeling_falcon.FalconForTokenClassification"
+  },
+  "bias": false,
+  "bos_token_id": 11,
+  "eos_token_id": 11,
+  "hidden_dropout": 0.0,
+  "hidden_size": 8192,
+  "initializer_range": 0.02,
+  "layer_norm_epsilon": 1e-05,
+  "model_type": "falcon",
+  "new_decoder_architecture": true,
+  "num_attention_heads": 128,
+  "num_hidden_layers": 60,
+  "num_kv_heads": 8,
+  "parallel_attn": true,
+  "torch_dtype": "bfloat16",
+  "transformers_version": "4.27.4",
+  "use_cache": true,
+  "vocab_size": 65024
+ },
+ "config_canonical_sha256": "e8744cabd7d8f21b57000688fff6ef8c8246bc5230411245a30dfb18abce5309",
+ "fetched": "2026-10-05",
+ "file": "config.json",
+ "repo": "tiiuae/falcon-40b",
+ "revision": "05ab2ee8d6b593bdbab17d728de5c028a7a94d83"
+}

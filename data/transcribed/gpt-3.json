@@ -1,0 +1,22 @@
+{
+ "_source": {
+  "id": "paper",
+  "type": "paper",
+  "url": "https://arxiv.org/abs/2005.14165",
+  "title": "Language Models are Few-Shot Learners"
+ },
+ "_status": "paper",
+ "_refs": {
+  "n_embd": "Table 2.1: d_model 12288",
+  "n_layer": "Table 2.1: n_layers 96",
+  "n_head": "Table 2.1: n_heads 96 (d_head 128)",
+  "n_positions": "\u00a72.1: context window n_ctx = 2048",
+  "vocab_size": "\u00a72.1: same model and architecture as GPT-2; GPT-2 BPE vocabulary of 50,257 (openai-community/gpt2-xl config)"
+ },
+ "model_type": "gpt2",
+ "n_embd": 12288,
+ "n_layer": 96,
+ "n_head": 96,
+ "n_positions": 2048,
+ "vocab_size": 50257
+}

@@ -1,0 +1,30 @@
+{
+ "_source": {
+  "id": "paper",
+  "type": "paper",
+  "url": "https://arxiv.org/abs/1706.03762",
+  "title": "Attention Is All You Need"
+ },
+ "_status": "paper",
+ "_refs": {
+  "d_model": "Table 3 (base): d_model 512",
+  "d_ff": "Table 3 (base): d_ff 2048",
+  "num_heads": "Table 3 (base): h 8",
+  "d_kv": "Table 3 (base): d_k = d_v = 64",
+  "num_layers": "Table 3 (base): N = 6 (encoder and decoder)",
+  "num_decoder_layers": "Table 3 (base): N = 6",
+  "vocab_size": "\u00a75.1: shared source-target vocabulary of about 37000 tokens (EN-DE)",
+  "feed_forward_proj": "\u00a73.3: ReLU FFN",
+  "n_positions": "sinusoidal positions (\u00a73.5), no length limit stated"
+ },
+ "model_type": "t5",
+ "d_model": 512,
+ "d_ff": 2048,
+ "num_heads": 8,
+ "d_kv": 64,
+ "num_layers": 6,
+ "num_decoder_layers": 6,
+ "vocab_size": 37000,
+ "feed_forward_proj": "relu",
+ "n_positions": null
+}

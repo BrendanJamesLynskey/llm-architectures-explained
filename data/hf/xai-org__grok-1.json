@@ -1,0 +1,13 @@
+{
+ "api": {
+  "createdAt": "2024-03-17T05:47:21.000Z",
+  "gated": false,
+  "license": "apache-2.0",
+  "safetensors": null
+ },
+ "config": null,
+ "fetched": "2026-10-05",
+ "file": null,
+ "repo": "xai-org/grok-1",
+ "revision": "5de83eb225f49624b424f1c8aa74f96983b5885c"
+}

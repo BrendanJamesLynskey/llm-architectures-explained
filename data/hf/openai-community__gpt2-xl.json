@@ -1,0 +1,50 @@
+{
+ "api": {
+  "createdAt": "2022-03-02T23:29:04.000Z",
+  "gated": false,
+  "license": "mit",
+  "safetensors": {
+   "parameters": {
+    "F32": 1607942848
+   },
+   "total": 1607942848
+  }
+ },
+ "config": {
+  "activation_function": "gelu_new",
+  "architectures": [
+   "GPT2LMHeadModel"
+  ],
+  "attn_pdrop": 0.1,
+  "bos_token_id": 50256,
+  "embd_pdrop": 0.1,
+  "eos_token_id": 50256,
+  "initializer_range": 0.02,
+  "layer_norm_epsilon": 1e-05,
+  "model_type": "gpt2",
+  "n_ctx": 1024,
+  "n_embd": 1600,
+  "n_head": 25,
+  "n_layer": 48,
+  "n_positions": 1024,
+  "output_past": true,
+  "resid_pdrop": 0.1,
+  "summary_activation": null,
+  "summary_first_dropout": 0.1,
+  "summary_proj_to_labels": true,
+  "summary_type": "cls_index",
+  "summary_use_proj": true,
+  "task_specific_params": {
+   "text-generation": {
+    "do_sample": true,
+    "max_length": 50
+   }
+  },
+  "vocab_size": 50257
+ },
+ "config_canonical_sha256": "0930f1e9239a2d889ae29f1eec2feea4eb941305508b210c1d2b04d09e05ab13",
+ "fetched": "2026-10-05",
+ "file": "config.json",
+ "repo": "openai-community/gpt2-xl",
+ "revision": "15ea56dee5df4983c59b2538573817e1667135e2"
+}

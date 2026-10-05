@@ -1,0 +1,31 @@
+name: Freshness
+
+# Weekly: re-fetch every pinned config.json and report models whose
+# Hugging Face repository has moved on since it was pinned, or whose pinned
+# config no longer matches the stored snapshot. It never changes the data;
+# re-pinning is a deliberate commit (scripts/fetch_configs.py --repin).
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  drift:
+    name: Pinned configs against Hugging Face
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r reference/requirements.txt
+      - name: Check for drift
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python scripts/fetch_configs.py --check --report drift.md
+      - name: Summary
+        if: always()
+        run: cat drift.md >> "$GITHUB_STEP_SUMMARY" || true

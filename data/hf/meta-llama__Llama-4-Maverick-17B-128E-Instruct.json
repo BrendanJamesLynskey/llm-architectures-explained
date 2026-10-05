@@ -1,0 +1,18 @@
+{
+ "api": {
+  "createdAt": "2025-04-01T22:17:20.000Z",
+  "gated": "manual",
+  "license": "other",
+  "safetensors": {
+   "parameters": {
+    "BF16": 401583781376
+   },
+   "total": 401583781376
+  }
+ },
+ "config": null,
+ "fetched": "2026-10-05",
+ "file": null,
+ "repo": "meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+ "revision": "73d14711bcc77c16df3470856949c3764056b617"
+}

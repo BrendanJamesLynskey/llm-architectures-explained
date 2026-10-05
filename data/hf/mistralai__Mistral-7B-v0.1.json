@@ -1,0 +1,42 @@
+{
+ "api": {
+  "createdAt": "2023-09-20T13:03:50.000Z",
+  "gated": false,
+  "license": "apache-2.0",
+  "safetensors": {
+   "parameters": {
+    "BF16": 7241732096
+   },
+   "total": 7241732096
+  }
+ },
+ "config": {
+  "architectures": [
+   "MistralForCausalLM"
+  ],
+  "bos_token_id": 1,
+  "eos_token_id": 2,
+  "hidden_act": "silu",
+  "hidden_size": 4096,
+  "initializer_range": 0.02,
+  "intermediate_size": 14336,
+  "max_position_embeddings": 32768,
+  "model_type": "mistral",
+  "num_attention_heads": 32,
+  "num_hidden_layers": 32,
+  "num_key_value_heads": 8,
+  "rms_norm_eps": 1e-05,
+  "rope_theta": 10000.0,
+  "sliding_window": 4096,
+  "tie_word_embeddings": false,
+  "torch_dtype": "bfloat16",
+  "transformers_version": "4.34.0.dev0",
+  "use_cache": true,
+  "vocab_size": 32000
+ },
+ "config_canonical_sha256": "57a42af6ad21d30256615eda7e160b5aed49fcd24c82638a0dc7dbf7c0e22054",
+ "fetched": "2026-10-05",
+ "file": "config.json",
+ "repo": "mistralai/Mistral-7B-v0.1",
+ "revision": "27d67f1b5f57dc0953326b2601d68371d40ea8da"
+}

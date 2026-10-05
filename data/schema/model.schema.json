@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/BrendanJamesLynskey/llm-architectures-explained/data/schema/model.schema.json",
+  "title": "One model's architecture record",
+  "description": "Every value is a field {v, st, src, ref}: the value, its status, the source it comes from (a key of `sources`), and where in that source.",
+  "type": "object",
+  "required": ["id", "name", "lab", "family", "open_weights", "kind", "sources", "facts", "arch", "checks", "in_gallery"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9.\\-]*$" },
+    "name": { "type": "string", "minLength": 1 },
+    "gallery_name": { "type": ["string", "null"] },
+    "lab": { "type": "string" },
+    "family": { "type": "string" },
+    "open_weights": { "type": "boolean" },
+    "kind": { "enum": ["decoder", "encoder", "encoder-decoder", "ced"] },
+    "multimodal": { "type": "boolean" },
+    "no_arch": { "type": ["string", "null"] },
+    "arch_from": {
+      "type": "object",
+      "required": ["id", "ref"],
+      "properties": { "id": { "type": "string" }, "ref": { "type": "string" } }
+    },
+    "in_gallery": { "type": "boolean" },
+    "sources": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["type", "url"],
+        "properties": {
+          "type": { "enum": ["config", "card", "paper", "blog", "doc", "code", "reported-estimate"] },
+          "url": { "type": "string", "pattern": "^https://" },
+          "publisher": { "type": "string" },
+          "date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+          "confidence": { "type": "string" }
+        },
+        "if": { "properties": { "type": { "const": "reported-estimate" } } },
+        "then": { "required": ["publisher", "date", "confidence", "where"] }
+      }
+    },
+    "facts": {
+      "type": "object",
+      "required": ["released", "licence", "total_params", "active_params", "context"],
+      "properties": {
+        "estimates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["field", "v", "st", "src", "quote"],
+            "properties": {
+              "field": { "enum": ["total_params", "active_params", "context"] },
+              "v": { "type": "number" },
+              "st": { "const": "reported-estimate" },
+              "src": { "type": "string" },
+              "quote": { "type": "string" }
+            }
+          }
+        }
+      },
+      "additionalProperties": { "$ref": "#/$defs/field" }
+    },
+    "arch": {
+      "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/arch" }]
+    },
+    "checks": { "type": "object" }
+  },
+  "$defs": {
+    "field": {
+      "type": "object",
+      "required": ["v", "st"],
+      "additionalProperties": false,
+      "properties": {
+        "v": {},
+        "st": { "enum": ["disclosed", "config", "paper", "code", "not-disclosed"] },
+        "src": { "type": "string" },
+        "ref": { "type": "string" },
+        "note": { "type": "string" }
+      },
+      "if": { "properties": { "st": { "not": { "const": "not-disclosed" } } } },
+      "then": { "required": ["src", "ref"] }
+    },
+    "intField": {
+      "allOf": [
+        { "$ref": "#/$defs/field" },
+        { "properties": { "v": { "type": "integer", "minimum": 0 } } }
+      ]
+    },
+    "mixer": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "allOf": [
+            { "$ref": "#/$defs/field" },
+            {
+              "properties": {
+                "v": {
+                  "enum": ["attn", "mla", "csa", "deltanet", "kda", "linear", "mamba2", "mamba1", "conv", "rwkv", "mlstm"]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "ffn": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "allOf": [{ "$ref": "#/$defs/field" }, { "properties": { "v": { "enum": ["dense", "moe"] } } }]
+        }
+      },
+      "additionalProperties": true
+    },
+    "layout": {
+      "allOf": [
+        { "$ref": "#/$defs/field" },
+        {
+          "properties": {
+            "v": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["mixer", "ffn", "n"],
+                "properties": {
+                  "mixer": { "type": "string" },
+                  "ffn": { "type": "string" },
+                  "n": { "type": "integer", "minimum": 1 },
+                  "ratio": { "type": "number" },
+                  "kv_source": { "type": "boolean" },
+                  "kv_shared": { "type": "boolean" },
+                  "indexer": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "arch": {
+      "type": "object",
+      "required": ["d_model", "vocab", "tied_embeddings", "mixers", "ffns", "layout"],
+      "properties": {
+        "d_model": { "$ref": "#/$defs/intField" },
+        "vocab": { "$ref": "#/$defs/intField" },
+        "tied_embeddings": { "$ref": "#/$defs/field" },
+        "mixers": { "type": "object", "minProperties": 1, "additionalProperties": { "$ref": "#/$defs/mixer" } },
+        "ffns": { "type": "object", "additionalProperties": { "$ref": "#/$defs/ffn" } },
+        "layout": { "$ref": "#/$defs/layout" },
+        "encoder_layout": { "$ref": "#/$defs/layout" },
+        "mtp_layers": { "$ref": "#/$defs/field" },
+        "mtp_layer": { "$ref": "#/$defs/field" },
+        "loops": { "$ref": "#/$defs/field" },
+        "ced_encoder_layers": { "$ref": "#/$defs/field" },
+        "ced_window": { "$ref": "#/$defs/field" },
+        "extra_embedding_params": { "$ref": "#/$defs/field" },
+        "norms_per_layer": { "$ref": "#/$defs/field" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

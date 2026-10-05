@@ -1,0 +1,44 @@
+{
+ "api": {
+  "createdAt": "2022-04-07T20:28:29.000Z",
+  "gated": false,
+  "license": "apache-2.0",
+  "safetensors": {
+   "parameters": {
+    "F16": 20554568208,
+    "U8": 184549376
+   },
+   "total": 20739117584
+  }
+ },
+ "config": {
+  "architectures": [
+   "GPTNeoXForCausalLM"
+  ],
+  "attention_probs_dropout_prob": 0,
+  "bos_token_id": 0,
+  "eos_token_id": 0,
+  "hidden_act": "gelu_fast",
+  "hidden_dropout_prob": 0,
+  "hidden_size": 6144,
+  "initializer_range": 0.02,
+  "intermediate_size": 24576,
+  "layer_norm_eps": 1e-05,
+  "max_position_embeddings": 2048,
+  "model_type": "gpt_neox",
+  "num_attention_heads": 64,
+  "num_hidden_layers": 44,
+  "rotary_emb_base": 10000,
+  "rotary_pct": 0.25,
+  "tie_word_embeddings": false,
+  "torch_dtype": "float16",
+  "transformers_version": "4.19.0.dev0",
+  "use_cache": true,
+  "vocab_size": 50432
+ },
+ "config_canonical_sha256": "1f288f775ece556961d0ff625a52e48a3f617e17c18c09b95af168b92766bf1e",
+ "fetched": "2026-10-05",
+ "file": "config.json",
+ "repo": "EleutherAI/gpt-neox-20b",
+ "revision": "c292233c833e336628618a88a648727eb3dff0a7"
+}

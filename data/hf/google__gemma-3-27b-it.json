@@ -1,0 +1,18 @@
+{
+ "api": {
+  "createdAt": "2025-03-01T19:10:19.000Z",
+  "gated": "manual",
+  "license": "gemma",
+  "safetensors": {
+   "parameters": {
+    "BF16": 27432406640
+   },
+   "total": 27432406640
+  }
+ },
+ "config": null,
+ "fetched": "2026-10-05",
+ "file": null,
+ "repo": "google/gemma-3-27b-it",
+ "revision": "005ad3404e59d6023443cb575daa05336842228a"
+}

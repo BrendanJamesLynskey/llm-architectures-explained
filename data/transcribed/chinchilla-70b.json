@@ -1,0 +1,29 @@
+{
+ "_source": {
+  "id": "paper",
+  "type": "paper",
+  "url": "https://arxiv.org/abs/2203.15556",
+  "title": "Training Compute-Optimal Large Language Models"
+ },
+ "_status": "paper",
+ "_refs": {
+  "hidden_size": "Table 4: d_model 8,192",
+  "num_hidden_layers": "Table 4: layers 80",
+  "num_attention_heads": "Table 4: 64 heads",
+  "head_dim": "Table 4: key/value size 128",
+  "intermediate_size": "Gopher paper (arXiv 2112.11446) \u00a73: feed-forward size always 4 x d_model",
+  "vocab_size": "Gopher paper \u00a73: SentencePiece vocabulary of 32,000",
+  "max_position_embeddings": "Gopher paper: 2048-token context",
+  "tie_word_embeddings": "not stated; untied assumed"
+ },
+ "model_type": "chinchilla",
+ "hidden_size": 8192,
+ "num_hidden_layers": 80,
+ "num_attention_heads": 64,
+ "head_dim": 128,
+ "num_key_value_heads": 64,
+ "intermediate_size": 32768,
+ "vocab_size": 32000,
+ "max_position_embeddings": 2048,
+ "tie_word_embeddings": false
+}
