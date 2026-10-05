@@ -6,9 +6,10 @@ computes:
 
 * parameter counts, total and active per token, split by component;
 * KV-cache (and recurrent-state) bytes per token and in total, for every
-  mixer type: MHA/GQA/MQA, sliding window, MLA, DeepSeek sparse attention
-  (DSA), compressed attention (DeepSeek V4 CSA/HCA), linear attention
-  (Gated DeltaNet, KDA, Lightning), Mamba, short convolutions, RWKV, mLSTM;
+  mixer type: MHA/GQA/MQA, sliding window, chunked attention (Llama 4), MLA,
+  DeepSeek sparse attention (DSA), compressed attention (DeepSeek V4
+  CSA/HCA), linear attention (Gated DeltaNet, KDA, Lightning), Mamba, short
+  convolutions, RWKV, mLSTM;
 * FLOPs per token for prefill and for decode, including the Causal
   Encoder-Decoder (CED), where prefill runs only the encoder half plus a
   bounded replay of the last ``W`` tokens through the decoder half;
@@ -32,6 +33,7 @@ Conventions (documented on the site's /about page as well):
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import Any
 
@@ -61,6 +63,19 @@ def sum_min(n: float, w: float) -> float:
     if w <= 0 or n <= w:
         return n * (n + 1.0) / 2.0
     return w * (w + 1.0) / 2.0 + (n - w) * w
+
+
+def in_chunk(t: float, c: float) -> float:
+    """Tokens the query at position t (1-based) reads under chunked attention:
+    those of its own c-token chunk up to and including itself."""
+    return t - c * math.floor((t - 1.0) / c)
+
+
+def sum_chunked(n: float, c: float) -> float:
+    """sum_{t=1..n} in_chunk(t, c), in closed form."""
+    q = math.floor(n / c)
+    r = n - q * c
+    return q * (c * (c + 1.0) / 2.0) + r * (r + 1.0) / 2.0
 
 
 # ---------------------------------------------------------------------------
@@ -370,6 +385,9 @@ def window_of(spec: Spec, run: dict[str, Any]) -> float:
     m = spec["mixers"][run["mixer"]]
     if m["type"] == "csa":
         return 0.0
+    if m.get("chunk"):
+        # A chunked layer keeps at most one chunk (the cache it reserves).
+        return _f(m["chunk"])
     return _f(m.get("window") or 0)
 
 
@@ -468,6 +486,8 @@ def attended(spec: Spec, run: dict[str, Any], t: float) -> float:
         ix = m.get("indexer")
         if ix:
             return min(t, _f(ix["topk"]))
+        if m.get("chunk"):
+            return in_chunk(t, _f(m["chunk"]))
         w = _f(m.get("window") or 0)
         return min(t, w) if w > 0 else t
     if m["type"] == "mla":
@@ -555,6 +575,8 @@ def _sum_attended(spec: Spec, run: dict[str, Any], n: float) -> float:
         ix = m.get("indexer")
         if ix:
             return sum_min(n, _f(ix["topk"]))
+        if m.get("chunk"):
+            return sum_chunked(n, _f(m["chunk"]))
         return sum_min(n, _f(m.get("window") or 0))
     if m["type"] == "mla":
         ix = m.get("indexer")
@@ -672,6 +694,8 @@ def attended_stored(spec: Spec, run: dict[str, Any], t: float) -> float:
     if m["type"] == "csa":
         ratio = _f(run.get("ratio") or 0)
         return t / ratio if ratio > 0 else 0.0
+    if m.get("chunk"):
+        return in_chunk(t, _f(m["chunk"]))
     w = _f(m.get("window") or 0)
     return min(t, w) if w > 0 else t
 

@@ -61,6 +61,13 @@ export const FEATURES = [
     description: "Some layers attend only to the most recent W tokens.",
   },
   {
+    id: "chunked",
+    group: "Attention",
+    label: "Chunked attention",
+    description:
+      "Some layers attend only to earlier tokens in their own fixed-size chunk.",
+  },
+  {
     id: "sparse",
     group: "Attention",
     label: "Sparse attention",
@@ -277,6 +284,7 @@ export function features(m: ModelRecord): Set<FeatureId> {
         else if (kv < x.heads!) out.add("gqa");
         else out.add("mha");
         if (x.window) out.add("sliding");
+        if (x.chunk) out.add("chunked");
         if (x.indexer) out.add("sparse");
       }
       if (x.type === "mla") {
@@ -301,12 +309,17 @@ export function features(m: ModelRecord): Set<FeatureId> {
       const [, mf] = moe;
       if (mf.shared) out.add("shared-expert");
       if (mf.latent) out.add("latent-moe");
-      const runs = expandLayout(spec).filter((r) => r.mixer !== "none");
-      const first = runs[0];
+      // Dense layers before the MoE block, not interleaved with it (GLaM,
+      // Jamba and Llama 4 alternate dense and MoE layers from the start).
+      const kinds = expandLayout(spec)
+        .filter((r) => r.mixer !== "none")
+        .map((r) => spec.ffns[r.ffn]?.type);
+      const firstMoe = kinds.indexOf("moe");
+      const lastMoe = kinds.lastIndexOf("moe");
       if (
-        first &&
-        spec.ffns[first.ffn]?.type === "dense" &&
-        ffns.includes(moe[0])
+        kinds[0] === "dense" &&
+        ffns.includes(moe[0]) &&
+        !kinds.slice(firstMoe, lastMoe + 1).includes("dense")
       )
         out.add("dense-prefix");
     }
@@ -365,6 +378,7 @@ export function attentionSummary(m: ModelRecord): string {
         x.kv_heads === 1 ? "MQA" : x.kv_heads! < x.heads! ? "GQA" : "MHA";
       label = `${kind} ${x.heads}q/${x.kv_heads}kv`;
       if (x.window) label += `, window ${x.window}`;
+      if (x.chunk) label += `, chunks of ${x.chunk}`;
       if (x.indexer) label += `, top-${x.indexer.topk}`;
     } else if (x.type === "mla") {
       label = `MLA ${x.heads}h, latent ${x.kv_lora_rank}`;

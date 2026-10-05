@@ -15,6 +15,7 @@ import { formatCount } from "@/lib/arch/format";
 export const MIXER_COLOURS: Record<string, string> = {
   full: "#6366f1",
   sliding: "#0ea5e9",
+  chunked: "#06b6d4",
   mla: "#8b5cf6",
   csa: "#d946ef",
   deltanet: "#10b981",
@@ -36,6 +37,7 @@ const FFN_COLOURS: Record<string, string> = {
 export function mixerKey(m: Mixer): string {
   if (m.type === "attn") {
     if (m.indexer) return "sparse";
+    if (m.chunk) return "chunked";
     return m.window ? "sliding" : "full";
   }
   return m.type;
@@ -50,6 +52,7 @@ export function mixerLabel(m: Mixer): string {
       `head ${m.head_dim}${m.v_head_dim && m.v_head_dim !== m.head_dim ? ` (V ${m.v_head_dim})` : ""}`,
     );
     if (m.window) parts.push(`window ${m.window.toLocaleString("en-GB")}`);
+    if (m.chunk) parts.push(`chunks of ${m.chunk.toLocaleString("en-GB")}`);
     if (m.indexer) parts.push(`sparse top-${m.indexer.topk}`);
     if (m.gate) parts.push(`${m.gate} output gate`);
     if (m.k_eq_v) parts.push("K = V");
@@ -512,6 +515,7 @@ export function BlockDiagram({
 const LEGEND: Record<string, string> = {
   full: "full attention",
   sliding: "sliding window",
+  chunked: "chunked attention",
   sparse: "sparse attention",
   mla: "MLA",
   csa: "compressed attention",

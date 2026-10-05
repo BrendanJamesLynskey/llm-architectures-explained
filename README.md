@@ -2,8 +2,8 @@
 
 An interactive, sourced record of how large language models are built and
 what their designs cost: attention (MHA, GQA, MQA, MLA, sliding windows,
-sparse and compressed attention, linear attention, DeltaNet and Mamba
-hybrids), positional encoding, normalisation, dense and mixture-of-experts
+chunked, sparse and compressed attention, linear attention, DeltaNet and
+Mamba hybrids), positional encoding, normalisation, dense and mixture-of-experts
 feed-forward blocks, depth and width, multi-token prediction, looped and
 parallel blocks, encoder-decoders and the causal encoder-decoder. **160
 models**, from the 2017 Transformer to this year's releases, every value
@@ -69,7 +69,13 @@ Regenerate them with `pnpm build && pnpm start` in one shell and
 - **Gated configs** (Meta, Google, Cohere, Cisco and others) are transcribed
   from the lab's own GitHub (`llama-models`, `gemma`, `grok-1`) or from the
   paper into [`data/transcribed/`](data/transcribed/), with the line or table
-  for every value.
+  for every value. Where the owner has accepted a gated licence, the
+  [Freshness workflow](.github/workflows/freshness.yml) pins the real
+  `config.json` instead, with the `HF_TOKEN` repository secret, and uploads
+  the snapshot as an artifact to commit (Llama 4 Maverick is pinned this way):
+  `gh workflow run freshness.yml -f pin="org/repo"`, then
+  `gh run download <run id> -n pinned-configs -D data/hf`. The token never
+  leaves GitHub.
 - **Generated, not typed.** [`scripts/build_models.py`](scripts/build_models.py)
   builds the model files from the snapshots, the transcriptions and the
   curation ([`data/curation/`](data/curation/): names, labs, the totals the

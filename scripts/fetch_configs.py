@@ -6,9 +6,12 @@
         head (if it differs, or the head has moved, report it). Exits 1 only
         if a pinned config no longer matches its snapshot.
 
-    python scripts/fetch_configs.py --pin org/repo [org/repo ...]
+    python scripts/fetch_configs.py --pin org/repo [org/repo ...] [--out DIR]
         Pin a repository at its current head: write data/hf/<org>__<repo>.json
-        with the API metadata and the config. Then run build_models.py.
+        (or DIR/<org>__<repo>.json) with the API metadata and the config. Then
+        run build_models.py. The Freshness workflow does this for gated
+        repositories with the HF_TOKEN secret (its `pin` input) and uploads the
+        snapshots as an artifact, so the token never leaves GitHub.
 
 Gated repositories need HF_TOKEN (the owner's token, with the licence
 accepted); without it their configs are reported as unavailable, and the
@@ -70,7 +73,7 @@ def trim(cfg: dict) -> dict:
     return cfg
 
 
-def pin(repo: str) -> None:
+def pin(repo: str, out: Path = HF) -> None:
     s, b = get(f"https://huggingface.co/api/models/{repo}")
     if s != 200:
         raise SystemExit(f"{repo}: API {s}")
@@ -93,7 +96,7 @@ def pin(repo: str) -> None:
     if cfg is not None:
         snap["config_canonical_sha256"] = canonical(cfg)
         snap["config"] = trim(cfg)
-    (HF / (repo.replace("/", "__") + ".json")).write_text(json.dumps(snap, indent=1, sort_keys=True) + "\n")
+    (out / (repo.replace("/", "__") + ".json")).write_text(json.dumps(snap, indent=1, sort_keys=True) + "\n")
     print(f"pinned {repo} @ {a['sha'][:7]}{'' if cfg is not None else ' (config unavailable)'}")
 
 
@@ -141,10 +144,11 @@ def main() -> int:
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--report", type=Path)
     ap.add_argument("--pin", nargs="+")
+    ap.add_argument("--out", type=Path, default=HF, help="directory for --pin snapshots (default data/hf)")
     a = ap.parse_args()
     if a.pin:
         for r in a.pin:
-            pin(r)
+            pin(r, a.out)
         return 0
     if a.check:
         return check(a.report)

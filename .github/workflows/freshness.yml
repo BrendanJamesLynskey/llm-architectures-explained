@@ -3,11 +3,25 @@ name: Freshness
 # Weekly: re-fetch every pinned config.json and report models whose
 # Hugging Face repository has moved on since it was pinned, or whose pinned
 # config no longer matches the stored snapshot. It never changes the data;
-# re-pinning is a deliberate commit (scripts/fetch_configs.py --repin).
+# re-pinning is a deliberate commit (scripts/fetch_configs.py --pin).
+#
+# Run by hand with the `pin` input (space-separated org/repo names) to pin
+# repositories at their current head with the HF_TOKEN secret, which can read
+# gated repositories whose licence the owner has accepted. The new
+# data/hf/*.json snapshots (config.json + the commit SHA) are uploaded as the
+# `pinned-configs` artifact, to be downloaded and committed deliberately:
+#   gh workflow run freshness.yml -f pin="org/repo"
+#   gh run download <run id> -n pinned-configs -D data/hf
 on:
   schedule:
     - cron: "17 6 * * 1"
   workflow_dispatch:
+    inputs:
+      pin:
+        description: "Pin these repositories (space-separated org/repo) instead of checking drift"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
@@ -15,6 +29,7 @@ permissions:
 jobs:
   drift:
     name: Pinned configs against Hugging Face
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.pin == '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,3 +44,36 @@ jobs:
       - name: Summary
         if: always()
         run: cat drift.md >> "$GITHUB_STEP_SUMMARY" || true
+
+  pin:
+    name: Pin configs from Hugging Face
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.pin != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Pin
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          REPOS: ${{ inputs.pin }}
+        run: |
+          mkdir -p pinned
+          # shellcheck disable=SC2086 # word-split the repository list
+          python scripts/fetch_configs.py --pin $REPOS --out pinned
+          python - <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
+          import json, pathlib, sys
+          bad = 0
+          for p in sorted(pathlib.Path("pinned").glob("*.json")):
+              s = json.loads(p.read_text())
+              ok = s["config"] is not None
+              bad += not ok
+              print(f"- {s['repo']} @ {s['revision']}: {'config.json pinned' if ok else 'CONFIG UNAVAILABLE'}")
+          sys.exit(1 if bad else 0)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pinned-configs
+          path: pinned/*.json
+          if-no-files-found: error

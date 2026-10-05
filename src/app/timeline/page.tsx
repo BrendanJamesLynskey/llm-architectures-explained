@@ -31,6 +31,7 @@ const ROWS: FeatureId[] = [
   "gqa",
   "mqa",
   "sliding",
+  "chunked",
   "moe",
   "shared-expert",
   "mla",

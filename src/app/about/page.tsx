@@ -156,8 +156,10 @@ export default function AboutPage(): JSX.Element {
             ones);
           </li>
           <li>
-            sliding-window layers keep only their window; sparse attention reads
-            only the selected entries, plus its indexer keys in full;
+            sliding-window layers keep only their window; chunked layers (Llama
+            4) keep one chunk, and each query reads only its own chunk so far;
+            sparse attention reads only the selected entries, plus its indexer
+            keys in full;
           </li>
           <li>
             linear attention, Mamba and short convolutions keep a fixed-size

@@ -9,7 +9,7 @@ import math
 import pytest
 
 import arch_model as am
-from helpers import models, spec
+from helpers import by_id, models, snapshot, spec
 
 # --- tiny hand-made specs ---------------------------------------------------
 
@@ -107,6 +107,30 @@ def test_whole_model_params_by_hand():
     tied = am.params(gqa(tied=True))
     assert tied.total == p.total - v * d
     assert tied.matmul_active == tied.total - tied.norms
+
+
+def test_chunked_closed_forms_match_loop():
+    for c in (1, 4, 17):
+        for n in (1, 3, 4, 5, 16, 17, 18, 100):
+            loop = [(t - 1) % c + 1 for t in range(1, n + 1)]
+            assert am.in_chunk(float(n), float(c)) == loop[-1]
+            assert am.sum_chunked(float(n), float(c)) == sum(loop)
+
+
+def test_chunked_attention_by_hand():
+    """A chunked layer reserves one chunk of cache, and the query at position
+    t reads only the tokens of its own chunk up to itself."""
+    s = gqa(layers=1, chunk=4)
+    per_entry = 2 * 4 * (16 + 16)
+    assert am.kv_cache(s, 10.0, 2.0)["kv_bytes"] == 2 * 32 * 4 * 2
+    assert am.kv_cache(s, 3.0, 2.0)["kv_bytes"] == 2 * 32 * 3 * 2
+    assert am.kv_cache(s, 10.0, 2.0)["bytes_per_token_unbounded"] == 0
+    base = 2 * am.params(s).matmul_active
+    assert am.decode_flops(s, 8.0) == base + 4 * per_entry
+    assert am.decode_flops(s, 9.0) == base + 1 * per_entry
+    assert am.decode_bytes(s, 10.0, 0.0, 1.0)["kv"] == 2 * 32 * 2
+    layer = am.layer_matmul(s, s["layout"][0])
+    assert am.prefill_flops(s, 10.0) == 2 * layer * 10 + (10 + 10 + 3) * per_entry + 2 * am.params(s).lm_head
 
 
 def test_kv_cache_gqa_and_window():
@@ -264,6 +288,34 @@ def test_active_matches_what_the_authors_state(m):
         pytest.skip(ACTIVE_EXCEPTIONS[m["id"]])
     p = am.params(spec(m))
     assert 0.9 * p.non_embedding_active <= stated <= 1.1 * p.active, (p.non_embedding_active, p.active, stated)
+
+
+def llama4_vision_params(vc: dict, text_d: int) -> int:
+    """Weights of Llama 4's vision encoder, adapter and projector, from its
+    vision_config, following transformers 5.18.0 Llama4VisionModel and
+    Llama4MultiModalProjector."""
+    h, i, L, ps = vc["hidden_size"], vc["intermediate_size"], vc["num_hidden_layers"], vc["patch_size"]
+    layer = 4 * (h * h + h) + (h * i + i) + (i * h + h) + 2 * 2 * h  # q/k/v/o with biases, fc1/fc2, two LayerNorms
+    patches = (vc["image_size"] // ps) ** 2 + 1
+    embed = vc["num_channels"] * ps * ps * h + h + patches * h  # unfold conv, class embedding, positions
+    adapter = i * vc["projector_input_dim"] + vc["projector_output_dim"] * vc["projector_output_dim"]
+    projector = vc["vision_output_dim"] * text_d
+    return L * layer + embed + 2 * 2 * h + adapter + projector  # + pre and post LayerNorms
+
+
+def test_llama4_maverick_matches_published_weights_exactly():
+    """Multimodal models skip the weights check below; for Llama 4 Maverick
+    the vision tower is small and fully specified, so the text stack the cost
+    model counts, plus the final norm (which the cost model leaves out), plus
+    the vision tower must equal the safetensors count exactly."""
+    m = by_id("llama-4-maverick")
+    p = am.params(spec(m))
+    cfg = snapshot(m)["config"]
+    d = cfg["text_config"]["hidden_size"]
+    total = int(p.total) + d + llama4_vision_params(cfg["vision_config"], d)
+    assert total == m["checks"]["hf_weight_count"]["v"] == 401_583_781_376
+    assert int(p.total) == 400_711_843_840
+    assert int(p.active) == 17_184_686_080
 
 
 HF_EXCEPTIONS = {
