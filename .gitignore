@@ -14,7 +14,7 @@ build/
 .env.*.local
 
 # Testing
-coverage/
+/coverage/
 playwright-report/
 test-results/
 .playwright/
