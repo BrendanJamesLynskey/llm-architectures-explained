@@ -1,0 +1,163 @@
+<Callout kind="prereq">
+
+The attention family ([chapter 1](/learn/01-attention)); prefill and decode
+as separate phases, and why serving systems give them separate GPU pools,
+from LLM Inference Explained's
+[Why disaggregate](https://llm-inference-explained.vercel.app/learn/11-why-disaggregate)
+and [live simulator](https://llm-inference-explained.vercel.app/learn/13-live-simulator)
+chapters.
+
+</Callout>
+
+<Layer kind="concept">
+
+**Encoder-decoder** was the original Transformer's shape, and T5's (Raffel
+et al., 2019): an **encoder** reads the whole input with bidirectional
+attention, and a **decoder** generates the output, attending causally to
+what it has written and, through **cross-attention** in every layer, to the
+encoder's output. Decoder-only models dropped the split: one causal stack
+reads the prompt and writes the answer. In this data set the original
+Transformer, T5 11B and Switch-C are encoder-decoders and BERT an encoder;
+every other model is a decoder, except one.
+
+DeepSeek-V4.1-Flash brings a split back, in a different form, for a
+different reason. Its **causal encoder-decoder (CED)** divides its 40 layers
+into a 20-layer **causal** encoder and a 20-layer decoder, and projects the
+decoder's global keys and values from the last encoder layer's hidden
+state (section 2.2, eq. 1, p. 9). So a prompt token needs only the encoder,
+plus the decoder's key/value projections: prefill does about half the work
+(the paper: it "nearly halves prefill computation", p. 8; 8B parameters
+activated per token at prefill against 16B at decode). Decode still runs
+the whole model. The decoder's sliding-window layers need their own recent
+keys and values, so the last $n_{\text{win}} = 128$ prompt tokens are
+replayed through the decoder, an approximation the paper simulates during
+post-training (section 3.2.2, p. 20). The idea, the paper says, was
+inspired by YOCO (Sun et al., 2024), whose "self-decoder" builds a cache
+that a "cross-decoder" reuses.
+
+First, what the split saves on the real model, by this site's cost model.
+At an 8K-token prompt, CED's prefill is 0.458 of the same stack run as a
+decoder, and at 1M tokens 0.337: below one half, because in this model's
+recorded layout the decoder half's compressed attention keeps every entry
+(ratio 1) where the encoder half keeps one in two (ratio 2), so the half
+that prefill skips is the more expensive one.
+
+</Layer>
+
+<CedCostWidget />
+
+<Layer kind="concept">
+
+**Then, what it does to a serving cluster.** Prefill and decode already run
+on separate GPU pools in disaggregated serving. If a prompt token costs half
+as much, the cluster needs fewer prefill GPUs for the same load, and the
+freed GPUs can decode. Brief 11 added a CED option to
+[Disaggregated_Inference_Sim](https://github.com/BrendanJamesLynskey/Disaggregated_Inference_Sim)
+to measure that, with two placements of the 128-token replay: on the
+prefill instance (the paper's), or as the decode instance's first step
+(SGLang RFC #39963's, where a prefill instance holds only the encoder).
+
+The interactive below runs that simulator's own JavaScript engine,
+vendored byte for byte at the commit that added CED, in your browser. Its
+proxy is a dense Llama-3-70B shape split 40 + 40. One prompt token of the
+CED proxy touches 34.90B parameters against 69.50B for the decoder-only
+model (0.502 of them); at 8,192 tokens one prefill step takes 288.3 ms
+with the replay on the prefill instance and 283.5 ms encoder-only, against
+564.3 ms. An encoder-only prefill instance also holds half the weights: on
+two H100s it has room for 220,048 tokens of cache, against 8,835 for the
+whole model.
+
+The capacity search finds, for each split of six 4×H100 instances into
+prefill and decode pools, the highest load at which 90% of requests meet
+both SLOs. Press **Re-measure live** and your browser reruns every
+bisection, checking each rate against `results.md`. With prompts four times
+the outputs (2,048 : 512) the best decoder-only split is 4P2D at 25.72
+req/s, and CED's moves to 3P3D, at 39.20 req/s with the replay on prefill
+and 41.07 on decode: 1.52× and 1.60×. At 4,096 : 256 the gains are 2.06×
+and 2.13×. Gains above 2× are queueing, not FLOPs: with a fixed TTFT SLO,
+halving the prefill service time cuts the queueing delay by more than half.
+
+</Layer>
+
+<CedSimulatorWidget />
+
+<Callout kind="illustrative">
+
+Every simulated number is for a dense Llama-3-70B shape split half and
+half, with the simulator's roofline and H100 coefficients: a proxy, not
+DeepSeek's model (a 552B mixture of experts with compressed sparse
+attention, FP4 keys and values and a prefix cache). The prompt:output
+ratios stand in for agent loops. The section 18 table (two-GPU prefill
+instances) shows only the CED rows: results.md explains that its
+decoder-only row is limited by the simulator's prefill router, not by
+compute. The same router slightly favours the model with the shorter prefill
+steps in section 17.
+
+</Callout>
+
+<ModelsWith feature="encoder-decoder" />
+<ModelsWith feature="ced" />
+<ModelsWith feature="kv-sharing" />
+
+<Layer kind="maths">
+
+With $L$ layers split into $E$ encoder and $L - E$ decoder layers, a
+prompt of $N$ tokens costs, in matrix-multiplication FLOPs,
+
+$$
+F_{\text{prefill}}^{\text{CED}} \approx 2N\big(E\,P_{\text{layer}} + (L - E)\,P_{KV}\big) + 2\min(N, W)\,(L - E)\,P_{\text{layer}},
+$$
+
+against $2NL\,P_{\text{layer}}$ for the decoder-only stack, where $P_{KV}$
+is a decoder layer's key/value projection and $W$ the replay window. For
+$N \gg W$ and $E = L/2$ the ratio tends to $\tfrac12 + P_{KV}/(2P_{\text{layer}})$
+(ignoring the output head). For the 70B proxy, section 16 counts 34.90B
+parameters per prompt token (the encoder plus 0.67B of decoder K/V
+projections) against 69.50B per decode token, output head included: 0.502.
+The paper writes
+the same saving as prefill going from $O(NL)$ to $O(NL/2 + n_{\text{win}} L/2)$
+(section 2.2, p. 9).
+
+</Layer>
+
+<Layer kind="code">
+
+```ts
+// src/lib/disagg/engine.ts — the capacity search, as the simulator's search.py
+while (att(hi) >= target) {
+  runs += 1;
+  lo = hi;
+  hi = hi * 1.5;
+}
+runs += 1;
+while (hi - lo > relTol * hi) {
+  const mid = (lo + hi) / 2;
+  runs += 1;
+  if (att(mid) >= target) lo = mid;
+  else hi = mid;
+}
+```
+
+`tests/unit/disagg/parity.test.ts` runs the simulator's own ten CED parity
+configurations against Python fixtures from the same commit (every request's
+timestamps, every instance's energy); `tests/unit/disagg/search.test.ts`
+reruns all 72 bisections of sections 17 and 18 and requires every rate to
+equal the recorded one exactly. The workloads are Python's own draws,
+stored as unit exponentials so that any rate rebuilds Python's arrivals bit
+for bit.
+
+</Layer>
+
+<Callout kind="deeper">
+
+- Decks: Modern Architectures 06 · [Asymmetric Causal Encoder-Decoder](https://brendanjameslynskey.github.io/Arch_06_Asymmetric_Causal_Encoder_Decoder/);
+  05 · [Hybrid & Encoder-Decoder](https://brendanjameslynskey.github.io/Arch_05_Hybrid_and_Encoder_Decoder/);
+  InfSim 05 · [Asymmetric Models: Encoder-Only Prefill](https://brendanjameslynskey.github.io/InfSim_05_Disaggregated_Inference/#slide-11)
+- Glossary: [causal encoder-decoder](https://brendanjameslynskey.github.io/LLM_Hub_Inference_Simulators/#g-ced)
+- The simulator: [Disaggregated_Inference_Sim](https://github.com/BrendanJamesLynskey/Disaggregated_Inference_Sim) (results.md sections 16–18)
+- DeepSeek-AI, [DeepSeek-V4.1-Flash](https://arxiv.org/abs/2609.19969) (arXiv:2609.19969);
+  Sun et al., [You Only Cache Once](https://arxiv.org/abs/2405.05254) (arXiv:2405.05254);
+  Raffel et al., [Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer](https://arxiv.org/abs/1910.10683) (T5, arXiv:1910.10683);
+  SGLang, [RFC: Asymmetric P/D deployment for DeepSeek-V4.1 Flash](https://github.com/sgl-project/sglang/issues/39963)
+
+</Callout>

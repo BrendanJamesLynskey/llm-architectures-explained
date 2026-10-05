@@ -17,7 +17,6 @@ differ. The three share one design system and link to each other from the
 header ("Decoder · Inference · Architectures").
 
 **Live:** [llm-architectures-explained.vercel.app](https://llm-architectures-explained.vercel.app/)
-(production deploy pending; preview builds are checked in CI and on Vercel).
 
 ![DeepSeek-V4.1-Flash's causal encoder-decoder, drawn from its data](docs/screenshots/03-model-page.png)
 
@@ -33,20 +32,22 @@ slide series and the
 
 ## What you can do
 
-| Page           | What it shows                                                                                                                                                                             |
-| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/models`      | Every model: total and active parameters, layers, width, attention, KV cache per token, context. Filter by any design choice; sort any column.                                            |
-| `/models/[id]` | One model: every value with a status chip and a link to the exact source; a diagram of its layer stack and blocks, generated from the data; its modelled costs; KV cache against context. |
-| `/compare`     | Two to four models side by side, with a calculator: context length, weight and KV precision; weights and KV memory, prefill and decode FLOPs, bytes per decode step.                      |
-| `/timeline`    | When each variation appears across the data set.                                                                                                                                          |
-| `/about`       | Where every value comes from, how estimates are handled, the cost model's conventions and how it is checked.                                                                              |
+| Page           | What it shows                                                                                                                                                                                                                           |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/learn`       | Nine chapters, one per axis of variation (attention, positions, norms, MoE, depth and width, long context, MTP, looped and parallel blocks, encoder-decoder and CED), each with a live interactive and the models that use the feature. |
+| `/models`      | Every model: total and active parameters, layers, width, attention, KV cache per token, context. Filter by any design choice; sort any column.                                                                                          |
+| `/models/[id]` | One model: every value with a status chip and a link to the exact source; a diagram of its layer stack and blocks, generated from the data; its modelled costs; KV cache against context.                                               |
+| `/compare`     | Two to four models side by side, with a calculator: context length, weight and KV precision; weights and KV memory, prefill and decode FLOPs, bytes per decode step.                                                                    |
+| `/timeline`    | When each variation appears across the data set.                                                                                                                                                                                        |
+| `/about`       | Where every value comes from, how estimates are handled, the cost model's conventions and how it is checked.                                                                                                                            |
 
 ## Screenshots
 
-|                                             |                                                |
-| ------------------------------------------- | ---------------------------------------------- |
-| ![Landing](docs/screenshots/01-landing.png) | ![Model table](docs/screenshots/02-models.png) |
-| ![Compare](docs/screenshots/04-compare.png) | ![Timeline](docs/screenshots/05-timeline.png)  |
+|                                                                                   |                                                                               |
+| --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| ![Landing](docs/screenshots/01-landing.png)                                       | ![Model table](docs/screenshots/02-models.png)                                |
+| ![Compare](docs/screenshots/04-compare.png)                                       | ![Timeline](docs/screenshots/05-timeline.png)                                 |
+| ![The attention chapter's interactive](docs/screenshots/06-attention-chapter.png) | ![The CED simulator, re-measured live](docs/screenshots/07-ced-simulator.png) |
 
 Regenerate them with `pnpm build && pnpm start` in one shell and
 `pnpm screenshots` in another.
@@ -114,6 +115,40 @@ projections, n-gram embedding tables, GDLA (Motif) and the weights of
 multi-token-prediction layers. Multimodal models are modelled as their
 text stack.
 
+## The chapters and the live simulator
+
+The nine chapters in [`content/chapters/`](content/chapters/) are MDX with
+Concept / Maths / Code layers, as on the companion sites. Each has an
+interactive driven by the cost model, or by a closed form in
+[`reference/chapter_model.py`](reference/chapter_model.py) (the attention
+variants on one body, RoPE wavelengths, the norm-placement variance
+argument, MoE and depth/width builders, the MTP speed-up, looping). The
+TypeScript port, [`src/lib/chapters/model.ts`](src/lib/chapters/model.ts),
+is checked against fixtures from
+[`scripts/make_chapter_fixtures.py`](scripts/make_chapter_fixtures.py)
+(exactly, except RoPE's `pow`, to 1e-12), and
+[`tests/unit/chapters/numbers.test.ts`](tests/unit/chapters/numbers.test.ts)
+recomputes every number the prose quotes and checks the MDX still says it.
+Code shown in a chapter must be cut from the file it names
+([`content.test.ts`](tests/unit/chapters/content.test.ts)).
+
+The encoder-decoder chapter runs
+[Disaggregated_Inference_Sim](https://github.com/BrendanJamesLynskey/Disaggregated_Inference_Sim)'s
+own JavaScript engine, vendored byte for byte at commit `e674e18` (the
+one that added the causal encoder-decoder option) by
+`pnpm vendor:sim <commit>`, which records the repository, commit and
+SHA-256 in [`src/lib/disagg/vendor/VENDORED.json`](src/lib/disagg/vendor/VENDORED.json).
+[`scripts/disagg_reference.py`](scripts/disagg_reference.py), run with the
+simulator's virtualenv at that commit, writes the parity fixtures (the
+simulator's own ten CED configurations, every request's timestamps and
+every instance's energy), the recorded `results.md` sections 16–18, and
+the four workloads as unit-rate exponential draws, so the browser rebuilds
+Python's arrivals at any rate bit for bit. The chapter reruns the
+simulator's capacity search (a port of `search.py`) in a Web Worker; the
+unit tests rerun all 72 bisections and require every rate to equal the
+recorded one exactly. The simulated numbers are for a dense
+Llama-3-70B-shaped proxy split 40 + 40: illustrative, not any lab's model.
+
 ## Stack
 
 The same stack as the companion sites, minus the backend:
@@ -121,6 +156,7 @@ The same stack as the companion sites, minus the backend:
 - **Framework**: Next.js 14 (App Router) + TypeScript (strict)
 - **Styling**: Tailwind CSS, Tailwind plugin for ESLint + Prettier
 - **Data**: YAML + JSON Schema, built by Python scripts, bundled to JSON
+- **Content**: MDX via `next-mdx-remote`, KaTeX rendered on the server
 - **Visualisation**: plain SVG generated from the data (block diagrams,
   log-log charts, the timeline), rendered on the server where it can be
 - **Testing**: pytest (schema, provenance, sources, the reference model),
@@ -131,22 +167,24 @@ The same stack as the companion sites, minus the backend:
   Lighthouse), a weekly freshness workflow, Vercel
 
 No database and no sign-in: every page is statically rendered. The compare
-tool is code-split and loads the compact data file `/data/specs.json` when
-it opens.
+tool and the chapter interactives are code-split; those that use real
+models load the compact data file `/data/specs.json` when they open, and
+the simulator runs in a Web Worker.
 
 ### Design system: where each piece came from
 
 Copied from [llm-inference-explained](https://github.com/BrendanJamesLynskey/llm-inference-explained)
 at commit `ff7d3bd`, which copied it from the explainer:
 
-| Here                                                                                                                                               | From                                                                    |
-| -------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| `tailwind.config.ts`, `src/app/globals.css`, `src/app/layout.tsx`                                                                                  | identical apart from titles                                             |
-| `src/components/ui/SiteHeader.tsx`                                                                                                                 | the same header; new navigation links                                   |
-| `src/components/ui/SiteSwitch.tsx`                                                                                                                 | the same component with a third site; the other two sites get it in 13B |
-| `src/components/ui/Controls.tsx`, `WidgetFrame.tsx`, `Callout.tsx`                                                                                 | unchanged                                                               |
-| `.eslintrc.json`, `.prettierrc.json`, `tsconfig.json`, `vitest.config.ts`, `playwright.config.ts`, `lighthouserc.json`, `.github/workflows/ci.yml` | adapted (data job, new pages)                                           |
-| `scripts/smoke-check.ts`, `scripts/capture-screenshots.ts`, `RUNBOOK.md`                                                                           | adapted                                                                 |
+| Here                                                                                                                                               | From                                                          |
+| -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `tailwind.config.ts`, `src/app/globals.css`, `src/app/layout.tsx`                                                                                  | identical apart from titles                                   |
+| `src/components/ui/SiteHeader.tsx`                                                                                                                 | the same header; new navigation links                         |
+| `src/components/ui/SiteSwitch.tsx`                                                                                                                 | the same component on all three sites; only `current` differs |
+| `src/app/learn/`, `src/lib/mdx/`, `Layer.tsx`, `LayerToggle.tsx`, `MdxTable.tsx`, `scripts/vendor-sim-engine.ts`                                   | copied from llm-inference-explained (`ff7d3bd`)               |
+| `src/components/ui/Controls.tsx`, `WidgetFrame.tsx`, `Callout.tsx`                                                                                 | unchanged                                                     |
+| `.eslintrc.json`, `.prettierrc.json`, `tsconfig.json`, `vitest.config.ts`, `playwright.config.ts`, `lighthouserc.json`, `.github/workflows/ci.yml` | adapted (data job, new pages)                                 |
+| `scripts/smoke-check.ts`, `scripts/capture-screenshots.ts`, `RUNBOOK.md`                                                                           | adapted                                                       |
 
 A shared npm package for the design system would be cleaner in principle;
 for three small sites, copying and recording the origin stays simpler.
@@ -171,6 +209,7 @@ pnpm dev                              # http://localhost:3000
 # edit data/curation/*.yaml (name, lab, stated totals and their sources)
 .venv/bin/python scripts/build_models.py                   # regenerate data/models, src/data, public/data
 .venv/bin/python scripts/make_fixtures.py                  # regenerate the parity fixtures
+.venv/bin/python scripts/make_chapter_fixtures.py          # regenerate the chapters' data and fixtures
 .venv/bin/python scripts/verify_arxiv.py                   # if a new paper is cited (network)
 .venv/bin/python -m pytest tests/python && pnpm test
 ```
@@ -187,6 +226,15 @@ pnpm lighthouse                           # Lighthouse CI on a `pnpm build`
 pnpm smoke <url>                          # post-deploy check of every page
 ```
 
+Re-vendoring the simulator (only when a newer commit should be shown):
+
+```bash
+pnpm vendor:sim <commit>                  # copies web/sim_engine.js from ../Disaggregated_Inference_Sim
+git -C ../Disaggregated_Inference_Sim checkout <commit>
+pnpm ced:reference                        # parity fixtures, results.md 16–18, workloads (sim's .venv)
+pnpm test                                 # parity, the 72 bisections, the chapters' numbers
+```
+
 ## Deploying
 
 See [`RUNBOOK.md`](RUNBOOK.md): a CLI deploy from a clean `git archive`
@@ -201,16 +249,21 @@ data/transcribed/     Configs transcribed from labs' GitHub repositories or pape
 data/curation/        Names, labs, stated totals, papers, estimates
 data/coverage/        The gallery checklist (names only)
 data/schema/          JSON Schema for a model file
-data/sources/         arXiv verification record
-reference/            The Python cost model (and its requirements)
+data/sources/         arXiv verification record (data and chapters)
+content/chapters/     The nine MDX chapters
+reference/            The Python cost model and the chapters' closed forms
 scripts/              build_models, hf_adapter, arch_facts, make_fixtures, coverage,
                       fetch_configs, verify_arxiv, smoke-check, capture-screenshots
-src/app/              Routes: /, /models, /models/[id], /compare, /timeline, /about
+src/app/              Routes: /, /learn, /learn/[slug], /models, /models/[id], /compare,
+                      /timeline, /about
 src/lib/arch/         The TypeScript cost model, features, formatting, table rows
+src/lib/chapters/     The chapters' builders and closed forms (port of chapter_model.py)
+src/lib/disagg/       The vendored simulator engine, its wrapper and the CED experiment
+public/disagg/        Recorded CED results and workloads (scripts/disagg_reference.py)
 src/components/       Header, cross-site switch, provenance chips, diagrams, charts,
                       the model table and the compare tool
 tests/python/         pytest
-tests/unit/           Vitest (with tests/fixtures/arch_fixtures.json)
+tests/unit/           Vitest (fixtures in tests/fixtures/ and tests/unit/fixtures/)
 tests/e2e/            Playwright + axe-core
 ```
 

@@ -1,0 +1,114 @@
+<Callout kind="prereq">
+
+The attention family ([chapter 1](/learn/01-attention)) and RoPE
+([chapter 2](/learn/02-positional-encoding)). Why the cache, not the
+weights, limits how many long sequences a GPU serves: LLM Inference
+Explained's [KV cache](https://llm-inference-explained.vercel.app/learn/02-kv-cache)
+and [memory management](https://llm-inference-explained.vercel.app/learn/05-memory-management)
+chapters.
+
+</Callout>
+
+<Layer kind="concept">
+
+Reading a million tokens poses two separate problems.
+
+**Can the model use positions it never trained on?** That is a positional
+encoding question. Raising RoPE's base, interpolating positions, YaRN's
+per-wavelength rescaling (chapter 2) and NoPE layers all answer it, and
+none of them changes what a token costs.
+
+**Can anyone afford to run it?** That is an attention question. With
+full attention in every layer, the cache grows by the same amount for every
+token, and every new token reads all of it. Llama 3.1 405B, GQA in all 126
+layers, holds 63 GiB of cache per 128K-token sequence in BF16; at 1M tokens
+it would need 504 GiB for one sequence, and 9.47 TFLOP per generated token,
+91.5% of it attention. The answers are the mixers of chapter 1, now on real
+models:
+
+- **Windows.** Gemma 3 27B's five sliding-window layers per global layer
+  keep its 1M-token cache to 80.4 GiB.
+- **Compress the cache.** DeepSeek-V3's MLA latent holds 68.6 GiB at 1M, but
+  every token still reads all of it: 5.31 TFLOP per token, 98.6% attention
+  in this cost model's expanded form.
+- **Read less of it.** DeepSeek-V3.2 adds an indexer that picks 2,048 cached
+  tokens per query; at 1M tokens its decode drops to 1.13 TFLOP.
+- **Replace most layers with a fixed state.** Qwen3-Next (Gated DeltaNet,
+  3:1) needs 24 GiB at 1M; MiniMax-Text-01 (Lightning attention, 7:1)
+  40.1 GiB.
+- **Compress and sparsify together.** DeepSeek V4-Flash compresses keys
+  and values along the sequence and lets an indexer choose among the
+  compressed entries: 6.72 GiB at 1M tokens, the smallest here.
+
+</Layer>
+
+<ContextWidget />
+
+<Layer kind="concept">
+
+**Things to try.** Switch the chart to decode FLOPs: every line starts flat,
+where the weights dominate (two FLOPs per active parameter), and bends upward
+once attention takes over. The windowed, hybrid and sparse models bend later
+and stay lower. Then look at the last column: at 1M
+tokens even the most frugal of these spends most of each decode step on
+token mixing, not on the feed-forward weights that the parameter count
+measures.
+
+Past a model's supported context length these numbers are what its
+architecture _would_ cost, not a claim that it works there: each model's
+page gives the context its makers state.
+
+</Layer>
+
+<ModelsWith feature="sliding" />
+<ModelsWith feature="compressed" />
+<ModelsWith feature="linear" />
+<ModelsWith feature="ssm" />
+
+<Layer kind="maths">
+
+For a model whose layers are full attention ($\mathcal{F}$), windowed
+($\mathcal{W}$, window $W$) or recurrent ($\mathcal{R}$, state $s$), the
+cache for a context of $t$ tokens is
+
+$$
+\text{cache}(t) = b \Big[ t \sum_{\mathcal{F}} e_\ell + \min(t, W) \sum_{\mathcal{W}} e_\ell \Big] + b_s \sum_{\mathcal{R}} s_\ell ,
+$$
+
+with $e_\ell$ values per token in layer $\ell$ and $b$, $b_s$ bytes per
+value. Only the first term grows without bound, so for long $t$ the cache
+is set by the number of full-attention layers and their $e_\ell$, which is
+what MLA ($e_\ell = 576$ against GQA's $2 n_{kv} d_h$) and DeepSeek V4's
+compression shrink. Decode FLOPs follow the entries each query reads: $t$
+in $\mathcal{F}$, $\min(t, W)$ in $\mathcal{W}$, the indexer's top-$k$ with
+sparse attention.
+
+</Layer>
+
+<Layer kind="code">
+
+```ts
+// src/lib/arch/costModel.ts — growing, windowed and fixed caches (excerpt)
+if (e > 0) {
+  if (w > 0) {
+    windowed = windowed + e * Math.min(context, w);
+  } else {
+    growing = growing + e * context;
+    perTokenUnbounded = perTokenUnbounded + e;
+  }
+}
+state = state + stateElems(spec, run);
+```
+
+</Layer>
+
+<Callout kind="deeper">
+
+- Deck: Modern Architectures 03 · [Long-Context Techniques](https://brendanjameslynskey.github.io/Arch_03_Long_Context/)
+- Beltagy et al., [Longformer](https://arxiv.org/abs/2004.05150) (sliding-window attention, arXiv:2004.05150);
+  Child et al., [Generating Long Sequences with Sparse Transformers](https://arxiv.org/abs/1904.10509) (arXiv:1904.10509);
+  DeepSeek-AI, [DeepSeek-V3.2](https://arxiv.org/abs/2512.02556) (arXiv:2512.02556);
+  MiniMax, [MiniMax-01](https://arxiv.org/abs/2501.08313) (Lightning attention, arXiv:2501.08313);
+  Grattafiori et al., [The Llama 3 Herd of Models](https://arxiv.org/abs/2407.21783) (arXiv:2407.21783)
+
+</Callout>

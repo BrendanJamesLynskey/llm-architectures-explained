@@ -1,0 +1,115 @@
+<Callout kind="prereq">
+
+The feed-forward block, from the Transformer Decoder Explainer's
+[FFN](https://transformer-decoder-explained.vercel.app/learn/04-ffn) chapter.
+For expert parallelism across GPUs, see LLM Inference Explained's
+[Parallelism](https://llm-inference-explained.vercel.app/learn/09-parallelism)
+chapter.
+
+</Callout>
+
+<Layer kind="concept">
+
+In a **dense** model every token runs every weight. In a **mixture of
+experts (MoE)** the feed-forward block is replaced by many smaller
+feed-forward blocks, the **experts**, and a small **router** picks a few of
+them for each token. The model holds all the experts' weights but each
+token computes with only some of them, so the **total** parameter count
+(what the model knows, and what the memory must hold) and the **active**
+count (what each token costs) come apart. Switch Transformers made the
+point directly: "outrageous numbers of parameters, but a constant
+computational cost".
+
+The design space has four knobs, and the interactive has a slider for each:
+
+- **How many experts, and how many per token.** Mixtral 8x7B routes each
+  token to 2 of 8 experts, each as wide as a dense FFN. Among this data
+  set's MoE models released since 2025, routing to 8 experts is by far the
+  most common choice, out of pools of 8 to 896 experts.
+- **Expert width (granularity).** DeepSeekMoE split experts finely ("$mN$"
+  narrow experts, "$mK$" of them active) so the router can combine them
+  more flexibly. At the same active width, finer experts make many more
+  combinations.
+- **Shared experts**, which every token uses, to hold common knowledge so
+  the routed experts need not each relearn it (DeepSeekMoE again).
+- **Dense first layers.** DeepSeek-V3 keeps a dense FFN in its first three
+  layers.
+
+On the interactive's Llama 3 8B body (8.03B parameters dense), Mixtral's
+counts give 47.5B total and 13.7B active. DeepSeekMoE 16B's counts (64
+experts an eighth of the width, 6 routed plus 2 shared) give 47.6B total but
+only 8.04B active: the same per-token work as the dense model, with six
+times the weights. DeepSeek-V3's counts (256 experts, 8 routed, 1 shared,
+3 dense layers) at a sixteenth of the width give 85B total and 5.83B active,
+6.9% of the total.
+
+</Layer>
+
+<MoeWidget />
+
+<Layer kind="concept">
+
+**What MoE does not save.** At batch 1, a decode step reads only the
+active experts, so an MoE model decodes about as fast as a dense model of
+its active size. But all the experts must sit in memory (85B parameters in
+BF16 is 158 GiB), and a server batching many requests routes them to
+different experts, so each step reads far more than the active set. MoE
+trades memory and communication for compute; it shines where compute, not
+memory, is the limit. The [compare view](/compare?m=mixtral-8x7b,deepseek-v3,qwen3-235b-a22b,llama-3.1-405b)
+puts real models' totals and active counts side by side.
+
+</Layer>
+
+<ModelsWith feature="moe" />
+<ModelsWith feature="shared-expert" />
+<ModelsWith feature="dense-prefix" />
+<ModelsWith feature="latent-moe" />
+
+<Layer kind="maths">
+
+With $E$ routed experts of width $d_e$, $k$ active, $s$ shared experts of
+width $d_s$, gated FFNs (three matrices) and model width $d$, one MoE
+layer holds
+
+$$
+P_{\text{total}} = 3 d\,(E\,d_e + s\,d_s) + d\,E
+\qquad
+P_{\text{active}} = 3 d\,(k\,d_e + s\,d_s) + d\,E,
+$$
+
+the last term being the router. A dense FFN of width $d_{ff}$ holds
+$3 d\,d_{ff}$; with $d_e = d_{ff}/m$ and $k = m$ routed experts the active
+FFN width equals the dense one, whatever $E$ is.
+
+</Layer>
+
+<Layer kind="code">
+
+```ts
+// src/lib/chapters/model.ts — replace the dense FFN with experts (excerpt)
+const dExpert = Math.floor(dense.d_ff! / granularity);
+const moe: Spec["ffns"][string] = {
+  type: "moe",
+  experts,
+  active,
+  d_expert: dExpert,
+  gated: dense.gated ?? true,
+};
+```
+
+The presets' expert counts are the models' own (from their config files,
+on each model's page); the widths are this body's FFN divided by the
+granularity, not theirs.
+
+</Layer>
+
+<Callout kind="deeper">
+
+- Deck: Modern Architectures 01 · [Mixture of Experts](https://brendanjameslynskey.github.io/Arch_01_MoE/)
+- Fedus et al., [Switch Transformers](https://arxiv.org/abs/2101.03961) (arXiv:2101.03961);
+  Lepikhin et al., [GShard](https://arxiv.org/abs/2006.16668) (arXiv:2006.16668);
+  Jiang et al., [Mixtral of Experts](https://arxiv.org/abs/2401.04088) (arXiv:2401.04088);
+  Dai et al., [DeepSeekMoE](https://arxiv.org/abs/2401.06066) (arXiv:2401.06066);
+  DeepSeek-AI, [DeepSeek-V3 Technical Report](https://arxiv.org/abs/2412.19437) (arXiv:2412.19437)
+
+</Callout>

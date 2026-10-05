@@ -19,6 +19,16 @@ const PAGES = [
   "/models/olmo-2-7b",
   "/models/gpt-4",
   "/models/claude-opus-5.5",
+  "/learn",
+  "/learn/01-attention",
+  "/learn/02-positional-encoding",
+  "/learn/03-normalisation",
+  "/learn/04-dense-and-moe",
+  "/learn/05-depth-and-width",
+  "/learn/06-long-context",
+  "/learn/07-multi-token-prediction",
+  "/learn/08-looped-and-parallel-blocks",
+  "/learn/09-encoder-decoder-and-ced",
 ];
 
 async function collectErrors(page: Page): Promise<string[]> {
@@ -44,6 +54,8 @@ for (const scheme of ["light", "dark"] as const) {
           if (path === "/compare") {
             await expect(page.getByTestId("compare-table")).toBeVisible();
           }
+          // chapter interactives load after the page: wait for every one
+          await expect(page.locator("[data-pending-widget]")).toHaveCount(0);
           const overflow = await page.evaluate(() => {
             const el = document.scrollingElement!;
             return el.scrollWidth - el.clientWidth;

@@ -1,0 +1,94 @@
+<Callout kind="prereq">
+
+How blocks stack, from the Transformer Decoder Explainer's
+[Stacking](https://transformer-decoder-explained.vercel.app/learn/06-stacking)
+chapter.
+
+</Callout>
+
+<Layer kind="concept">
+
+Two numbers set a decoder's size: its **depth** (layers) and its **width**
+(the model dimension $d$). A layer's weights grow as $d^2$, so a fixed
+parameter budget can be spent on a few wide layers or many narrow ones. The
+data set spans both ends: Llama 3.1 405B stacks 126 layers of width 16,384,
+a width 130 times its depth; Gemma 3 270M stacks 18 layers of width 640,
+about 36 times.
+
+For quality, the shape matters less than you might expect, within limits.
+Kaplan et al. (2020) found that "architectural details such as network
+width or depth have minimal effects within a wide range"; below a billion
+parameters, MobileLLM (Liu et al., 2024) argued that architecture matters
+more, and built its models deep and thin.
+
+For **cost**, the shape matters in ways the parameter count hides. The
+interactive builds Llama-style decoders of any shape and costs them:
+
+- **The KV cache grows with depth, not width.** Each layer caches its keys
+  and values, and with the number of KV heads fixed (8 of 128 dimensions
+  here) a layer's cache per token does not depend on $d$. An 80-layer,
+  2,048-wide model caches 320 KiB per token; a 12-layer, 8,192-wide one
+  48 KiB, though it has more than twice the parameters (12.4B against
+  5.06B).
+- **Attention's share of decode grows with depth too.** At a 32K context
+  the deep, thin model spends 69.1% of its decode FLOPs in attention, the
+  Llama 3 8B shape 53.4%, the shallow, wide model 36.3%.
+- **The embedding tables grow with width only.** With a 128,256-token
+  vocabulary they are 10.4% of the deep, thin model's parameters and 17.0% of
+  the shallow, wide one's (untied input and output tables).
+- **Depth costs latency.** Layers run one after another for every token, so
+  at batch 1 a deeper model has more sequential steps per token; width can
+  be split across GPUs (tensor parallelism), depth only pipelined.
+
+</Layer>
+
+<DepthWidthWidget />
+
+<Layer kind="maths">
+
+For a Llama-style layer of width $d$ with $n_h = d/128$ query heads,
+$n_{kv}$ KV heads of $d_h = 128$ and a gated FFN of width $d_{ff}$:
+
+$$
+P_{\text{layer}} = \underbrace{2 d^2 + 2 d\, n_{kv} d_h}_{\text{attention}} + \underbrace{3 d\, d_{ff}}_{\text{FFN}},
+\qquad
+\text{KV per token} = 2\, l\, n_{kv}\, d_h \cdot b,
+$$
+
+with $l$ layers and $b$ bytes per value. Parameters scale as $l d^2$, the
+cache as $l$ alone. A decode step costs $2P_{\text{active}}$ FLOPs for the
+matrix multiplications plus $4 n_h d_h\, t = 4 d\, t$ per layer at context
+$t$, so the attention share is roughly $\dfrac{4 l d t}{2 P + 4 l d t}$,
+which grows with $l$ at a fixed $P$.
+
+</Layer>
+
+<Layer kind="code">
+
+```ts
+// src/lib/chapters/model.ts — the shape the sliders build (excerpt)
+  const heads = Math.floor(dModel / 128);
+  return {
+    kind: "decoder",
+    d_model: dModel,
+    vocab,
+    tied_embeddings: false,
+```
+
+</Layer>
+
+<Callout kind="illustrative">
+
+The shapes are this site's Llama-style constructions (FFN 3.5× the width,
+rounded down to a multiple of 256), not trained models; the quality
+statements are the cited papers'.
+
+</Callout>
+
+<Callout kind="deeper">
+
+- Compare real shapes: [Llama 3.1 405B, Llama 3 8B, Gemma 3 270M, SmolLM3 3B](/compare?m=llama-3.1-405b,llama-3-8b,gemma-3-270m,smollm3-3b)
+- Kaplan et al., [Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361) (arXiv:2001.08361);
+  Liu et al., [MobileLLM](https://arxiv.org/abs/2402.14905) (arXiv:2402.14905)
+
+</Callout>

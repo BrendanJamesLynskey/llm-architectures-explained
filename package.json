@@ -30,12 +30,19 @@
     "fixtures": "python3 scripts/make_fixtures.py",
     "coverage:models": "python3 scripts/coverage.py",
     "screenshots": "tsx scripts/capture-screenshots.ts",
-    "smoke": "tsx scripts/smoke-check.ts"
+    "smoke": "tsx scripts/smoke-check.ts",
+    "vendor:sim": "tsx scripts/vendor-sim-engine.ts",
+    "ced:reference": "../Disaggregated_Inference_Sim/.venv/bin/python scripts/disagg_reference.py"
   },
   "dependencies": {
+    "katex": "^0.16.47",
     "next": "14.2.15",
+    "next-mdx-remote": "^6.0.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "rehype-katex": "^7.0.1",
+    "remark-gfm": "^4",
+    "remark-math": "^6.0.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.3",

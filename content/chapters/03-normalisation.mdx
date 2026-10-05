@@ -1,0 +1,116 @@
+<Callout kind="prereq">
+
+The residual stream and layer normalisation, from the Transformer Decoder
+Explainer's [LayerNorm and residuals](https://transformer-decoder-explained.vercel.app/learn/05-layernorm-residuals)
+chapter.
+
+</Callout>
+
+<Layer kind="concept">
+
+Every block adds its sub-blocks' outputs (attention, then the feed-forward
+block) to a **residual stream** that runs from the embedding to the output
+head. Normalisation layers keep the numbers on that stream in range. They
+weigh almost nothing, and they cost almost nothing to run, but where they
+sit decides whether a deep model trains at all.
+
+- **Post-LN**, the original Transformer: normalise _after_ each residual
+  addition, $x \leftarrow \mathrm{LN}(x + f(x))$. Every norm rescales the
+  whole stream, so whatever the embedding put there is shrunk again at each
+  of the dozens of norms above it. Xiong et al. (2020) showed that at
+  initialisation the gradients near the output are large, which is why
+  Post-LN needs a learning-rate warm-up.
+- **Pre-norm**, the placement of most open models in this data set:
+  normalise the sub-block's _input_, $x \leftarrow x + f(\mathrm{LN}(x))$. The stream
+  itself is never normalised, so the embedding passes straight through, and
+  the same paper showed the gradients are well behaved at initialisation,
+  so the warm-up can go. The
+  price: the stream's size grows with depth, so each later layer's update is
+  a smaller fraction of it, and if a sub-block's output grows during
+  training, nothing caps it.
+- **A norm on the sub-block's output** caps it: **sandwich norm** (Gemma 2
+  and 3: RMSNorm on both the input and the output of each sub-layer) and
+  OLMo 2's **reordered norm** ($x \leftarrow x + \mathrm{RMSNorm}(f(x))$,
+  outputs only), a strategy first proposed to stabilise training, as the
+  OLMo 2 report notes.
+- **QK-norm** normalises queries and keys inside attention, before their
+  dot product, which "avoids attention logits being too large, which can
+  lead to training loss divergence" (OLMo 2, p. 5). Gemma 3 replaced Gemma
+  2's logit soft-capping with it.
+- **Parallel blocks** (chapter 8) feed one norm's output to attention and
+  the feed-forward block side by side.
+
+The interactive runs the textbook variance argument behind those
+statements: a unit-size embedding, and every sub-block adding an output
+independent of the stream, whose size is a **gain** times its input's. At
+32 layers and gain 1, pre-norm's stream ends 8.06 times the embedding's
+size, the last sub-block changes it by 12.5%, and the embedding is still
+12.4% of it. Post-LN keeps the stream at 1, but the embedding's share at
+the top is $2^{-32}$. Raise the gain to 2 and pre-norm's stream doubles to
+16.03, while the output-norm stream does not move.
+
+</Layer>
+
+<NormWidget />
+
+<ModelsWith feature="pre-norm" />
+<ModelsWith feature="sandwich" />
+<ModelsWith feature="post-norm" />
+<ModelsWith feature="qk-norm" />
+<ModelsWith feature="post-ln" />
+
+<Layer kind="maths">
+
+Let $v_k$ be the stream's variance after $k$ sub-blocks, $v_0 = 1$, and let
+a sub-block add an output independent of the stream with variance $g^2$
+times its input's ($\gamma^2$ when its output is normalised and scaled by
+$\gamma$). Then, over $K = 2l$ sub-blocks:
+
+| Placement   | $v_k$            | update / stream                     | embedding share at the top |
+| ----------- | ---------------- | ----------------------------------- | -------------------------- |
+| Post-LN     | $1$              | $g$                                 | $(1 + g^2)^{-K/2}$         |
+| Pre-norm    | $1 + k g^2$      | $g / \sqrt{1 + (k-1)g^2}$           | $(1 + K g^2)^{-1/2}$       |
+| Output norm | $1 + k \gamma^2$ | $\gamma / \sqrt{1 + (k-1)\gamma^2}$ | $(1 + K\gamma^2)^{-1/2}$   |
+
+The output-norm row does not contain $g$: that is the whole argument for
+it. (In this idealisation sandwich norm and OLMo 2's output-only norm are
+the same row; they differ in whether the sub-block's input is normalised
+too.)
+
+</Layer>
+
+<Layer kind="code">
+
+```ts
+// src/lib/chapters/model.ts — one sub-block of the profile
+if (placement === "post-ln") {
+  update.push(gain / Math.sqrt(v));
+  const total = v + gain * gain;
+  emb = emb / Math.sqrt(total);
+  v = 1.0;
+} else {
+  const add = placement === "pre-norm" ? gain : gamma;
+  update.push(add / Math.sqrt(v));
+  v = v + add * add;
+  emb = 1.0 / Math.sqrt(v);
+}
+```
+
+</Layer>
+
+<Callout kind="illustrative">
+
+The profile is an idealisation, not a trained model: real sub-block outputs
+are correlated with the stream, and their gains change during training. It
+shows the direction of each effect, not its size in any particular model.
+
+</Callout>
+
+<Callout kind="deeper">
+
+- Xiong et al., [On Layer Normalization in the Transformer Architecture](https://arxiv.org/abs/2002.04745) (arXiv:2002.04745);
+  Gemma Team, [Gemma 2](https://arxiv.org/abs/2408.00118) (pre- and post-norm, p. 2, arXiv:2408.00118);
+  Team OLMo, [2 OLMo 2 Furious](https://arxiv.org/abs/2501.00656) (reordered norm and QK-norm, p. 5, arXiv:2501.00656);
+  Gemma Team, [Gemma 3](https://arxiv.org/abs/2503.19786) (QK-norm replaces soft-capping, p. 2, arXiv:2503.19786)
+
+</Callout>

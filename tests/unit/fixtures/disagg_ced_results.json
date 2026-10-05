@@ -1,0 +1,1548 @@
+{
+  "simulator": "https://github.com/BrendanJamesLynskey/Disaggregated_Inference_Sim",
+  "commit": "e674e189c50d45aa5d87bfd774687398120c724c",
+  "s16": {
+    "params": {
+      "decoder_only_token": {
+        "v": 69501714432,
+        "line": "| Decoder-only, any token (layers + LM head) | 69.50B | 1.000 |",
+        "text": "69.50B"
+      },
+      "ced_prompt_token": {
+        "v": 34896609280,
+        "line": "| CED, prompt token (encoder + decoder K/V projections) | 34.90B | 0.502 |",
+        "text": "34.90B"
+      },
+      "ced_decode_token": {
+        "v": 69501714432,
+        "line": "| CED, decode token (whole model) | 69.50B | 1.000 |",
+        "text": "69.50B"
+      },
+      "ced_kv_proj": {
+        "v": 671088640,
+        "line": "| ... of which the decoder's K/V projections | 0.67B | 0.010 |",
+        "text": "0.67B"
+      }
+    },
+    "steps": {
+      "2048": {
+        "line": "| 2,048 | 0.290 | 133.9 ms | 0.155 | 71.8 ms | 0.536 | 0.146 | 67.5 ms | 0.504 |",
+        "cells": {
+          "base": {
+            "flops": 290179264806912,
+            "time": 0.1338666995159996,
+            "bound": "compute",
+            "pflop": "0.290",
+            "ms": "133.9 ms"
+          },
+          "ced": {
+            "flops": 155050282319872,
+            "time": 0.07176127508037135,
+            "bound": "compute",
+            "pflop": "0.155",
+            "ms": "71.8 ms",
+            "ratio": "0.536"
+          },
+          "enc": {
+            "flops": 145686632857600,
+            "time": 0.06745773180329073,
+            "bound": "compute",
+            "pflop": "0.146",
+            "ms": "67.5 ms",
+            "ratio": "0.504"
+          }
+        }
+      },
+      "8192": {
+        "line": "| 8,192 | 1.227 | 564.3 ms | 0.626 | 288.3 ms | 0.511 | 0.616 | 283.5 ms | 0.502 |",
+        "cells": {
+          "base": {
+            "flops": 1226687756894208,
+            "time": 0.5642870010544203,
+            "bound": "compute",
+            "pflop": "1.227",
+            "ms": "564.3 ms"
+          },
+          "ced": {
+            "flops": 626126321876992,
+            "time": 0.28826832515717987,
+            "bound": "compute",
+            "pflop": "0.626",
+            "ms": "288.3 ms",
+            "ratio": "0.511"
+          },
+          "enc": {
+            "flops": 615731880263680,
+            "time": 0.2834910287083739,
+            "bound": "compute",
+            "pflop": "0.616",
+            "ms": "283.5 ms",
+            "ratio": "0.502"
+          }
+        }
+      },
+      "32768": {
+        "line": "| 32,768 | 5.962 | 2,741 ms | 3.005 | 1,382 ms | 0.504 | 2.991 | 1,375 ms | 0.502 |",
+        "cells": {
+          "base": {
+            "flops": 5962282190241792,
+            "time": 2.740771252064432,
+            "bound": "compute",
+            "pflop": "5.962",
+            "ms": "2,741 ms"
+          },
+          "ced": {
+            "flops": 3005210712604672,
+            "time": 1.3816980478925782,
+            "bound": "compute",
+            "pflop": "3.005",
+            "ms": "1,382 ms",
+            "ratio": "0.504"
+          },
+          "enc": {
+            "flops": 2990693102387200,
+            "time": 1.3750257387568707,
+            "bound": "compute",
+            "pflop": "2.991",
+            "ms": "1,375 ms",
+            "ratio": "0.502"
+          }
+        }
+      }
+    },
+    "room": {
+      "1": {
+        "line": "| 1x H100 | 141.1 GB | does not fit | 71.9 GB | 321 |",
+        "base": {
+          "weights": 141104775168.0,
+          "kv_tokens": null
+        },
+        "enc": {
+          "weights": 71894564864.0,
+          "kv_tokens": 321
+        }
+      },
+      "2": {
+        "line": "| 2x H100 | 141.1 GB | 8,835 | 71.9 GB | 220,048 |",
+        "base": {
+          "weights": 141104775168.0,
+          "kv_tokens": 8835
+        },
+        "enc": {
+          "weights": 71894564864.0,
+          "kv_tokens": 220048
+        }
+      },
+      "4": {
+        "line": "| 4x H100 | 141.1 GB | 448,288 | 71.9 GB | 659,501 |",
+        "base": {
+          "weights": 141104775168.0,
+          "kv_tokens": 448288
+        },
+        "enc": {
+          "weights": 71894564864.0,
+          "kv_tokens": 659501
+        }
+      }
+    }
+  },
+  "s17": [
+    {
+      "workload": "2048:512",
+      "prompt": 2048,
+      "output": 512,
+      "ttft_slo": 0.669333497579998,
+      "slo_text": "669.3 ms",
+      "rows": {
+        "decoder-only": {
+          "line": "| 2048 : 512 | 669.3 ms | decoder-only | 4.92 | 11.70 | 18.96 | 25.72 | 11.82 | 4P2D | 25.72 | 1.072 | 1.00x |",
+          "cells": {
+            "1": {
+              "rate": 4.916035996090868,
+              "text": "4.92",
+              "ceiling": 7.491102470233705,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 1,
+                "nDecode": 5,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 0.669333497579998,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            },
+            "2": {
+              "rate": 11.704847609740163,
+              "text": "11.70",
+              "ceiling": 14.98220494046741,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 2,
+                "nDecode": 4,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 0.669333497579998,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            },
+            "3": {
+              "rate": 18.961853127779065,
+              "text": "18.96",
+              "ceiling": 22.473307410701114,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 3,
+                "nDecode": 3,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 0.669333497579998,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            },
+            "4": {
+              "rate": 25.721072021929356,
+              "text": "25.72",
+              "ceiling": 26.550784022636755,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 4,
+                "nDecode": 2,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 0.669333497579998,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            },
+            "5": {
+              "rate": 11.82339601008043,
+              "text": "11.82",
+              "ceiling": 13.275392011318377,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 5,
+                "nDecode": 1,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 0.669333497579998,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            }
+          },
+          "best": 4
+        },
+        "CED, replay on prefill": {
+          "line": "| 2048 : 512 |  | CED, replay on prefill | 11.82 | 25.39 | 39.20 | 26.14 | 11.82 | 3P3D | 39.20 | 1.633 | 1.52x |",
+          "cells": {
+            "1": {
+              "rate": 11.819498902976111,
+              "text": "11.82",
+              "ceiling": 14.008294996119835,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 1,
+                "nDecode": 5,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 0.669333497579998,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            },
+            "2": {
+              "rate": 25.390034680467203,
+              "text": "25.39",
+              "ceiling": 28.01658999223967,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 2,
+                "nDecode": 4,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 0.669333497579998,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            },
+            "3": {
+              "rate": 39.20389203342459,
+              "text": "39.20",
+              "ceiling": 39.826176033955136,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 3,
+                "nDecode": 3,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 0.669333497579998,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            },
+            "4": {
+              "rate": 26.135928022283053,
+              "text": "26.14",
+              "ceiling": 26.550784022636755,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 4,
+                "nDecode": 2,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 0.669333497579998,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            },
+            "5": {
+              "rate": 11.82339601008043,
+              "text": "11.82",
+              "ceiling": 13.275392011318377,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 5,
+                "nDecode": 1,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 0.669333497579998,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            }
+          },
+          "best": 3
+        },
+        "CED, replay on decode": {
+          "line": "| 2048 : 512 |  | CED, replay on decode | 12.48 | 26.70 | 41.07 | 25.72 | 11.82 | 3P3D | 41.07 | 1.711 | 1.60x |",
+          "cells": {
+            "1": {
+              "rate": 12.476137730919229,
+              "text": "12.48",
+              "ceiling": 14.008294996119835,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 1,
+                "nDecode": 5,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 0.669333497579998,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            },
+            "2": {
+              "rate": 26.703312336353438,
+              "text": "26.70",
+              "ceiling": 28.01658999223967,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 2,
+                "nDecode": 4,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 0.669333497579998,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            },
+            "3": {
+              "rate": 41.07074403501623,
+              "text": "41.07",
+              "ceiling": 39.826176033955136,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 3,
+                "nDecode": 3,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 0.669333497579998,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            },
+            "4": {
+              "rate": 25.721072021929356,
+              "text": "25.72",
+              "ceiling": 26.550784022636755,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 4,
+                "nDecode": 2,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 0.669333497579998,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            },
+            "5": {
+              "rate": 11.82339601008043,
+              "text": "11.82",
+              "ceiling": 13.275392011318377,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 5,
+                "nDecode": 1,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 0.669333497579998,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            }
+          },
+          "best": 3
+        }
+      }
+    },
+    {
+      "workload": "4096:256",
+      "prompt": 4096,
+      "output": 256,
+      "ttft_slo": 1.3614338309853478,
+      "slo_text": "1,361 ms",
+      "rows": {
+        "decoder-only": {
+          "line": "| 4096 : 256 | 1,361 ms | decoder-only | 2.56 | 6.09 | 9.65 | 13.10 | 12.26 | 4P2D | 13.10 | 0.546 | 1.00x |",
+          "cells": {
+            "1": {
+              "rate": 2.555950468460943,
+              "text": "2.56",
+              "ceiling": 3.675973707449447,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 1,
+                "nDecode": 5,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 1.3614338309853478,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            },
+            "2": {
+              "rate": 6.088331452963146,
+              "text": "6.09",
+              "ceiling": 7.351947414898894,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 2,
+                "nDecode": 4,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 1.3614338309853478,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            },
+            "3": {
+              "rate": 9.649430982054799,
+              "text": "9.65",
+              "ceiling": 11.02792112234834,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 3,
+                "nDecode": 3,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 1.3614338309853478,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            },
+            "4": {
+              "rate": 13.095656332788653,
+              "text": "13.10",
+              "ceiling": 14.703894829797788,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 4,
+                "nDecode": 2,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 1.3614338309853478,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            },
+            "5": {
+              "rate": 12.259955708772463,
+              "text": "12.26",
+              "ceiling": 15.089176256950724,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 5,
+                "nDecode": 1,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 1.3614338309853478,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            }
+          },
+          "best": 4
+        },
+        "CED, replay on prefill": {
+          "line": "| 4096 : 256 |  | CED, replay on prefill | 6.09 | 12.84 | 19.93 | 27.01 | 12.26 | 4P2D | 27.01 | 1.125 | 2.06x |",
+          "cells": {
+            "1": {
+              "rate": 6.088225522670264,
+              "text": "6.09",
+              "ceiling": 7.084480608198126,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 1,
+                "nDecode": 5,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 1.3614338309853478,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            },
+            "2": {
+              "rate": 12.840621102359101,
+              "text": "12.84",
+              "ceiling": 14.168961216396252,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 2,
+                "nDecode": 4,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 1.3614338309853478,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            },
+            "3": {
+              "rate": 19.92510171055723,
+              "text": "19.93",
+              "ceiling": 21.253441824594375,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 3,
+                "nDecode": 3,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 1.3614338309853478,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            },
+            "4": {
+              "rate": 27.009582318755353,
+              "text": "27.01",
+              "ceiling": 28.337922432792503,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 4,
+                "nDecode": 2,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 1.3614338309853478,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            },
+            "5": {
+              "rate": 12.259955708772463,
+              "text": "12.26",
+              "ceiling": 15.089176256950724,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 5,
+                "nDecode": 1,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 1.3614338309853478,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            }
+          },
+          "best": 4
+        },
+        "CED, replay on decode": {
+          "line": "| 4096 : 256 |  | CED, replay on decode | 6.31 | 13.28 | 20.59 | 27.90 | 12.50 | 4P2D | 27.90 | 1.162 | 2.13x |",
+          "cells": {
+            "1": {
+              "rate": 6.309615541676456,
+              "text": "6.31",
+              "ceiling": 7.084480608198126,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 1,
+                "nDecode": 5,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 1.3614338309853478,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            },
+            "2": {
+              "rate": 13.283401140371485,
+              "text": "13.28",
+              "ceiling": 14.168961216396252,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 2,
+                "nDecode": 4,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 1.3614338309853478,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            },
+            "3": {
+              "rate": 20.589271767575802,
+              "text": "20.59",
+              "ceiling": 21.253441824594375,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 3,
+                "nDecode": 3,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 1.3614338309853478,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            },
+            "4": {
+              "rate": 27.89514239478012,
+              "text": "27.90",
+              "ceiling": 28.337922432792503,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 4,
+                "nDecode": 2,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 1.3614338309853478,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            },
+            "5": {
+              "rate": 12.495724087787318,
+              "text": "12.50",
+              "ceiling": 15.089176256950724,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 5,
+                "nDecode": 1,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 1.3614338309853478,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            }
+          },
+          "best": 4
+        }
+      }
+    },
+    {
+      "workload": "8192:128",
+      "prompt": 8192,
+      "output": 128,
+      "ttft_slo": 2.8214350052721016,
+      "slo_text": "2,821 ms",
+      "rows": {
+        "decoder-only": {
+          "line": "| 8192 : 128 | 2,821 ms | decoder-only | 1.25 | 2.94 | 4.57 | 6.31 | 7.89 | 5P1D | 7.89 | 0.329 | 1.00x |",
+          "cells": {
+            "1": {
+              "rate": 1.246041462387311,
+              "text": "1.25",
+              "ceiling": 1.772147857617509,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 1,
+                "nDecode": 5,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 2.8214350052721016,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            },
+            "2": {
+              "rate": 2.935119889178999,
+              "text": "2.94",
+              "ceiling": 3.544295715235018,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 2,
+                "nDecode": 4,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 2.8214350052721016,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            },
+            "3": {
+              "rate": 4.5688186954201395,
+              "text": "4.57",
+              "ceiling": 5.316443572852527,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 3,
+                "nDecode": 3,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 2.8214350052721016,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            },
+            "4": {
+              "rate": 6.313276742762376,
+              "text": "6.31",
+              "ceiling": 7.088591430470036,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 4,
+                "nDecode": 2,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 2.8214350052721016,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            },
+            "5": {
+              "rate": 7.891595928452969,
+              "text": "7.89",
+              "ceiling": 8.860739288087544,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 5,
+                "nDecode": 1,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 2.8214350052721016,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            }
+          },
+          "best": 5
+        },
+        "CED, replay on prefill": {
+          "line": "| 8192 : 128 |  | CED, replay on prefill | 2.93 | 6.29 | 9.59 | 13.23 | 11.42 | 4P2D | 13.23 | 0.551 | 1.68x |",
+          "cells": {
+            "1": {
+              "rate": 2.9269604960584577,
+              "text": "2.93",
+              "ceiling": 3.4689902175507648,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 1,
+                "nDecode": 5,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 2.8214350052721016,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            },
+            "2": {
+              "rate": 6.287544769310761,
+              "text": "6.29",
+              "ceiling": 6.9379804351015295,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 2,
+                "nDecode": 4,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 2.8214350052721016,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            },
+            "3": {
+              "rate": 9.593926070413833,
+              "text": "9.59",
+              "ceiling": 10.406970652652294,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 3,
+                "nDecode": 3,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 2.8214350052721016,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            },
+            "4": {
+              "rate": 13.225525204412289,
+              "text": "13.23",
+              "ceiling": 13.875960870203059,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 4,
+                "nDecode": 2,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 2.8214350052721016,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            },
+            "5": {
+              "rate": 11.416906307245473,
+              "text": "11.42",
+              "ceiling": 15.546425609866176,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 5,
+                "nDecode": 1,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 2.8214350052721016,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            }
+          },
+          "best": 4
+        },
+        "CED, replay on decode": {
+          "line": "| 8192 : 128 |  | CED, replay on decode | 2.98 | 6.29 | 9.76 | 13.23 | 12.15 | 4P2D | 13.23 | 0.551 | 1.68x |",
+          "cells": {
+            "1": {
+              "rate": 2.981163468207688,
+              "text": "2.98",
+              "ceiling": 3.4689902175507648,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 1,
+                "nDecode": 5,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 2.8214350052721016,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            },
+            "2": {
+              "rate": 6.287544769310761,
+              "text": "6.29",
+              "ceiling": 6.9379804351015295,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 2,
+                "nDecode": 4,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 2.8214350052721016,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            },
+            "3": {
+              "rate": 9.756534986861526,
+              "text": "9.76",
+              "ceiling": 10.406970652652294,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 3,
+                "nDecode": 3,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 2.8214350052721016,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            },
+            "4": {
+              "rate": 13.225525204412289,
+              "text": "13.23",
+              "ceiling": 13.875960870203059,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 4,
+                "nDecode": 2,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 2.8214350052721016,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            },
+            "5": {
+              "rate": 12.14564500770795,
+              "text": "12.15",
+              "ceiling": 15.546425609866176,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 5,
+                "nDecode": 1,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 2.8214350052721016,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            }
+          },
+          "best": 4
+        }
+      }
+    },
+    {
+      "workload": "16384:64",
+      "prompt": 16384,
+      "output": 64,
+      "ttft_slo": 6.044639383749829,
+      "slo_text": "6,045 ms",
+      "rows": {
+        "decoder-only": {
+          "line": "| 16384 : 64 | 6,045 ms | decoder-only | 0.60 | 1.42 | 2.25 | 3.00 | 3.81 | 5P1D | 3.81 | 0.159 | 1.00x |",
+          "cells": {
+            "1": {
+              "rate": 0.6009973911373954,
+              "text": "0.60",
+              "ceiling": 0.8271792050063075,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 1,
+                "nDecode": 5,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 6.044639383749829,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            },
+            "2": {
+              "rate": 1.421714258604591,
+              "text": "1.42",
+              "ceiling": 1.654358410012615,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 2,
+                "nDecode": 4,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 6.044639383749829,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            },
+            "3": {
+              "rate": 2.2488934636108984,
+              "text": "2.25",
+              "ceiling": 2.4815376150189223,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 3,
+                "nDecode": 3,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 6.044639383749829,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            },
+            "4": {
+              "rate": 2.9985246181478646,
+              "text": "3.00",
+              "ceiling": 3.30871682002523,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 4,
+                "nDecode": 2,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 6.044639383749829,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            },
+            "5": {
+              "rate": 3.8127791480759483,
+              "text": "3.81",
+              "ceiling": 4.1358960250315375,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 5,
+                "nDecode": 1,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 6.044639383749829,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b"
+              }
+            }
+          },
+          "best": 5
+        },
+        "CED, replay on prefill": {
+          "line": "| 16384 : 64 |  | CED, replay on prefill | 1.43 | 3.01 | 4.67 | 6.33 | 6.89 | 5P1D | 6.89 | 0.287 | 1.81x |",
+          "cells": {
+            "1": {
+              "rate": 1.4289961330306027,
+              "text": "1.43",
+              "ceiling": 1.6331384377492602,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 1,
+                "nDecode": 5,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 6.044639383749829,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            },
+            "2": {
+              "rate": 3.0110989946001983,
+              "text": "3.01",
+              "ceiling": 3.2662768754985203,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 2,
+                "nDecode": 4,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 6.044639383749829,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            },
+            "3": {
+              "rate": 4.669755220439292,
+              "text": "4.67",
+              "ceiling": 4.899415313247781,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 3,
+                "nDecode": 3,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 6.044639383749829,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            },
+            "4": {
+              "rate": 6.328411446278383,
+              "text": "6.33",
+              "ceiling": 6.532553750997041,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 4,
+                "nDecode": 2,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 6.044639383749829,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            },
+            "5": {
+              "rate": 6.889802784254691,
+              "text": "6.89",
+              "ceiling": 8.1656921887463,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 5,
+                "nDecode": 1,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 6.044639383749829,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced"
+              }
+            }
+          },
+          "best": 5
+        },
+        "CED, replay on decode": {
+          "line": "| 16384 : 64 |  | CED, replay on decode | 1.45 | 3.06 | 4.67 | 6.43 | 8.17 | 5P1D | 8.17 | 0.340 | 2.14x |",
+          "cells": {
+            "1": {
+              "rate": 1.454513921120435,
+              "text": "1.45",
+              "ceiling": 1.6331384377492602,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 1,
+                "nDecode": 5,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 6.044639383749829,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            },
+            "2": {
+              "rate": 3.062134570779863,
+              "text": "3.06",
+              "ceiling": 3.2662768754985203,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 2,
+                "nDecode": 4,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 6.044639383749829,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            },
+            "3": {
+              "rate": 4.669755220439292,
+              "text": "4.67",
+              "ceiling": 4.899415313247781,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 3,
+                "nDecode": 3,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 6.044639383749829,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            },
+            "4": {
+              "rate": 6.430482598637711,
+              "text": "6.43",
+              "ceiling": 6.532553750997041,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 4,
+                "nDecode": 2,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 6.044639383749829,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            },
+            "5": {
+              "rate": 8.1656921887463,
+              "text": "8.17",
+              "ceiling": 8.1656921887463,
+              "cfg": {
+                "device": "h100",
+                "devicesPerInstance": 4,
+                "mode": "disagg",
+                "nPrefill": 5,
+                "nDecode": 1,
+                "nColocated": 2,
+                "link": "ib-ndr",
+                "ttftSlo": 6.044639383749829,
+                "tpotSlo": 0.025,
+                "model": "llama3-70b-ced",
+                "cedReplayOn": "decode"
+              }
+            }
+          },
+          "best": 5
+        }
+      }
+    }
+  ],
+  "s18": {
+    "workload": "8192:128",
+    "prompt": 8192,
+    "output": 128,
+    "ttft_slo": 2.8214350052721016,
+    "rows": {
+      "decoder-only": {
+        "line": "| decoder-only | 0.71 | 0.80 | 0.82 | 0.80 | 6x2+3x4 | 0.82 |",
+        "cells": {
+          "2x2+5x4": {
+            "rate": 0.7060901620194762,
+            "text": "0.71",
+            "ceiling": 3.544295715235018,
+            "cfg": {
+              "device": "h100",
+              "devicesPerInstance": 4,
+              "mode": "disagg",
+              "nPrefill": 2,
+              "nDecode": 5,
+              "nColocated": 2,
+              "link": "ib-ndr",
+              "ttftSlo": 2.8214350052721016,
+              "tpotSlo": 0.025,
+              "model": "llama3-70b",
+              "prefillDevicesPerInstance": 2
+            }
+          },
+          "4x2+4x4": {
+            "rate": 0.8030044979829338,
+            "text": "0.80",
+            "ceiling": 7.088591430470036,
+            "cfg": {
+              "device": "h100",
+              "devicesPerInstance": 4,
+              "mode": "disagg",
+              "nPrefill": 4,
+              "nDecode": 4,
+              "nColocated": 2,
+              "link": "ib-ndr",
+              "ttftSlo": 2.8214350052721016,
+              "tpotSlo": 0.025,
+              "model": "llama3-70b",
+              "prefillDevicesPerInstance": 2
+            }
+          },
+          "6x2+3x4": {
+            "rate": 0.8203106294049797,
+            "text": "0.82",
+            "ceiling": 10.632887145705054,
+            "cfg": {
+              "device": "h100",
+              "devicesPerInstance": 4,
+              "mode": "disagg",
+              "nPrefill": 6,
+              "nDecode": 3,
+              "nColocated": 2,
+              "link": "ib-ndr",
+              "ttftSlo": 2.8214350052721016,
+              "tpotSlo": 0.025,
+              "model": "llama3-70b",
+              "prefillDevicesPerInstance": 2
+            }
+          },
+          "8x2+2x4": {
+            "rate": 0.8030044979829338,
+            "text": "0.80",
+            "ceiling": 14.177182860940071,
+            "cfg": {
+              "device": "h100",
+              "devicesPerInstance": 4,
+              "mode": "disagg",
+              "nPrefill": 8,
+              "nDecode": 2,
+              "nColocated": 2,
+              "link": "ib-ndr",
+              "ttftSlo": 2.8214350052721016,
+              "tpotSlo": 0.025,
+              "model": "llama3-70b",
+              "prefillDevicesPerInstance": 2
+            }
+          }
+        }
+      },
+      "CED, replay on prefill": {
+        "line": "| CED, replay on prefill | 2.87 | 6.18 | 9.46 | 12.95 | 8x2+2x4 | 12.95 |",
+        "cells": {
+          "2x2+5x4": {
+            "rate": 2.872757523909227,
+            "text": "2.87",
+            "ceiling": 6.9379804351015295,
+            "cfg": {
+              "device": "h100",
+              "devicesPerInstance": 4,
+              "mode": "disagg",
+              "nPrefill": 2,
+              "nDecode": 5,
+              "nColocated": 2,
+              "link": "ib-ndr",
+              "ttftSlo": 2.8214350052721016,
+              "tpotSlo": 0.025,
+              "model": "llama3-70b-ced",
+              "prefillDevicesPerInstance": 2
+            }
+          },
+          "4x2+4x4": {
+            "rate": 6.1791388250123,
+            "text": "6.18",
+            "ceiling": 13.875960870203059,
+            "cfg": {
+              "device": "h100",
+              "devicesPerInstance": 4,
+              "mode": "disagg",
+              "nPrefill": 4,
+              "nDecode": 4,
+              "nColocated": 2,
+              "link": "ib-ndr",
+              "ttftSlo": 2.8214350052721016,
+              "tpotSlo": 0.025,
+              "model": "llama3-70b-ced",
+              "prefillDevicesPerInstance": 2
+            }
+          },
+          "6x2+3x4": {
+            "rate": 9.456983398013186,
+            "text": "9.46",
+            "ceiling": 18.62298269147212,
+            "cfg": {
+              "device": "h100",
+              "devicesPerInstance": 4,
+              "mode": "disagg",
+              "nPrefill": 6,
+              "nDecode": 3,
+              "nColocated": 2,
+              "link": "ib-ndr",
+              "ttftSlo": 2.8214350052721016,
+              "tpotSlo": 0.025,
+              "model": "llama3-70b-ced",
+              "prefillDevicesPerInstance": 2
+            }
+          },
+          "8x2+2x4": {
+            "rate": 12.94879265266421,
+            "text": "12.95",
+            "ceiling": 18.62298269147212,
+            "cfg": {
+              "device": "h100",
+              "devicesPerInstance": 4,
+              "mode": "disagg",
+              "nPrefill": 8,
+              "nDecode": 2,
+              "nColocated": 2,
+              "link": "ib-ndr",
+              "ttftSlo": 2.8214350052721016,
+              "tpotSlo": 0.025,
+              "model": "llama3-70b-ced",
+              "prefillDevicesPerInstance": 2
+            }
+          }
+        }
+      },
+      "CED, replay on decode": {
+        "line": "| CED, replay on decode | 2.93 | 6.18 | 9.60 | 13.09 | 8x2+2x4 | 13.09 |",
+        "cells": {
+          "2x2+5x4": {
+            "rate": 2.9269604960584577,
+            "text": "2.93",
+            "ceiling": 6.9379804351015295,
+            "cfg": {
+              "device": "h100",
+              "devicesPerInstance": 4,
+              "mode": "disagg",
+              "nPrefill": 2,
+              "nDecode": 5,
+              "nColocated": 2,
+              "link": "ib-ndr",
+              "ttftSlo": 2.8214350052721016,
+              "tpotSlo": 0.025,
+              "model": "llama3-70b-ced",
+              "cedReplayOn": "decode",
+              "prefillDevicesPerInstance": 2
+            }
+          },
+          "4x2+4x4": {
+            "rate": 6.1791388250123,
+            "text": "6.18",
+            "ceiling": 13.875960870203059,
+            "cfg": {
+              "device": "h100",
+              "devicesPerInstance": 4,
+              "mode": "disagg",
+              "nPrefill": 4,
+              "nDecode": 4,
+              "nColocated": 2,
+              "link": "ib-ndr",
+              "ttftSlo": 2.8214350052721016,
+              "tpotSlo": 0.025,
+              "model": "llama3-70b-ced",
+              "cedReplayOn": "decode",
+              "prefillDevicesPerInstance": 2
+            }
+          },
+          "6x2+3x4": {
+            "rate": 9.602475450290314,
+            "text": "9.60",
+            "ceiling": 18.62298269147212,
+            "cfg": {
+              "device": "h100",
+              "devicesPerInstance": 4,
+              "mode": "disagg",
+              "nPrefill": 6,
+              "nDecode": 3,
+              "nColocated": 2,
+              "link": "ib-ndr",
+              "ttftSlo": 2.8214350052721016,
+              "tpotSlo": 0.025,
+              "model": "llama3-70b-ced",
+              "cedReplayOn": "decode",
+              "prefillDevicesPerInstance": 2
+            }
+          },
+          "8x2+2x4": {
+            "rate": 13.094284704941337,
+            "text": "13.09",
+            "ceiling": 18.62298269147212,
+            "cfg": {
+              "device": "h100",
+              "devicesPerInstance": 4,
+              "mode": "disagg",
+              "nPrefill": 8,
+              "nDecode": 2,
+              "nColocated": 2,
+              "link": "ib-ndr",
+              "ttftSlo": 2.8214350052721016,
+              "tpotSlo": 0.025,
+              "model": "llama3-70b-ced",
+              "cedReplayOn": "decode",
+              "prefillDevicesPerInstance": 2
+            }
+          }
+        }
+      }
+    },
+    "router_note": "Prefill instances on 2 H100s (decode instances keep 4), every split that uses all 24 GPUs; otherwise as section 17 (TTFT SLO 2,821 ms). A whole Llama-3-70B shape only just fits on two H100s (section 16: KV room for one 8,192-token batch); the CED encoder fits with 25x the room. The roofline charges no extra cost for a tight fit, so this compares capacity, not feasibility. The decoder-only row is limited by the prefill router, not by compute: the router (unchanged) sends each request to the instance with the fewest queued prompt tokens and ignores the batch in flight, so with 1.1-second steps it piles work onto busy instances while others idle. The same router applies in section 17, where it slightly favours the model with the shorter prefill steps."
+  },
+  "quotes": {
+    "s16_intro": "DeepSeek-V4.1-Flash (arXiv:2609.19969, section 2.2) splits its 40 layers into a 20-layer causal encoder and a 20-layer decoder whose global KV is projected from the last encoder hidden state, so a prompt token runs only the encoder (and the decoder's K/V projections). The proxy here is the dense Llama-3-70B shape split 40 + 40 (`llama3-70b-ced`); the last 128 prompt tokens are replayed through the decoder (the paper's n_win = 128), on the prefill instance (`--ced-replay-on prefill`, the paper) or as the decode instance's first step (`--ced-replay-on decode`, SGLang RFC #39963, where a prefill instance holds only the encoder). Decode always runs the whole model. Illustrative: the paper's model is a 552B MoE with compressed sparse attention.",
+    "s16_paper": "The paper's own figures are 8B activated per token at prefill and 16B at decode (abstract; section 4.2.1).",
+    "s17_intro": "Highest Poisson rate with at least 90% of requests inside both SLOs (bisection on full runs to 2%, as `search.max_sustainable_rate`), for every split of 6 instances into prefill and decode pools. 1000 requests, seed 1, prompt and output cv 0.5, InfiniBand NDR, TPOT SLO 25 ms; TTFT SLO = 5x the decoder-only model's unloaded prefill of the mean prompt (shown). The prompt:output ratios stand in for agent loops (illustrative). Gains above 2x are queueing, not FLOPs: with a fixed TTFT SLO, halving the prefill service time cuts the queueing delay by more than half."
+  }
+}

@@ -5,6 +5,8 @@
  */
 import Link from "next/link";
 
+import vendored from "@/lib/disagg/vendor/VENDORED.json";
+
 import { StatusChip } from "@/components/ui/Provenance";
 import {
   DECODER_URL,
@@ -185,6 +187,30 @@ export default function AboutPage(): JSX.Element {
           pages: compressed convolutional attention (ZAYA1), Kimi Delta
           Attention&rsquo;s gate projections, n-gram embedding tables, GDLA
           (Motif) and the weights of multi-token-prediction layers.
+        </p>
+
+        <h2 id="chapters">The chapters and the simulator</h2>
+        <p>
+          The nine{" "}
+          <Link className={A} href="/learn">
+            chapters
+          </Link>{" "}
+          each drive an interactive with this cost model, or with a closed form
+          from the same Python reference (
+          <code>reference/chapter_model.py</code>, ported line by line and
+          checked against its fixtures). The encoder-decoder chapter also runs{" "}
+          <a
+            className={A}
+            href="https://github.com/BrendanJamesLynskey/Disaggregated_Inference_Sim"
+          >
+            Disaggregated_Inference_Sim
+          </a>
+          &rsquo;s own JavaScript engine, copied byte for byte from commit{" "}
+          <code>{vendored.commit.slice(0, 7)}</code> (the one that added the
+          causal encoder-decoder option), with parity tests against the Python
+          package at that commit, and reruns its capacity search in the browser,
+          rate for rate. Its numbers are for an illustrative dense 70B-shaped
+          proxy, not for any lab&rsquo;s model.
         </p>
 
         <h2>Freshness</h2>

@@ -13,10 +13,15 @@
  * Fails when a page is not a 200 (redirects count as failures) or lacks
  * the content that proves it rendered real data: every model page must
  * show its name and provenance chips, and the compare tool's data file must
- * hold every model with specs the cost model can evaluate.
+ * hold every model with specs the cost model can evaluate. Every chapter
+ * must render its MDX (a layer and a pending interactive), and the CED
+ * simulator's recorded results and workloads must be served at the vendored
+ * engine's commit.
  */
+import vendored from "@/lib/disagg/vendor/VENDORED.json";
 import { params, type Spec } from "@/lib/arch/costModel";
 import { MODELS } from "@/lib/data";
+import { SECTIONS } from "@/lib/mdx/sections";
 
 type Result = { path: string; ok: boolean; detail: string };
 
@@ -74,6 +79,24 @@ async function checkSpecs(base: string): Promise<Result> {
   }
 }
 
+async function checkJson(
+  base: string,
+  path: string,
+  test: (d: Record<string, unknown>) => string | null,
+): Promise<Result> {
+  try {
+    const res = await fetch(base + path, { redirect: "manual", headers });
+    if (res.status !== 200)
+      return { path, ok: false, detail: String(res.status) };
+    const bad = test((await res.json()) as Record<string, unknown>);
+    return bad
+      ? { path, ok: false, detail: `200 but ${bad}` }
+      : { path, ok: true, detail: "200" };
+  } catch (err) {
+    return { path, ok: false, detail: (err as Error).message };
+  }
+}
+
 async function main(): Promise<void> {
   const base = (process.argv[2] ?? "http://localhost:3000").replace(/\/$/, "");
   const checks: Promise<Result>[] = [
@@ -86,6 +109,38 @@ async function main(): Promise<void> {
     checkPage(base, "/timeline", ["How the variations spread"]),
     checkPage(base, "/about", ["Where every value comes from"]),
     checkSpecs(base),
+    checkPage(
+      base,
+      "/learn",
+      SECTIONS.map((x) => x.slug),
+    ),
+    ...SECTIONS.map((x) =>
+      checkPage(base, `/learn/${x.slug}`, [
+        'data-layer="concept"',
+        "data-pending-widget",
+      ]),
+    ),
+    checkJson(base, "/disagg/ced-results.json", (d) =>
+      d.commit !== vendored.commit
+        ? `commit ${String(d.commit)}`
+        : (d.s17 as unknown[]).length !== 4
+          ? "not four workloads"
+          : null,
+    ),
+    ...[
+      [2048, 512],
+      [4096, 256],
+      [8192, 128],
+      [16384, 64],
+    ].map(([p, o]) =>
+      checkJson(base, `/disagg/workloads/ced-${p}-${o}.json`, (d) =>
+        d.commit !== vendored.commit
+          ? `commit ${String(d.commit)}`
+          : (d.rows as unknown[]).length !== 1000
+            ? "not 1,000 requests"
+            : null,
+      ),
+    ),
   ];
   for (const m of MODELS) {
     const must = [m.name.replace(/&/g, "&amp;"), "data-status="];

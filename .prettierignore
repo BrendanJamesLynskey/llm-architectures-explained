@@ -19,3 +19,8 @@ public/data/
 data/
 .lighthouseci/
 .venv/
+
+# Vendored byte for byte from Disaggregated_Inference_Sim (pnpm vendor:sim),
+# and the recorded workloads (scripts/disagg_reference.py).
+src/lib/disagg/vendor/
+public/disagg/
