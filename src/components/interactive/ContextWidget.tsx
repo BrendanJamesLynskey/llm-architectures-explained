@@ -11,11 +11,7 @@ import { useState } from "react";
 import { Segmented, Slider } from "@/components/ui/Controls";
 import { WidgetFrame } from "@/components/ui/WidgetFrame";
 import { Legend, ScrollBox } from "@/components/viz/Legend";
-import {
-  binaryTicks,
-  LineChart,
-  PALETTE,
-} from "@/components/viz/LineChart";
+import { binaryTicks, LineChart, PALETTE } from "@/components/viz/LineChart";
 import { decodeFlops, kvCache, params } from "@/lib/arch/costModel";
 import { formatBytes, formatFlops, formatTokens } from "@/lib/arch/format";
 import { CHAPTERS } from "@/lib/chapters/data";

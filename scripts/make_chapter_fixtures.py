@@ -108,7 +108,10 @@ def build() -> tuple[str, str]:
                  for a in MOE_GRID]
     fx["depth_width"] = [{"args": list(a), "spec": cm.depth_width_spec(*a), "out": costs(cm.depth_width_spec(*a))}
                          for a in DEPTH_WIDTH_GRID]
-    fx["rope"] = [{"id": r["id"], "wavelengths": cm.rope_wavelengths(r["head_dim"], r["fraction"], r["theta"]),
+    # pow() may differ in the last bit between libms (CI's glibc vs a laptop's), so the stored
+    # wavelengths are rounded to 15 significant digits; the port compares them to 1e-12
+    fx["rope"] = [{"id": r["id"], "wavelengths": [float(f"{w:.15g}") for w in
+                                                  cm.rope_wavelengths(r["head_dim"], r["fraction"], r["theta"])],
                    "long_pairs": [{"context": c, "v": cm.rope_long_pairs(r["head_dim"], r["fraction"], r["theta"], c)}
                                   for c in CONTEXTS]}
                   for r in data["rope"]]
@@ -141,9 +144,14 @@ def main() -> int:
     data, fx = build()
     targets = [(ROOT / "src/data/chapters.json", data), (ROOT / "tests/fixtures/chapter_fixtures.json", fx)]
     if a.check:
-        stale = [p for p, text in targets if not p.exists() or p.read_text() != text]
-        for p in stale:
-            print(f"{p.relative_to(ROOT)} out of date: run python scripts/make_chapter_fixtures.py")
+        stale = [p for p, text in targets if not p.exists() or p.read_text() != text]  # noqa: E501
+        for p, text in targets:
+            if p in stale:
+                old = p.read_text() if p.exists() else ""
+                i = next((k for k, (x, y) in enumerate(zip(old, text)) if x != y), min(len(old), len(text)))
+                print(f"{p.relative_to(ROOT)} out of date: run python scripts/make_chapter_fixtures.py")
+                print(f"  first difference at {i}: committed {old[max(0, i - 60):i + 60]!r}")
+                print(f"  {'':22}rebuilt   {text[max(0, i - 60):i + 60]!r}")
         if not stale:
             print("chapter data and fixtures up to date")
         return 1 if stale else 0

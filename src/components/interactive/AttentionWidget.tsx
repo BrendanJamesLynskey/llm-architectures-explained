@@ -12,11 +12,7 @@ import { useMemo, useState } from "react";
 import { Segmented, Slider } from "@/components/ui/Controls";
 import { WidgetFrame } from "@/components/ui/WidgetFrame";
 import { Legend, ScrollBox } from "@/components/viz/Legend";
-import {
-  binaryTicks,
-  LineChart,
-  PALETTE,
-} from "@/components/viz/LineChart";
+import { binaryTicks, LineChart, PALETTE } from "@/components/viz/LineChart";
 import {
   decodeBytes,
   decodeFlops,
