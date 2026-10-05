@@ -8,7 +8,9 @@
         "http://localhost:3000/models",
         "http://localhost:3000/compare",
         "http://localhost:3000/models/deepseek-v3",
-        "http://localhost:3000/timeline"
+        "http://localhost:3000/timeline",
+        "http://localhost:3000/learn/01-attention",
+        "http://localhost:3000/learn/09-encoder-decoder-and-ced"
       ],
       "numberOfRuns": 3
     },

@@ -1,0 +1,131 @@
+<Callout kind="prereq">
+
+Embeddings and attention scores, from the Transformer Decoder Explainer's
+[Embeddings](https://transformer-decoder-explained.vercel.app/learn/02-embeddings)
+and [Attention](https://transformer-decoder-explained.vercel.app/learn/03-attention)
+chapters.
+
+</Callout>
+
+<Layer kind="concept">
+
+Attention on its own is blind to order: shuffle the cached keys and values
+and each query's output is unchanged. Position has to be put in somewhere,
+and the choices have changed more than once.
+
+- **Sinusoidal** (the original Transformer) and **learned absolute**
+  embeddings (GPT-2, GPT-3, BERT, OPT) add a position vector to each
+  token's embedding. A learned table has one row per position, so it also
+  fixes the longest sequence the model can read.
+- **Relative biases** (T5) and **ALiBi** (BLOOM) add nothing to the
+  embeddings; they add a bias to every attention score that depends on the
+  distance between query and key. ALiBi's is a fixed linear penalty per
+  head, chosen so a model trained on short sequences can read longer ones
+  (Press et al., 2021).
+- **Rotary position embedding (RoPE)** (Su et al., 2021) rotates each query
+  and key, pair of dimensions by pair of dimensions, through an angle
+  proportional to its position. The dot product of a rotated query and key
+  then depends only on how far apart they are. Almost every open model since
+  LLaMA uses it.
+- **Partial RoPE** rotates only some of each head's dimensions and leaves
+  the rest position-free: GLM-4.5 rotates half, Qwen3-Next a quarter. MLA
+  (chapter 1) carries position in a small separate rotary key, because a
+  rotation cannot pass through its compressed latent.
+- **NoPE layers** use no positional encoding at all; the causal mask alone
+  lets a decoder infer order (Kazemnejad et al., 2023). Some recent models
+  interleave NoPE layers with RoPE layers.
+
+RoPE has one knob that matters for long context: its **base θ**. Pair _i_
+of a head with _d_ rotated dimensions turns through an angle of
+$\theta^{-2i/d}$ radians per token, so its **wavelength** is
+$2\pi\theta^{2i/d}$ tokens. The first pair spins every 6.3 tokens; the last
+ones turn so slowly that they barely move across the whole context. A pair
+that turns less than once across the context still carries information,
+but only in its slow drift, and those are the dimensions that misbehave
+when a model reads past its training length. Raising θ stretches every
+wavelength. Mistral 7B's θ = 10,000 leaves 4 of its 64 pairs slower than a
+32K context; Qwen3 8B's θ = 1,000,000 leaves 24.
+
+</Layer>
+
+<RopeWidget />
+
+<Layer kind="concept">
+
+**Things to try.**
+
+- _Pick Mistral 7B, then Qwen3 8B, at 32K._ Same 128-dimension heads,
+  wavelengths a hundred times longer at the slow end.
+- _Pick GLM-4.5 or Qwen3-Next._ Partial RoPE halves (or quarters) the
+  pairs, and the remaining dimensions carry no position at all.
+- _Pick DeepSeek-V3._ Its rotary key is only 64 dimensions wide, with
+  θ = 10,000: at 128K no pair is slower than the context.
+
+**Extending context after training.** Position Interpolation (Chen et al., 2023) squeezes longer inputs into the trained range by scaling positions
+down; YaRN (Peng et al., 2023) sorts the pairs by exactly the comparison
+the interactive draws: a pair whose wavelength is much shorter than the
+trained context is left alone, one at least as long as the context is
+interpolated, and those in between get a blend (section 3.2, p. 5). Neither
+changes the cache, the parameters or
+the FLOPs: positional encoding costs almost nothing to run. What it changes
+is how far a trained model can read, which [chapter 6](/learn/06-long-context)
+takes up.
+
+</Layer>
+
+<ModelsWith feature="rope" />
+<ModelsWith feature="partial-rope" />
+<ModelsWith feature="nope" />
+<ModelsWith feature="alibi" />
+<ModelsWith feature="learned" />
+
+<Layer kind="maths">
+
+RoPE writes position $m$ into a query $q$ (and a key) by rotating each pair
+$(q_{2i}, q_{2i+1})$, $0 \le i < d/2$:
+
+$$
+\begin{pmatrix} q'_{2i} \\ q'_{2i+1} \end{pmatrix}
+=
+\begin{pmatrix} \cos m\omega_i & -\sin m\omega_i \\ \sin m\omega_i & \cos m\omega_i \end{pmatrix}
+\begin{pmatrix} q_{2i} \\ q_{2i+1} \end{pmatrix},
+\qquad \omega_i = \theta^{-2i/d}.
+$$
+
+Rotations compose, so $q'_m \cdot k'_n$ depends on $m - n$ only. Pair $i$
+has wavelength $\lambda_i = 2\pi/\omega_i = 2\pi\theta^{2i/d}$; the
+interactive counts the pairs with $\lambda_i$ greater than the context
+length. With partial RoPE, $d$ is the rotated fraction of the head,
+rounded down to an even number.
+
+</Layer>
+
+<Layer kind="code">
+
+```ts
+// src/lib/chapters/model.ts — the wavelength of every rotated pair
+const d = rotaryDims(headDim, fraction);
+const out: number[] = [];
+for (let i = 0; i < d / 2; i++)
+  out.push(2.0 * Math.PI * theta ** ((2.0 * i) / d));
+return out;
+```
+
+The θ values are read from each model's `config.json` at a pinned Hugging
+Face revision (the link under the chart). `tests/unit/chapters/model.test.ts`
+checks the wavelengths against the Python reference to 1e-12 (a power can
+round differently in the last bit between maths libraries) and the pair
+counts exactly.
+
+</Layer>
+
+<Callout kind="deeper">
+
+- Deck: Modern Architectures 03 · [Long-Context Techniques](https://brendanjameslynskey.github.io/Arch_03_Long_Context/)
+- Su et al., [RoFormer](https://arxiv.org/abs/2104.09864) (RoPE, arXiv:2104.09864);
+  Press et al., [Train Short, Test Long](https://arxiv.org/abs/2108.12409) (ALiBi, arXiv:2108.12409);
+  Kazemnejad et al., [The Impact of Positional Encoding on Length Generalization in Transformers](https://arxiv.org/abs/2305.19466) (NoPE, arXiv:2305.19466);
+  Chen et al., [Position Interpolation](https://arxiv.org/abs/2306.15595) (arXiv:2306.15595);
+  Peng et al., [YaRN](https://arxiv.org/abs/2309.00071) (wavelength rule, p. 5, arXiv:2309.00071)
+
+</Callout>

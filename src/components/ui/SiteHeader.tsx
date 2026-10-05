@@ -10,6 +10,7 @@ import Link from "next/link";
 import { SiteSwitch } from "./SiteSwitch";
 
 const NAV = [
+  { href: "/learn", label: "Learn" },
   { href: "/models", label: "Models" },
   { href: "/compare", label: "Compare" },
   { href: "/timeline", label: "Timeline" },

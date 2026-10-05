@@ -1,0 +1,107 @@
+<Callout kind="prereq">
+
+Speculative decoding (draft, verify, expected tokens per step), from LLM
+Inference Explained's [Speculative decoding](https://llm-inference-explained.vercel.app/learn/07-speculative-decoding)
+chapter; and why decode is memory-bound, from its
+[Roofline](https://llm-inference-explained.vercel.app/learn/03-roofline) chapter.
+
+</Callout>
+
+<Layer kind="concept">
+
+A language model is trained to predict the next token. **Multi-token
+prediction (MTP)** trains it to predict the next few as well. Gloeckle et
+al. (2024) did it with $n$ independent output heads on a shared trunk, as
+an auxiliary training task, and measured better sample efficiency.
+DeepSeek-V3 made the extra predictions **sequential**: its MTP module $k$
+is one more Transformer block that takes the main model's state at depth
+$k - 1$ and the embedding of the next token, and predicts one token
+further, so each prediction keeps the full causal chain (section 2.2,
+p. 10). The modules share the main model's embedding and output head.
+
+The architecture choice shows up twice:
+
+- **In training**, as a denser signal. DeepSeek-V3's report says the MTP
+  modules can simply be discarded at inference, leaving the main model
+  unchanged (p. 11).
+- **At inference**, as a built-in draft model for speculative decoding. The
+  modules propose the next tokens, the main model checks them in its next
+  step, and every accepted draft is a token for free. DeepSeek-V3 reports
+  that its second-token prediction is accepted 85% to 90% of the time,
+  giving 1.8 times the tokens per second (section 5.4.3, p. 35).
+
+The interactive puts numbers on both sides for any model in the data set
+that ships MTP layers. DeepSeek-V3's single module touches 688M weights per
+token, under 2% of the 37.6B the main model activates (both counted by
+this site's cost model). If each drafted
+token is accepted with probability $a$, a step emits $1 + a$ tokens with one
+module (1.85 at $a = 0.85$). With decode memory-bound at batch 1, the step
+costs about what the main model's step costs plus the module's weights, so
+the idealised speed-up is 1.82× at $a = 0.85$ and 1.87× at $a = 0.9$, the
+same neighbourhood as the 1.8× DeepSeek reports.
+
+</Layer>
+
+<MtpWidget />
+
+<Layer kind="concept">
+
+**Things to try.** Raise the depth: with $a = 0.85$, the third and fourth
+drafted tokens are worth less and less ($a^3$, $a^4$), while every module
+adds its weights to every step. Then pick a model with several MTP layers
+(Step 3.5 Flash ships three) and compare.
+
+</Layer>
+
+<ModelsWith feature="mtp" />
+
+<Layer kind="maths">
+
+If the draft at depth $j$ is accepted with probability $a$ given that the
+ones before it were, a step with $D$ drafted tokens emits
+
+$$
+E[\text{tokens}] = \sum_{j=0}^{D} a^j = \frac{1 - a^{D+1}}{1 - a}.
+$$
+
+At batch 1 a decode step is memory-bound: its time is about the bytes it
+reads, $B_{\text{main}}$ (active weights plus the KV cache) plus $D$
+modules of $P_{\text{MTP}}$ weights. The speed-up over plain decoding is
+
+$$
+S = \frac{E[\text{tokens}]\; B_{\text{main}}}{B_{\text{main}} + D\, P_{\text{MTP}}\, b},
+$$
+
+with $b$ bytes per weight. One module is a block's mixer and active FFN,
+the $d \times 2d$ projection that merges the state with the next token's
+embedding, and its norms.
+
+</Layer>
+
+<Layer kind="code">
+
+```ts
+// src/lib/chapters/model.ts — the memory-bound speed-up (excerpt)
+const main = decodeBytes(spec, context, weightBytes, kvBytes).total;
+const extra = depth * mtpModuleActive(spec) * weightBytes;
+const tokens = mtpExpectedTokens(acceptance, depth);
+const step = main + extra;
+```
+
+</Layer>
+
+<Callout kind="illustrative">
+
+The speed-up is an idealisation: acceptance is taken as independent and
+equal at every depth, the modules' own cache reads are ignored, and the
+verification's extra arithmetic is free because the step is memory-bound.
+The 85–90% and 1.8× are DeepSeek's measurements, not this site's.
+
+</Callout>
+
+<Callout kind="deeper">
+
+- Gloeckle et al., [Better & Faster Large Language Models via Multi-token Prediction](https://arxiv.org/abs/2404.19737) (arXiv:2404.19737);
+  DeepSeek-AI, [DeepSeek-V3 Technical Report](https://arxiv.org/abs/2412.19437) (MTP, section 2.2 pp. 10–11; acceptance, section 5.4.3 p. 35; arXiv:2412.19437)
+
+</Callout>

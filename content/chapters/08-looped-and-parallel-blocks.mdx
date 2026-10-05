@@ -1,0 +1,96 @@
+<Callout kind="prereq">
+
+How a block is built and stacked, from the Transformer Decoder Explainer's
+[Stacking](https://transformer-decoder-explained.vercel.app/learn/06-stacking)
+chapter; the depth trade-offs of [chapter 5](/learn/05-depth-and-width).
+
+</Callout>
+
+<Layer kind="concept">
+
+Two less common changes rearrange the blocks themselves.
+
+**Looped (recurrent-depth) models** run the same stack of layers more than
+once per token. The idea goes back to the Universal Transformer (Dehghani
+et al., 2018), "a parallel-in-time self-attentive recurrent sequence
+model". Ouro's LoopLMs run their stack four times; their authors report
+that the 1.4B and 2.6B models "match 4B and 8B standard transformers on
+most benchmarks" (p. 2). Looping buys depth without parameters, and the
+interactive shows what it costs instead. Ouro 2.6B's 2.67B parameters stay
+put as the loops go from 1 to 4, while its decode FLOPs per token at an 8K
+context go from 8.36 to 32.8 GFLOP.
+
+The cache depends on a choice. Each pass through the stack computes its own
+keys and values, so naively a four-pass model keeps four caches: 12 GiB
+instead of 3 GiB for one 8K-token sequence. Ouro's paper found that prefill
+needs all four, but that during decoding keeping only the last pass's cache
+(or an average of the four) loses little on its benchmarks, for a quarter
+of the memory (section 5.4.2, Table 14, p. 18).
+
+**Parallel blocks** run attention and the feed-forward block side by side
+on the same normalised input and add both to the stream, instead of one
+after the other. GPT-J used it; PaLM adopted it and reported "roughly 15%
+faster training speed at large scales, since the MLP and Attention input
+matrix multiplications can be fused", with a small quality loss at 8B and
+none at 62B (p. 5). The parameter count and the FLOPs are unchanged, which
+is why this site's cost model gives a parallel block exactly the cost of a
+sequential one: the gain is in how the hardware runs it, not in the
+arithmetic.
+
+</Layer>
+
+<LoopWidget />
+
+<ModelsWith feature="looped" />
+<ModelsWith feature="parallel" />
+
+<Layer kind="maths">
+
+A model of $l$ layers looped $R$ times has the parameters of $l$ layers and
+the per-token arithmetic of $R \cdot l$:
+
+$$
+F_{\text{decode}} = 2 P_{\text{matmul}} + (R - 1)\, 2 P_{\text{stack}} + R\, A(t),
+$$
+
+where $P_{\text{stack}}$ excludes the output head and the embedding
+(computed once per token) and $A(t)$ is one pass's attention at context
+$t$. The cache is $R$ times one pass's with a cache per pass, and one
+pass's when they share it.
+
+The two block layouts are, sequential,
+
+$$
+x' = x + \mathrm{Attn}(\mathrm{LN}(x)), \qquad y = x' + \mathrm{FFN}(\mathrm{LN}(x')),
+$$
+
+and parallel,
+
+$$
+y = x + \mathrm{Attn}(\mathrm{LN}(x)) + \mathrm{FFN}(\mathrm{LN}(x)).
+$$
+
+</Layer>
+
+<Layer kind="code">
+
+```ts
+// src/lib/arch/costModel.ts — a looped model's decode FLOPs (excerpt)
+if (loops > 1) {
+  const stack =
+    2.0 *
+    (p.matmul_active - p.lm_head - (spec.tied_embeddings ? p.embedding : 0.0));
+  return f + (loops - 1.0) * stack + loops * attn;
+}
+```
+
+</Layer>
+
+<Callout kind="deeper">
+
+- Deck: Modern Architectures 10 · [Small Recursive Transformers](https://brendanjameslynskey.github.io/Raschka_Beyond_LLMs_04_Small_Recursive_Transformers/)
+- Dehghani et al., [Universal Transformers](https://arxiv.org/abs/1807.03819) (arXiv:1807.03819);
+  Zhu et al., [Scaling Latent Reasoning via Looped Language Models](https://arxiv.org/abs/2510.25741) (Ouro; KV sharing, section 5.4.2, p. 18; arXiv:2510.25741);
+  Chowdhery et al., [PaLM](https://arxiv.org/abs/2204.02311) (parallel layers, p. 5, arXiv:2204.02311)
+
+</Callout>

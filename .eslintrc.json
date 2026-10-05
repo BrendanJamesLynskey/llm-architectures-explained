@@ -27,6 +27,7 @@
     "node_modules/",
     "drizzle/",
     "coverage/",
-    ".venv/"
+    ".venv/",
+    "src/lib/disagg/vendor/"
   ]
 }

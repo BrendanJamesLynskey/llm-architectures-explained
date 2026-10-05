@@ -7,25 +7,70 @@
    "first_author": "Vaswani, Ashish",
    "submitted": "12 Jun 2017"
   },
+  "1807.03819": {
+   "title": "Universal Transformers",
+   "first_author": "Dehghani, Mostafa",
+   "submitted": "10 Jul 2018"
+  },
   "1810.04805": {
    "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
    "first_author": "Devlin, Jacob",
    "submitted": "11 Oct 2018"
+  },
+  "1904.10509": {
+   "title": "Generating Long Sequences with Sparse Transformers",
+   "first_author": "Child, Rewon",
+   "submitted": "23 Apr 2019"
   },
   "1910.10683": {
    "title": "Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer",
    "first_author": "Raffel, Colin",
    "submitted": "23 Oct 2019"
   },
+  "1911.02150": {
+   "title": "Fast Transformer Decoding: One Write-Head is All You Need",
+   "first_author": "Shazeer, Noam",
+   "submitted": "6 Nov 2019"
+  },
+  "2001.08361": {
+   "title": "Scaling Laws for Neural Language Models",
+   "first_author": "Kaplan, Jared",
+   "submitted": "23 Jan 2020"
+  },
+  "2002.04745": {
+   "title": "On Layer Normalization in the Transformer Architecture",
+   "first_author": "Xiong, Ruibin",
+   "submitted": "12 Feb 2020"
+  },
+  "2004.05150": {
+   "title": "Longformer: The Long-Document Transformer",
+   "first_author": "Beltagy, Iz",
+   "submitted": "10 Apr 2020"
+  },
   "2005.14165": {
    "title": "Language Models are Few-Shot Learners",
    "first_author": "Brown, Tom B.",
    "submitted": "28 May 2020"
   },
+  "2006.16668": {
+   "title": "GShard: Scaling Giant Models with Conditional Computation and Automatic Sharding",
+   "first_author": "Lepikhin, Dmitry",
+   "submitted": "30 Jun 2020"
+  },
   "2101.03961": {
    "title": "Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity",
    "first_author": "Fedus, William",
    "submitted": "11 Jan 2021"
+  },
+  "2104.09864": {
+   "title": "RoFormer: Enhanced Transformer with Rotary Position Embedding",
+   "first_author": "Su, Jianlin",
+   "submitted": "20 Apr 2021"
+  },
+  "2108.12409": {
+   "title": "Train Short, Test Long: Attention with Linear Biases Enables Input Length Extrapolation",
+   "first_author": "Press, Ofir",
+   "submitted": "27 Aug 2021"
   },
   "2112.06905": {
    "title": "GLaM: Efficient Scaling of Language Models with Mixture-of-Experts",
@@ -77,10 +122,30 @@
    "first_author": "Peng, Bo",
    "submitted": "22 May 2023"
   },
+  "2305.13245": {
+   "title": "GQA: Training Generalized Multi-Query Transformer Models from Multi-Head Checkpoints",
+   "first_author": "Ainslie, Joshua",
+   "submitted": "22 May 2023"
+  },
+  "2305.19466": {
+   "title": "The Impact of Positional Encoding on Length Generalization in Transformers",
+   "first_author": "Kazemnejad, Amirhossein",
+   "submitted": "31 May 2023"
+  },
+  "2306.15595": {
+   "title": "Extending Context Window of Large Language Models via Positional Interpolation",
+   "first_author": "Chen, Shouyuan",
+   "submitted": "27 Jun 2023"
+  },
   "2307.09288": {
    "title": "Llama 2: Open Foundation and Fine-Tuned Chat Models",
    "first_author": "Touvron, Hugo",
    "submitted": "18 Jul 2023"
+  },
+  "2309.00071": {
+   "title": "YaRN: Efficient Context Window Extension of Large Language Models",
+   "first_author": "Peng, Bowen",
+   "submitted": "31 Aug 2023"
   },
   "2310.06825": {
    "title": "Mistral 7B",
@@ -112,6 +177,11 @@
    "first_author": "Dai, Damai",
    "submitted": "11 Jan 2024"
   },
+  "2402.14905": {
+   "title": "MobileLLM: Optimizing Sub-billion Parameter Language Models for On-Device Use Cases",
+   "first_author": "Liu, Zechun",
+   "submitted": "22 Feb 2024"
+  },
   "2403.05530": {
    "title": "Gemini 1.5: Unlocking multimodal understanding across millions of tokens of context",
    "first_author": "Gemini Team",
@@ -132,10 +202,20 @@
    "first_author": "Abdin, Marah",
    "submitted": "22 Apr 2024"
   },
+  "2404.19737": {
+   "title": "Better & Faster Large Language Models via Multi-token Prediction",
+   "first_author": "Gloeckle, Fabian",
+   "submitted": "30 Apr 2024"
+  },
   "2405.04434": {
    "title": "DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model",
    "first_author": "DeepSeek-AI",
    "submitted": "7 May 2024"
+  },
+  "2405.05254": {
+   "title": "You Only Cache Once: Decoder-Decoder Architectures for Language Models",
+   "first_author": "Sun, Yutao",
+   "submitted": "8 May 2024"
   },
   "2405.21060": {
    "title": "Transformers are SSMs: Generalized Models and Efficient Algorithms Through Structured State Space Duality",
@@ -156,6 +236,11 @@
    "title": "OLMoE: Open Mixture-of-Experts Language Models",
    "first_author": "Muennighoff, Niklas",
    "submitted": "3 Sep 2024"
+  },
+  "2412.06464": {
+   "title": "Gated Delta Networks: Improving Mamba2 with Delta Rule",
+   "first_author": "Yang, Songlin",
+   "submitted": "9 Dec 2024"
   },
   "2412.08905": {
    "title": "Phi-4 Technical Report",

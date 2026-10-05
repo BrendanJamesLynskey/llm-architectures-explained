@@ -1,0 +1,152 @@
+<Callout kind="prereq">
+
+Queries, keys, values and the causal mask, from the Transformer Decoder
+Explainer's [Attention](https://transformer-decoder-explained.vercel.app/learn/03-attention)
+chapter; and why the cache of keys and values decides serving costs, from
+LLM Inference Explained's [KV cache](https://llm-inference-explained.vercel.app/learn/02-kv-cache)
+chapter.
+
+</Callout>
+
+<Layer kind="concept">
+
+The token mixer is the part of a block that lets a position read earlier
+positions. Since 2017 it has been the place where architectures differ
+most, and nearly every change has the same target: the **cache** a model
+keeps per sequence while it generates, and the work each new token does
+against it.
+
+- **Multi-head attention (MHA)**, the original Transformer's: every query
+  head has its own key and value head, so each layer caches two vectors per
+  head per token.
+- **Multi-query attention (MQA)** keeps all the query heads but shares one
+  key and one value head between them (Shazeer, 2019). PaLM used it.
+- **Grouped-query attention (GQA)** sits between the two: query heads in
+  groups, one key/value head per group (Ainslie et al., 2023). Llama 3 8B
+  has 32 query heads and 8 key/value heads.
+- **Multi-head latent attention (MLA)**, from DeepSeek-V2, caches one
+  compressed latent vector per token per layer, plus a small separate key
+  for positions, and rebuilds every head's keys and values from it.
+- **Sliding windows** make most layers attend only to the most recent
+  _W_ tokens. Gemma 3 interleaves five local layers (a 1,024-token window)
+  with one global layer.
+- **Sparse attention** keeps the whole cache but lets a cheap indexer pick
+  which cached tokens each query reads (DeepSeek-V3.2 picks 2,048).
+- **Linear attention and state-space layers** (Gated DeltaNet, Lightning
+  attention, Mamba) replace the growing cache with a fixed-size state. They
+  are almost always mixed with some full-attention layers: Qwen3-Next uses
+  three Gated DeltaNet layers per attention layer, Jamba seven Mamba layers
+  per attention layer.
+
+The interactive puts all eight on **one body**: Llama 3 8B's width, depth,
+feed-forward blocks and vocabulary, with only the token mixer swapped.
+So every difference you see is the mixer's alone. At a 128K-token context in
+BF16, GQA's cache is 16 GiB per sequence; MHA's is 4× that, 64 GiB; MQA's
+2 GiB; MLA's 4.5 GiB. The sliding-window mix holds 2.61 GiB, and the
+Mamba-2 hybrid 2.06 GiB, almost all of it in its four global layers.
+
+</Layer>
+
+<AttentionWidget />
+
+<Layer kind="concept">
+
+**Things to try.**
+
+- _Look at the chart from 1K to 1M._ Every line ends up rising in step with
+  the context, because every variant keeps some layers whose cache grows. The
+  window, linear and state-space hybrids start almost flat, where their
+  fixed-size part is all there is, and then rise from a much lower level,
+  because only one layer in four, six or eight keeps a growing cache.
+- _Compare decode FLOPs at 128K._ The attention term is proportional to
+  the tokens each query reads, so the sliding-window mix needs 26.2 GFLOP
+  per token against GQA's 83.7. MLA needs more (101 GFLOP) in this cost
+  model, which counts its attention in the expanded form: MLA saves memory,
+  not arithmetic.
+- _Switch the cache to FP8._ Every cache halves; the recurrent state is
+  counted at its own precision.
+
+</Layer>
+
+<ModelsWith feature="gqa" />
+<ModelsWith feature="mla" />
+<ModelsWith feature="sliding" />
+<ModelsWith feature="sparse" />
+<ModelsWith feature="hybrid" />
+
+<Layer kind="maths">
+
+Per token, summed over $l$ layers, a softmax-attention cache holds
+
+| Mixer      | Values per token                                  |
+| ---------- | ------------------------------------------------- |
+| MHA        | $2\,n_h\,d_h\,l$                                  |
+| GQA        | $2\,n_{kv}\,d_h\,l$                               |
+| MQA        | $2\,d_h\,l$                                       |
+| MLA        | $(d_c + d_h^R)\,l$                                |
+| Window $W$ | $2\,n_{kv}\,d_h\,l$, for the last $W$ tokens only |
+
+for $n_h$ query heads of dimension $d_h$, $n_{kv}$ key/value heads, a
+compressed latent of $d_c$ values and a decoupled rotary key of $d_h^R$.
+For the Llama 3 8B body ($l = 32$, $n_h = 32$, $n_{kv} = 8$, $d_h = 128$)
+in BF16 that is 512 KiB per token for MHA, 128 KiB for GQA, 16 KiB for MQA
+and, with DeepSeek-V3's latent sizes ($d_c = 512$, $d_h^R = 64$), 36 KiB
+for MLA.
+
+A linear-attention or state-space layer instead keeps a state of fixed
+size: $h \cdot d_k \cdot d_v$ for a Gated DeltaNet layer with $h$ value
+heads, $h \cdot d_h \cdot N$ for a Mamba-2 layer with state size $N$, plus
+a few tokens of convolution history. That is why the hybrids' curves
+flatten.
+
+Decode FLOPs per token at context $t$ are $2P_{\text{active}}$ for the
+matrix multiplications, plus, per attention layer, $2 n_h (d_k + d_v)$ for
+each cached token the query reads: $t$ for full attention, $\min(t, W)$ in
+a window, and the indexer's top-$k$ for sparse attention (whose indexer
+still scores all $t$ tokens with $2 h_I d_I$ FLOPs each).
+
+</Layer>
+
+<Layer kind="code">
+
+```ts
+// src/lib/arch/costModel.ts — the cache one layer adds per token (excerpt)
+  if (t === "attn") {
+    const kv = m.kv_heads!;
+    const hd = m.head_dim!;
+    const vd = m.v_head_dim || m.head_dim!;
+    let e = m.k_eq_v ? kv * hd : kv * (hd + vd);
+```
+
+The variants are built in `reference/chapter_model.py` (`attention_variants`)
+and costed by the cost model in Python and in TypeScript;
+`tests/unit/chapters/model.test.ts` asserts that every number in the table
+is identical in the two.
+
+</Layer>
+
+<Callout kind="illustrative">
+
+The variants are this site's constructions on Llama 3 8B's shape, not
+models anyone trained: the MLA latent sizes are DeepSeek-V3's, the window
+pattern Gemma 3's, the indexer DeepSeek-V3.2's, the Gated DeltaNet sizes
+Qwen3-Next's. Parameter counts differ because the mixers' weights differ.
+
+</Callout>
+
+<Callout kind="deeper">
+
+- Decks: Modern Architectures 02 · [Mamba & State-Space Models](https://brendanjameslynskey.github.io/Arch_02_Mamba_SSM/);
+  07 · [Linear-Attention Hybrids](https://brendanjameslynskey.github.io/Raschka_Beyond_LLMs_01_Linear_Attention_Hybrids/);
+  InfSim 03 · [KV-Cache Arithmetic](https://brendanjameslynskey.github.io/InfSim_03_LLM_Inference_Workloads/#slide-06)
+- Compare real models' caches side by side: [/compare](/compare?m=llama-3-8b,deepseek-v3,gemma-3-27b,qwen3-next-80b-a3b)
+- Shazeer, [Fast Transformer Decoding: One Write-Head is All You Need](https://arxiv.org/abs/1911.02150) (arXiv:1911.02150);
+  Ainslie et al., [GQA](https://arxiv.org/abs/2305.13245) (arXiv:2305.13245);
+  DeepSeek-AI, [DeepSeek-V2](https://arxiv.org/abs/2405.04434) (MLA, arXiv:2405.04434);
+  Gemma Team, [Gemma 3 Technical Report](https://arxiv.org/abs/2503.19786) (5:1 local:global, p. 2, arXiv:2503.19786);
+  DeepSeek-AI, [DeepSeek-V3.2](https://arxiv.org/abs/2512.02556) (sparse attention, arXiv:2512.02556);
+  Yang et al., [Gated Delta Networks](https://arxiv.org/abs/2412.06464) (arXiv:2412.06464);
+  Lieber et al., [Jamba](https://arxiv.org/abs/2403.19887) (1:7 attention-to-Mamba, p. 3, arXiv:2403.19887);
+  Gu and Dao, [Mamba](https://arxiv.org/abs/2312.00752) (arXiv:2312.00752)
+
+</Callout>

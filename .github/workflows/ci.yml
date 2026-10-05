@@ -78,6 +78,8 @@ jobs:
         run: python scripts/build_models.py --check
       - name: Fixtures are up to date
         run: python scripts/make_fixtures.py --check
+      - name: Chapter data and fixtures are up to date
+        run: python scripts/make_chapter_fixtures.py --check
       - name: Gallery coverage
         run: python scripts/coverage.py
       - name: Schema, provenance, sources and reference-model tests
@@ -123,7 +125,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      # Starts `pnpm start`, audits four pages three times each, and fails on
+      # Starts `pnpm start`, audits seven pages three times each, and fails on
       # any category below 0.9 (lighthouserc.json).
       - run: pnpm lighthouse
 

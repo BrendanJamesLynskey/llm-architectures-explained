@@ -36,6 +36,7 @@ export function LineChart({
   formatX,
   formatY,
   title,
+  yTicks = logTicks,
 }: {
   series: Series[];
   xLabel: string;
@@ -43,6 +44,8 @@ export function LineChart({
   formatX: (v: number) => string;
   formatY: (v: number) => string;
   title: string;
+  /** Tick positions on the y axis (default: powers of ten). */
+  yTicks?: (lo: number, hi: number) => number[];
 }): JSX.Element {
   const pts = series
     .flatMap((s) => s.points)
@@ -99,7 +102,7 @@ export function LineChart({
           </text>
         </g>
       ))}
-      {logTicks(10 ** ly0, 10 ** ly1).map((t) => (
+      {yTicks(10 ** ly0, 10 ** ly1).map((t) => (
         <g key={`y${t}`}>
           <line
             x1={M.l}
@@ -165,10 +168,29 @@ export function LineChart({
   );
 }
 
+/** Powers of two between lo and hi, at most about six of them: byte axes. */
+export function binaryTicks(lo: number, hi: number): number[] {
+  const a = Math.ceil(Math.log2(lo));
+  const b = Math.floor(Math.log2(hi));
+  const step = Math.max(1, Math.ceil((b - a + 1) / 6));
+  const out: number[] = [];
+  for (let e = b; e >= a; e -= step) out.push(2 ** e);
+  return out.reverse();
+}
+
 /** Colours for up to four compared models (distinct in light and dark). */
 export const SERIES_COLOURS = [
   "#4f46e5",
   "#e11d48",
   "#059669",
   "#d97706",
+] as const;
+
+/** Colours for up to eight series (the chapter interactives); the first four are SERIES_COLOURS. */
+export const PALETTE = [
+  ...SERIES_COLOURS,
+  "#0891b2",
+  "#9333ea",
+  "#65a30d",
+  "#78716c",
 ] as const;

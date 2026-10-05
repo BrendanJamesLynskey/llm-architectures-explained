@@ -11,6 +11,13 @@ export default function HomePage(): JSX.Element {
   const s = stats();
   const ENTRY = [
     {
+      href: "/learn",
+      title: "Nine ways models differ",
+      blurb:
+        "One chapter per axis of variation, from attention to the causal encoder-decoder, each with a live interactive and the models that use it.",
+      cta: "Start learning →",
+    },
+    {
       href: "/models",
       title: "Every model",
       blurb: `${s.models} models in one table: size, depth, width, attention, KV cache per token. Filter by any design choice.`,
@@ -71,7 +78,10 @@ export default function HomePage(): JSX.Element {
           </div>
         ))}
       </dl>
-      <nav aria-label="Ways in" className="mt-12 grid gap-4 sm:grid-cols-3">
+      <nav
+        aria-label="Ways in"
+        className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+      >
         {ENTRY.map((e) => (
           <Link
             key={e.href}

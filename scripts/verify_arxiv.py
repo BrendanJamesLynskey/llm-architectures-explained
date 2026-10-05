@@ -1,4 +1,4 @@
-"""Check every arXiv identifier the data cites at export.arxiv.org and record
+"""Check every arXiv identifier the data and the chapters cite at export.arxiv.org and record
 its title, first author and submission date in data/sources/arxiv.json.
 
     python scripts/verify_arxiv.py          # network; rewrites the record
@@ -29,6 +29,8 @@ def cited() -> list[str]:
     for p in (ROOT / "data/transcribed").glob("*.json"):
         ids.update(re.findall(r"arxiv\.org/abs/(\d{4}\.\d{4,5})", p.read_text()))
         ids.update(re.findall(r"arXiv (\d{4}\.\d{4,5})", p.read_text()))
+    for p in (ROOT / "content/chapters").glob("*.mdx"):
+        ids.update(re.findall(r"arxiv\.org/abs/(\d{4}\.\d{4,5})", p.read_text()))
     for p in (ROOT / "data/models").glob("*.yaml"):
         m = yaml.safe_load(p.read_text())
         for s in m["sources"].values():

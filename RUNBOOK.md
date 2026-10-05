@@ -39,9 +39,12 @@ rendered real data: each model page's name and provenance chips, its
 diagram when the model has dimensions, and its labelled estimates when it
 has any. It also fetches `/data/specs.json`, the compare tool's data, checks
 it holds every model, and runs the cost model on DeepSeek-V3 from it (671B
-expected). Then open `/compare` in a browser and change the context slider
-and the estimates toggle: the tool runs client-side, which the smoke check
-can't see.
+expected). It checks every chapter rendered its MDX, and that the CED
+simulator's recorded results and four workloads are served at the vendored
+engine's commit. Then open `/compare` in a browser and change the context
+slider and the estimates toggle, and on `/learn/09-encoder-decoder-and-ced`
+pick 2048 : 512 and press **Re-measure live** (all 15 cells must show ✓):
+the interactives run client-side, which the smoke check can't see.
 
 ## 3. Read the logs
 
