@@ -13,6 +13,7 @@ import {
   GALLERY_URL,
   GITHUB_URL,
   INFERENCE_URL,
+  KERNELS_URL,
   repoFile,
 } from "@/lib/site";
 import { stats, weightChecks } from "@/lib/stats";
@@ -40,16 +41,20 @@ export default function AboutPage(): JSX.Element {
       <div className="mdx-content mt-6">
         <p>
           <strong>LLM Architectures Explained</strong> records how {s.models}{" "}
-          language models are built and what that costs. It is the third of
-          three companion sites: the{" "}
+          language models are built and what that costs. It is the third of a
+          family of companion sites: the{" "}
           <a className={A} href={DECODER_URL}>
             Transformer Decoder Explainer
           </a>{" "}
-          shows one forward pass, and{" "}
+          shows one forward pass,{" "}
           <a className={A} href={INFERENCE_URL}>
             LLM Inference Explained
           </a>{" "}
-          shows how a model is served. This one shows how the models themselves
+          shows how a model is served, and{" "}
+          <a className={A} href={KERNELS_URL}>
+            GPU Kernels Explained
+          </a>{" "}
+          shows how a GPU executes it. This one shows how the models themselves
           differ.
         </p>
 

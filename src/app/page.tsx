@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { stats } from "@/lib/stats";
-import { DECODER_URL, INFERENCE_URL } from "@/lib/site";
+import { DECODER_URL, INFERENCE_URL, KERNELS_URL } from "@/lib/site";
 
 /**
  * Landing page: what the site is, how much it covers, and the ways in.
@@ -99,21 +99,29 @@ export default function HomePage(): JSX.Element {
         ))}
       </nav>
       <p className="mt-12 text-sm text-neutral-600 dark:text-neutral-400">
-        Part of a family of three sites: the{" "}
+        Part of a family of companion sites: the{" "}
         <a
           href={DECODER_URL}
           className="focus-ring rounded underline decoration-accent/40 underline-offset-4 hover:decoration-accent"
         >
           Transformer Decoder Explainer
         </a>{" "}
-        (one forward pass) and{" "}
+        (one forward pass),{" "}
         <a
           href={INFERENCE_URL}
           className="focus-ring rounded underline decoration-accent/40 underline-offset-4 hover:decoration-accent"
         >
           LLM Inference Explained
         </a>{" "}
-        (serving it). How this site was built, and how to check its data:{" "}
+        (serving it) and{" "}
+        <a
+          href={KERNELS_URL}
+          className="focus-ring rounded underline decoration-accent/40 underline-offset-4 hover:decoration-accent"
+        >
+          GPU Kernels Explained
+        </a>{" "}
+        (how a GPU executes it). How this site was built, and how to check its
+        data:{" "}
         <Link
           href="/about"
           className="focus-ring rounded underline decoration-accent/40 underline-offset-4 hover:decoration-accent"

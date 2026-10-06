@@ -9,12 +9,14 @@ parallel blocks, encoder-decoders and the causal encoder-decoder. **160
 models**, from the 2017 Transformer to this year's releases, every value
 traced to the model's own configuration, paper, model card or announcement.
 
-It is the third of three companion sites: the
+It is the third of a family of companion sites: the
 [Transformer Decoder Explainer](https://transformer-decoder-explained.vercel.app/)
 shows one forward pass, [LLM Inference Explained](https://llm-inference-explained.vercel.app/)
-shows how a model is served, and this site shows how the models themselves
-differ. The three share one design system and link to each other from the
-header ("Decoder · Inference · Architectures").
+shows how a model is served, this site shows how the models themselves
+differ, and [GPU Kernels Explained](https://gpu-kernels-explained.vercel.app/)
+shows how a GPU executes them. They share one design system and link to
+each other from the header ("Decoder · Inference · Architectures · Kernels ·
+Numerics · Silicon"; the last two are coming).
 
 **Live:** [llm-architectures-explained.vercel.app](https://llm-architectures-explained.vercel.app/)
 

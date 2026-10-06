@@ -88,3 +88,33 @@ test("every model page renders with provenance", async ({ page }) => {
     else expect(html, m.id).toContain('data-testid="no-arch"');
   }
 });
+
+test("the six-way site switch: a row on desktop, a dropdown on phones", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/");
+  const nav = page.getByRole("navigation", { name: "Companion sites" });
+  await expect(
+    nav.getByRole("link", { name: "Architectures" }),
+  ).toHaveAttribute("aria-current", "true");
+  await expect(nav.getByRole("link", { name: "Kernels" })).toHaveAttribute(
+    "href",
+    "https://gpu-kernels-explained.vercel.app",
+  );
+  await expect(nav.getByRole("link", { name: /Numerics/ })).toHaveCount(0);
+  await page.setViewportSize({ width: 390, height: 800 });
+  const compact = page.locator("[data-site-switch='compact']");
+  await expect(compact).toBeVisible();
+  await compact.locator("summary").click();
+  const box = await compact
+    .getByRole("link", { name: "Decoder" })
+    .boundingBox();
+  expect(box!.height).toBeGreaterThanOrEqual(44);
+  const overflow = await page.evaluate(
+    () =>
+      document.scrollingElement!.scrollWidth -
+      document.scrollingElement!.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
+});
