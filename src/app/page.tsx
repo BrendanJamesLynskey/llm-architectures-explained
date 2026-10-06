@@ -6,6 +6,7 @@ import {
   INFERENCE_URL,
   KERNELS_URL,
   NUMERICS_URL,
+  SILICON_URL,
 } from "@/lib/site";
 
 /**
@@ -125,15 +126,22 @@ export default function HomePage(): JSX.Element {
         >
           GPU Kernels Explained
         </a>{" "}
-        (how a GPU executes it) and{" "}
+        (how a GPU executes it),{" "}
         <a
           href={NUMERICS_URL}
           className="focus-ring rounded underline decoration-accent/40 underline-offset-4 hover:decoration-accent"
         >
           Numerics Explained
         </a>{" "}
-        (the number formats it runs in). How this site was built, and how to
-        check its data:{" "}
+        (the number formats it runs in) and{" "}
+        <a
+          href={SILICON_URL}
+          className="focus-ring rounded underline decoration-accent/40 underline-offset-4 hover:decoration-accent"
+        >
+          Systolic Arrays Explained
+        </a>{" "}
+        (the matrix hardware of TPUs). How this site was built, and how to check
+        its data:{" "}
         <Link
           href="/about"
           className="focus-ring rounded underline decoration-accent/40 underline-offset-4 hover:decoration-accent"

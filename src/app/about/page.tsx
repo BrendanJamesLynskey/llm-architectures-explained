@@ -15,6 +15,7 @@ import {
   INFERENCE_URL,
   KERNELS_URL,
   NUMERICS_URL,
+  SILICON_URL,
   repoFile,
 } from "@/lib/site";
 import { stats, weightChecks } from "@/lib/stats";
@@ -55,11 +56,15 @@ export default function AboutPage(): JSX.Element {
           <a className={A} href={KERNELS_URL}>
             GPU Kernels Explained
           </a>{" "}
-          shows how a GPU executes it, and{" "}
+          shows how a GPU executes it,{" "}
           <a className={A} href={NUMERICS_URL}>
             Numerics Explained
           </a>{" "}
-          shows the number formats it runs in. This one shows how the models
+          shows the number formats it runs in, and{" "}
+          <a className={A} href={SILICON_URL}>
+            Systolic Arrays Explained
+          </a>{" "}
+          shows the matrix hardware of TPUs. This one shows how the models
           themselves differ.
         </p>
 
