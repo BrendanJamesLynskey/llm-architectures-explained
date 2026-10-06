@@ -16,7 +16,8 @@ shows how a model is served, this site shows how the models themselves
 differ, and [GPU Kernels Explained](https://gpu-kernels-explained.vercel.app/)
 shows how a GPU executes them. They share one design system and link to
 each other from the header ("Decoder · Inference · Architectures · Kernels ·
-Numerics · Silicon"; the last two are coming).
+Numerics · Silicon"; the last is coming). [Numerics Explained](https://numerics-explained.vercel.app/)
+covers number formats and quantisation.
 
 **Live:** [llm-architectures-explained.vercel.app](https://llm-architectures-explained.vercel.app/)
 

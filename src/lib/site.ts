@@ -10,6 +10,7 @@ export const SITE_URL = "https://llm-architectures-explained.vercel.app";
 export const DECODER_URL = "https://transformer-decoder-explained.vercel.app";
 export const INFERENCE_URL = "https://llm-inference-explained.vercel.app";
 export const KERNELS_URL = "https://gpu-kernels-explained.vercel.app";
+export const NUMERICS_URL = "https://numerics-explained.vercel.app";
 
 export const GITHUB_URL =
   "https://github.com/BrendanJamesLynskey/llm-architectures-explained";
