@@ -1,7 +1,12 @@
 import Link from "next/link";
 
 import { stats } from "@/lib/stats";
-import { DECODER_URL, INFERENCE_URL, KERNELS_URL } from "@/lib/site";
+import {
+  DECODER_URL,
+  INFERENCE_URL,
+  KERNELS_URL,
+  NUMERICS_URL,
+} from "@/lib/site";
 
 /**
  * Landing page: what the site is, how much it covers, and the ways in.
@@ -113,15 +118,22 @@ export default function HomePage(): JSX.Element {
         >
           LLM Inference Explained
         </a>{" "}
-        (serving it) and{" "}
+        (serving it),{" "}
         <a
           href={KERNELS_URL}
           className="focus-ring rounded underline decoration-accent/40 underline-offset-4 hover:decoration-accent"
         >
           GPU Kernels Explained
         </a>{" "}
-        (how a GPU executes it). How this site was built, and how to check its
-        data:{" "}
+        (how a GPU executes it) and{" "}
+        <a
+          href={NUMERICS_URL}
+          className="focus-ring rounded underline decoration-accent/40 underline-offset-4 hover:decoration-accent"
+        >
+          Numerics Explained
+        </a>{" "}
+        (the number formats it runs in). How this site was built, and how to
+        check its data:{" "}
         <Link
           href="/about"
           className="focus-ring rounded underline decoration-accent/40 underline-offset-4 hover:decoration-accent"

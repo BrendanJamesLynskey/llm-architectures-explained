@@ -14,6 +14,7 @@ import {
   GITHUB_URL,
   INFERENCE_URL,
   KERNELS_URL,
+  NUMERICS_URL,
   repoFile,
 } from "@/lib/site";
 import { stats, weightChecks } from "@/lib/stats";
@@ -50,12 +51,16 @@ export default function AboutPage(): JSX.Element {
           <a className={A} href={INFERENCE_URL}>
             LLM Inference Explained
           </a>{" "}
-          shows how a model is served, and{" "}
+          shows how a model is served,{" "}
           <a className={A} href={KERNELS_URL}>
             GPU Kernels Explained
           </a>{" "}
-          shows how a GPU executes it. This one shows how the models themselves
-          differ.
+          shows how a GPU executes it, and{" "}
+          <a className={A} href={NUMERICS_URL}>
+            Numerics Explained
+          </a>{" "}
+          shows the number formats it runs in. This one shows how the models
+          themselves differ.
         </p>
 
         <h2>Where every value comes from</h2>
