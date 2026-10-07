@@ -16,6 +16,7 @@ import {
   KERNELS_URL,
   NUMERICS_URL,
   SILICON_URL,
+  TRADEOFFS_URL,
   repoFile,
 } from "@/lib/site";
 import { stats, weightChecks } from "@/lib/stats";
@@ -60,12 +61,16 @@ export default function AboutPage(): JSX.Element {
           <a className={A} href={NUMERICS_URL}>
             Numerics Explained
           </a>{" "}
-          shows the number formats it runs in, and{" "}
+          shows the number formats it runs in,{" "}
           <a className={A} href={SILICON_URL}>
             Systolic Arrays Explained
           </a>{" "}
-          shows the matrix hardware of TPUs. This one shows how the models
-          themselves differ.
+          shows the matrix hardware of TPUs, and{" "}
+          <a className={A} href={TRADEOFFS_URL}>
+            Inference Trade-offs Explained
+          </a>{" "}
+          measures which serving lever helps which metric. This one shows how
+          the models themselves differ.
         </p>
 
         <h2>Where every value comes from</h2>
