@@ -15,8 +15,12 @@ shows one forward pass, [LLM Inference Explained](https://llm-inference-explaine
 shows how a model is served, this site shows how the models themselves
 differ, and [GPU Kernels Explained](https://gpu-kernels-explained.vercel.app/)
 shows how a GPU executes them. They share one design system and link to
-each other from the header ("Decoder · Inference · Architectures · Kernels ·
-Numerics · Silicon · Trade-offs"). [Numerics Explained](https://numerics-explained.vercel.app/)
+each other from the header, in two groups:
+"LLM systems" (Decoder · Inference · Architectures · Kernels · Numerics ·
+Silicon · Trade-offs) and "Agents", which starts with
+[Agent Harnesses Explained](https://agent-harnesses-explained.vercel.app/)
+(the loop, tools, context and permissions that turn a model into an agent;
+five more agent sites are marked "soon"). [Numerics Explained](https://numerics-explained.vercel.app/)
 covers number formats and quantisation, and
 [Systolic Arrays Explained](https://systolic-arrays-explained.vercel.app/)
 the matrix hardware that runs the models' GEMMs;
