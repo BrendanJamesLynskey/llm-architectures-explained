@@ -16,10 +16,13 @@ shows how a model is served, this site shows how the models themselves
 differ, and [GPU Kernels Explained](https://gpu-kernels-explained.vercel.app/)
 shows how a GPU executes them. They share one design system and link to
 each other from the header ("Decoder · Inference · Architectures · Kernels ·
-Numerics · Silicon"). [Numerics Explained](https://numerics-explained.vercel.app/)
+Numerics · Silicon · Trade-offs"). [Numerics Explained](https://numerics-explained.vercel.app/)
 covers number formats and quantisation, and
 [Systolic Arrays Explained](https://systolic-arrays-explained.vercel.app/)
-the matrix hardware that runs the models' GEMMs.
+the matrix hardware that runs the models' GEMMs;
+[Inference Trade-offs Explained](https://inference-tradeoffs-explained.vercel.app/)
+measures serving levers such as MoE expert parallelism, speculative
+decoding with an MTP head and encoder-only (CED) prefill.
 
 **Live:** [llm-architectures-explained.vercel.app](https://llm-architectures-explained.vercel.app/)
 
