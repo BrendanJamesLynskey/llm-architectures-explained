@@ -15,16 +15,19 @@ shows one forward pass, [LLM Inference Explained](https://llm-inference-explaine
 shows how a model is served, this site shows how the models themselves
 differ, and [GPU Kernels Explained](https://gpu-kernels-explained.vercel.app/)
 shows how a GPU executes them. They share one design system and link to
-each other from the header, in two groups:
-"LLM systems" (Decoder · Inference · Architectures · Kernels · Numerics ·
-Silicon · Trade-offs ·
+each other from the header, in three groups:
+"Inference" (Decoder · Inference · Architectures · Kernels · Numerics ·
+Silicon · Trade-offs), "Training" (Training, the second part of the decoder
+site, marked "soon", and
 [Compute in transit](https://compute-in-transit-results.vercel.app/)) and "Agents", which starts with
 [Agent Harnesses Explained](https://agent-harnesses-explained.vercel.app/)
 (the loop, tools, context and permissions that turn a model into an agent;
 then [Agent Protocols Explained](https://agent-protocols-explained.vercel.app/),
 MCP and A2A on the wire;
 then [Agent Context Explained](https://agent-context-explained.vercel.app/),
-retrieval, memory and context engineering; three more agent sites are marked "soon"). [Numerics Explained](https://numerics-explained.vercel.app/)
+retrieval, memory and context engineering;
+then [Agent Orchestration Explained](https://agent-orchestration-explained.vercel.app/),
+graphs, multi-agent patterns and durable execution; two more agent sites are marked "soon"). [Numerics Explained](https://numerics-explained.vercel.app/)
 covers number formats and quantisation, and
 [Systolic Arrays Explained](https://systolic-arrays-explained.vercel.app/)
 the matrix hardware that runs the models' GEMMs;
