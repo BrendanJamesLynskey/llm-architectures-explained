@@ -29,6 +29,17 @@ const headers: Record<string, string> = process.env.VERCEL_BYPASS
   ? { "x-vercel-protection-bypass": process.env.VERCEL_BYPASS }
   : {};
 
+/** The four-track site switch, with this site's place on the button and in the header. */
+const SWITCH = [
+  'data-site-switch="menu"',
+  'data-site-group="foundations"',
+  'data-site-group="hardware"',
+  'data-site-key="decoder"',
+  'href="https://transformer-training-explained.vercel.app"',
+  'data-site-place="architectures"',
+  "data-site-brand",
+];
+
 async function checkPage(
   base: string,
   path: string,
@@ -102,6 +113,7 @@ async function main(): Promise<void> {
   const checks: Promise<Result>[] = [
     checkPage(base, "/", [
       "LLM Architectures Explained",
+      ...SWITCH,
       'data-testid="stats"',
     ]),
     checkPage(base, "/models", ['data-testid="model-table"', "DeepSeek-V3"]),
