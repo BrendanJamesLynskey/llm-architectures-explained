@@ -17,6 +17,12 @@ export const TRADEOFFS_URL = "https://inference-tradeoffs-explained.vercel.app";
 export const GITHUB_URL =
   "https://github.com/BrendanJamesLynskey/llm-architectures-explained";
 
+/** The author, credited in one quiet line at the foot of the About page. */
+export const AUTHOR = {
+  name: "Brendan Lynskey",
+  url: "https://github.com/BrendanJamesLynskey",
+} as const;
+
 /** Used as a checklist of model names only, and cited as related reading. */
 export const GALLERY_URL =
   "https://sebastianraschka.com/llm-architecture-gallery/";
