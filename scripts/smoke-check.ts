@@ -40,6 +40,7 @@ const SWITCH = [
   'data-site-key="decoder"',
   'href="https://transformer-training-explained.vercel.app"',
   'data-site-place="architectures"',
+  'data-site-brand="true" class="focus-ring whitespace-nowrap rounded text-sm font-medium tracking-tight" href="/">LLM Architectures Explained</a>',
   "data-site-brand",
 ];
 

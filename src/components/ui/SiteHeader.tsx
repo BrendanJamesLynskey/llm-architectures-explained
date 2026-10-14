@@ -3,11 +3,12 @@
  *
  * Server Component, adapted from transformer-explainer's `SiteHeader`
  * (same layout and classes), as in LLM Inference Explained: no accounts,
- * so the sign-in controls are replaced by the cross-site switch.
+ * so the sign-in controls are replaced by the cross-site switch. The brand
+ * names the site; the switch's button says where it sits ("Track › Site").
  */
 import Link from "next/link";
 
-import { placeOf, SitePlace, SiteSwitch } from "./SiteSwitch";
+import { nameOf, placeOf, SiteSwitch } from "./SiteSwitch";
 
 const NAV = [
   { href: "/learn", label: "Learn" },
@@ -25,9 +26,9 @@ export function SiteHeader(): JSX.Element {
           href="/"
           title={placeOf("architectures").title}
           data-site-brand
-          className="focus-ring whitespace-nowrap rounded text-sm tracking-tight"
+          className="focus-ring whitespace-nowrap rounded text-sm font-medium tracking-tight"
         >
-          <SitePlace current="architectures" />
+          {nameOf("architectures")}
         </Link>
         <nav
           aria-label="Site"
