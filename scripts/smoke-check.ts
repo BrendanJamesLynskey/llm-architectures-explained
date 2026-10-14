@@ -23,6 +23,13 @@ import { params, type Spec } from "@/lib/arch/costModel";
 import { MODELS } from "@/lib/data";
 import { SECTIONS } from "@/lib/mdx/sections";
 
+/** The author credit: the last line of the About page (brief 35). */
+const CREDIT = [
+  'data-author-credit="true"',
+  "Written and built by",
+  'href="https://github.com/BrendanJamesLynskey">Brendan Lynskey</a>',
+];
+
 type Result = { path: string; ok: boolean; detail: string };
 
 const headers: Record<string, string> = process.env.VERCEL_BYPASS
@@ -123,7 +130,7 @@ async function main(): Promise<void> {
     checkPage(base, "/models", ['data-testid="model-table"', "DeepSeek-V3"]),
     checkPage(base, "/compare", ["Compare and calculate"]),
     checkPage(base, "/timeline", ["How the variations spread"]),
-    checkPage(base, "/about", ["Where every value comes from"]),
+    checkPage(base, "/about", [...CREDIT, "Where every value comes from"]),
     checkSpecs(base),
     checkPage(
       base,
