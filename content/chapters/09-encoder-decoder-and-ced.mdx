@@ -51,7 +51,7 @@ that prefill skips is the more expensive one.
 **Then, what it does to a serving cluster.** Prefill and decode already run
 on separate GPU pools in disaggregated serving. If a prompt token costs half
 as much, the cluster needs fewer prefill GPUs for the same load, and the
-freed GPUs can decode. Brief 11 added a CED option to
+freed GPUs can decode. This series added a CED option to
 [Disaggregated_Inference_Sim](https://github.com/BrendanJamesLynskey/Disaggregated_Inference_Sim)
 to measure that, with two placements of the 128-token replay: on the
 prefill instance (the paper's), or as the decode instance's first step
