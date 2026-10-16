@@ -21,12 +21,13 @@ import {
   repoFile,
 } from "@/lib/site";
 import { stats, weightChecks } from "@/lib/stats";
+import { withShare } from "@/lib/share";
 
-export const metadata = {
+export const metadata = withShare("/about", {
   title: "About",
   description:
     "Where every value on LLM Architectures Explained comes from, how estimates are labelled, and how the cost model is checked.",
-};
+});
 
 const A =
   "focus-ring rounded text-accent underline underline-offset-2 dark:text-indigo-300";

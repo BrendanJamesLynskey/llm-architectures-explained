@@ -5,12 +5,13 @@
 import { ModelTable } from "@/components/interactive/ModelTable";
 import { toRow } from "@/lib/arch/rows";
 import { MODELS } from "@/lib/data";
+import { withShare } from "@/lib/share";
 
-export const metadata = {
+export const metadata = withShare("/models", {
   title: "Models",
   description:
     "Every model in the data set: size, depth, width, attention, KV cache per token and context, with filters.",
-};
+});
 
 export default function ModelsPage(): JSX.Element {
   const rows = MODELS.map(toRow);

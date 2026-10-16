@@ -1,6 +1,9 @@
+import type { Route } from "next";
 import Link from "next/link";
 
-import { stats } from "@/lib/stats";
+import { CheckedStrip, StartButton } from "@/components/ui/Landing";
+import { SECTIONS } from "@/lib/mdx/sections";
+import { stats, weightChecks } from "@/lib/stats";
 
 /**
  * Landing page: what the site is, how much it covers, and the ways in.
@@ -8,6 +11,7 @@ import { stats } from "@/lib/stats";
  */
 export default function HomePage(): JSX.Element {
   const s = stats();
+  const w = weightChecks();
   const ENTRY = [
     {
       href: "/learn",
@@ -45,38 +49,65 @@ export default function HomePage(): JSX.Element {
       <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">
         How language-model architectures differ, model by model.
       </h1>
-      <p className="mt-6 max-w-3xl text-lg text-neutral-600 dark:text-neutral-300">
-        Every large language model is a stack of the same few parts, chosen
-        differently: how attention shares its keys and values, how positions are
-        encoded, where the norms sit, whether the feed-forward block is one
-        network or many experts, how deep and how wide. This site records those
-        choices for {s.models} models, each value traced to the model&rsquo;s
-        own configuration, paper or announcement, and computes what they cost.
-      </p>
-      <dl
-        className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4"
-        data-testid="stats"
-      >
-        {[
-          [String(s.models), "models"],
-          [`${s.gallery}/${s.gallery}`, "gallery checklist names covered"],
-          [String(s.pinned), "configs pinned to a Hugging Face commit"],
-          [
-            String(s.closed),
-            "closed models, sizes not disclosed unless stated",
-          ],
-        ].map(([v, l]) => (
-          <div
-            key={l}
-            className="rounded-lg border border-neutral-200 p-4 dark:border-neutral-800"
-          >
-            <dt className="text-xs text-neutral-600 dark:text-neutral-400">
-              {l}
-            </dt>
-            <dd className="mt-1 font-mono text-2xl">{v}</dd>
+      <div className="mt-6 grid items-start gap-8 md:grid-cols-[1fr_minmax(0,22rem)]">
+        <div>
+          <p className="max-w-2xl text-lg text-neutral-600 dark:text-neutral-300">
+            An interactive guide built from the recorded design choices of{" "}
+            {s.models} models, every value traced to its source, with a tested
+            cost model.
+          </p>
+          <div className="mt-6">
+            <StartButton href={`/learn/${SECTIONS[0]!.slug}` as Route} />
           </div>
-        ))}
-      </dl>
+        </div>
+        <dl
+          data-hero-figure
+          className="grid grid-cols-2 gap-3"
+          data-testid="stats"
+        >
+          {[
+            [String(s.models), "models"],
+            [
+              `${s.gallery}/${s.gallery}`,
+              "models of a public architecture gallery, all covered",
+            ],
+            [String(s.pinned), "configs pinned to a Hugging Face commit"],
+            [
+              String(s.closed),
+              "closed models, sizes not disclosed unless stated",
+            ],
+          ].map(([v, l]) => (
+            <div
+              key={l}
+              className="rounded-lg border border-neutral-200 p-4 dark:border-neutral-800"
+            >
+              <dt className="text-xs text-neutral-600 dark:text-neutral-400">
+                {l}
+              </dt>
+              <dd className="mt-1 font-mono text-2xl">{v}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+      <CheckedStrip href="/about#checks">
+        Every value links to its source, and the modelled parameter count of{" "}
+        {w.within} of the {w.compared} open models whose published weights can
+        be counted is within 0.5% of those weights at a pinned commit.
+      </CheckedStrip>
+      <section aria-labelledby="learn-heading" className="mt-12">
+        <h2 id="learn-heading" className="text-xl font-semibold tracking-tight">
+          What you&apos;ll learn
+        </h2>
+        <p className="mt-4 max-w-3xl text-neutral-600 dark:text-neutral-300">
+          Every large language model is a stack of the same few parts, chosen
+          differently: how attention shares its keys and values, how positions
+          are encoded, where the norms sit, whether the feed-forward block is
+          one network or many experts, how deep and how wide. This site records
+          those choices for {s.models} models, each value traced to the
+          model&rsquo;s own configuration, paper or announcement, and computes
+          what they cost.
+        </p>
+      </section>
       <nav
         aria-label="Ways in"
         className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"

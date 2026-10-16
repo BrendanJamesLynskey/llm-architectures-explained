@@ -10,10 +10,11 @@ import type { ReactNode } from "react";
 
 import { SiteHeader } from "@/components/ui/SiteHeader";
 import { SITE_URL } from "@/lib/site";
+import { withShare } from "@/lib/share";
 
 import "./globals.css";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withShare("/", {
   metadataBase: new URL(SITE_URL),
   title: {
     default: "LLM Architectures Explained",
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
   },
   description:
     "How LLM architectures differ: attention, positions, normalisation, mixture-of-experts, depth and width, long context, multi-token prediction, looped and parallel blocks, and encoder–decoder designs, across 160 models with every fact sourced and a tested cost model.",
-};
+});
 
 export default function RootLayout({
   children,

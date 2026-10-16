@@ -14,12 +14,13 @@ import {
   released,
 } from "@/lib/arch/features";
 import { byRelease } from "@/lib/data";
+import { withShare } from "@/lib/share";
 
-export const metadata = {
+export const metadata = withShare("/timeline", {
   title: "Timeline",
   description:
     "When each architectural variation appears across 160 language models, from 2017 to today.",
-};
+});
 
 const ROWS: FeatureId[] = [
   "encoder-decoder",

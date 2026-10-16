@@ -36,6 +36,7 @@ import {
 } from "@/lib/arch/format";
 import type { Field, ModelRecord, Position } from "@/lib/arch/types";
 import { MODELS, getModel } from "@/lib/data";
+import { withShare } from "@/lib/share";
 
 export function generateStaticParams(): { id: string }[] {
   return MODELS.map((m) => ({ id: m.id }));
@@ -48,10 +49,10 @@ export function generateMetadata({
 }): Metadata {
   const m = getModel(p.id);
   return m
-    ? {
+    ? withShare(`/models/${p.id}`, {
         title: m.name,
         description: `${m.name} (${m.lab}): architecture, sources and modelled costs.`,
-      }
+      })
     : {};
 }
 
