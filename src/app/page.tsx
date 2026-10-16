@@ -94,7 +94,8 @@ export default function HomePage(): JSX.Element {
         className="mt-4 max-w-3xl rounded-lg bg-neutral-50 p-4 text-sm text-neutral-700 dark:bg-neutral-900 dark:text-neutral-300"
       >
         <strong>Original result.</strong> A causal encoder-decoder, whose prompt
-        tokens touch about half the parameters, serves {ced.lo}× to {ced.hi}×
+        tokens touch about half the parameters, serves{" "}
+        {`${ced.lo}× to ${ced.hi}×`}
         the load of the same-sized decoder-only model at the same SLOs, in this
         site&rsquo;s run of a disaggregated-serving simulator&rsquo;s capacity
         search (four prompt-to-output mixes, six 4×H100 instances).{" "}
