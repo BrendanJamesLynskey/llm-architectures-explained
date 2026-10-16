@@ -68,3 +68,17 @@ export const CedSimulatorWidget = dynamic(
   () => import("./CedSimulatorWidget"),
   { ssr: false, loading: loading("simulator") },
 );
+
+// brief 41: the chapter heroes (driven by src/lib/chapters/visuals.ts)
+export const RopePhasorWidget = dynamic(() => import("./RopePhasorWidget"), {
+  ssr: false,
+  loading: loading("animation"),
+});
+export const HeadSharingWidget = dynamic(() => import("./HeadSharingWidget"), {
+  ssr: false,
+  loading: loading("animation"),
+});
+export const MoeRoutingWidget = dynamic(() => import("./MoeRoutingWidget"), {
+  ssr: false,
+  loading: loading("animation"),
+});

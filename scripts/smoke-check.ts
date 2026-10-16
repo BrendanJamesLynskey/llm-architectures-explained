@@ -125,7 +125,9 @@ async function main(): Promise<void> {
     checkPage(base, "/", [
       "LLM Architectures Explained",
       ...SWITCH,
-      'data-testid="stats"',
+      // brief 41: the landing hero and the CED result
+      "data-kv-landscape",
+      "data-ced-result",
     ]),
     checkPage(base, "/models", ['data-testid="model-table"', "DeepSeek-V3"]),
     checkPage(base, "/compare", ["Compare and calculate"]),

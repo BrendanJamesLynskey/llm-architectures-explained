@@ -18,6 +18,11 @@ import {
   NormWidget,
   RopeWidget,
 } from "@/components/interactive/lazy";
+import {
+  HeadSharing,
+  MoeRouting,
+  RopePhasors,
+} from "@/components/interactive/Visuals";
 import { ModelsWith } from "@/components/mdx/ModelsWith";
 import { Callout } from "@/components/ui/Callout";
 import { MdxTable } from "@/components/ui/MdxTable";
@@ -37,4 +42,8 @@ export const mdxComponents: NonNullable<MDXRemoteProps["components"]> = {
   LoopWidget,
   CedCostWidget,
   CedSimulatorWidget,
+  // brief 41: the chapter heroes
+  HeadSharing,
+  RopePhasors,
+  MoeRouting,
 };

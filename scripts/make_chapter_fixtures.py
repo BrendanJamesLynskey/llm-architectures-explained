@@ -26,6 +26,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path[:0] = [str(ROOT / "reference"), str(ROOT / "scripts")]
 import arch_model as am  # noqa: E402
 import chapter_model as cm  # noqa: E402
+import visuals as vz  # noqa: E402
 from build_models import strip  # noqa: E402
 
 CONTEXTS = [1024.0, 8192.0, 32768.0, 131072.0, 1048576.0]
@@ -79,7 +80,18 @@ NORM_GRID = [(p, layers, g) for p in cm.PLACEMENTS for layers in (6, 32, 80) for
 MTP_ACCEPT = [0.6, 0.85, 0.9]
 
 
-def build() -> tuple[str, str]:
+def round12(x):
+    """Floats to 12 significant digits (sin, cos, exp and pow may differ in the last bit between libms)."""
+    if isinstance(x, float):
+        return float(f"{x:.12g}")
+    if isinstance(x, list):
+        return [round12(v) for v in x]
+    if isinstance(x, dict):
+        return {k: round12(v) for k, v in x.items()}
+    return x
+
+
+def build() -> tuple[str, str, str]:
     base_id = "llama-3-8b"
     base = spec_of(load(base_id))
     variants = cm.attention_variants(base)
@@ -134,15 +146,18 @@ def build() -> tuple[str, str]:
     dec = cm.as_decoder(ced_spec)
     fx["ced"] = {"as_decoder": dec, "ced": costs(ced_spec), "decoder": costs(dec), "t5": costs(t5_spec)}
     dump = lambda x: json.dumps(x, separators=(",", ":")) + "\n"  # noqa: E731
-    return dump(data), dump(fx)
+    # brief 41: the animations' states, in a file of their own (the two above are unchanged)
+    visuals = round12(vz.build(json.loads(dump(data))))
+    return dump(data), dump(fx), dump(visuals)
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--check", action="store_true")
     a = ap.parse_args()
-    data, fx = build()
-    targets = [(ROOT / "src/data/chapters.json", data), (ROOT / "tests/fixtures/chapter_fixtures.json", fx)]
+    data, fx, visuals = build()
+    targets = [(ROOT / "src/data/chapters.json", data), (ROOT / "tests/fixtures/chapter_fixtures.json", fx),
+               (ROOT / "tests/fixtures/visual_fixtures.json", visuals)]
     if a.check:
         stale = [p for p, text in targets if not p.exists() or p.read_text() != text]  # noqa: E501
         for p, text in targets:
