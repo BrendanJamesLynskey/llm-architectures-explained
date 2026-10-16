@@ -1,0 +1,35 @@
+{
+  "note": "The animation frame, clock, palette, equation and controls of Inference Trade-offs Explained, copied byte for byte (brief 41) so this site's animations share the family's controls. tests/unit/anim/vendor.test.ts checks every hash.",
+  "repository": "https://github.com/BrendanJamesLynskey/inference-tradeoffs-explained",
+  "commit": "239d29b92bd359d3907f5b5c481dfc627c257ada",
+  "files": [
+    {
+      "path": "src/components/anim/AnimationPanel.tsx",
+      "sha256": "adca7f17a1b38f857ec6444499649e4f619a01cdee92667a0faefe4d4c2aa23a"
+    },
+    {
+      "path": "src/components/anim/useStepper.ts",
+      "sha256": "82d09f5c15aa1561953fe912b95e8a6bc3998408a05187c12bb726080a6bb110"
+    },
+    {
+      "path": "src/components/anim/useTween.ts",
+      "sha256": "a59b3af79abfe7c200c8f5c17f86984a6ff739e674970e0773cd74db6c8a71ae"
+    },
+    {
+      "path": "src/lib/anim/clock.ts",
+      "sha256": "d1cf624e3f48118e1e8ab477f23019daff2eed4da755b24522ce71e83101370a"
+    },
+    {
+      "path": "src/lib/viz/palette.ts",
+      "sha256": "13e11ff4d7801c1c767bd6bbb45e2eae030fb4ae855ec6a1d0e73824ec88043b"
+    },
+    {
+      "path": "src/components/mdx/Eq.tsx",
+      "sha256": "2029b891f2c49625aa78fbf8232c02971ef8f16b2c96264696da92ed867efcba"
+    },
+    {
+      "path": "src/components/ui/Controls.tsx",
+      "sha256": "df8d039680fcd3909b3ff5c467a685e0fe3cd01a28186bf3bfa7433881f3f219"
+    }
+  ]
+}

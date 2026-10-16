@@ -8,6 +8,12 @@ chapter.
 
 </Callout>
 
+Tokens choosing their experts, step by step, and the bias trick that evens out the load.
+
+<MoeRouting />
+
+The routing above is a seeded toy, labelled as such: 8 experts and 64 tokens of 8 numbers, clustered on purpose so the load starts uneven. The rule, sigmoid affinities, top-k with a per-expert bias used only for the choice and nudged after every step, is DeepSeek-V3's ([arXiv:2412.19437](https://arxiv.org/abs/2412.19437), section 2.1.2); the numbers are not a real model's.
+
 <Layer kind="concept">
 
 In a **dense** model every token runs every weight. In a **mixture of

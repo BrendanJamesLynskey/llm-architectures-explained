@@ -65,6 +65,40 @@ slide series and the
 | `/timeline`    | When each variation appears across the data set.                                                                                                                                                                                        |
 | `/about`       | Where every value comes from, how estimates are handled, the cost model's conventions and how it is checked.                                                                                                                            |
 
+## Animations
+
+Since brief 41 three chapters open with an animation (play, pause, step,
+scrub, 0.25–4× speed, keyboard; captions read out to screen readers; no
+autoplay with reduced motion), each a pure function of a tested model in
+`src/lib/chapters/visuals.ts`, ported from `reference/visuals.py`.
+`scripts/make_chapter_fixtures.py` writes the Python states to
+`tests/fixtures/visual_fixtures.json` (its `--check` covers them in CI);
+`tests/unit/chapters/visuals.test.ts` compares every state and
+`tests/e2e/visual-frames.spec.ts` the captions on the page. GIFs (WebM
+alongside) in [`docs/media/`](docs/media/):
+
+|                                                                             |                                                                |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| ![RoPE as a bank of phasors](docs/media/rope-phasors.gif)                   | ![MHA, GQA, MQA and MLA to scale](docs/media/head-sharing.gif) |
+| ![Routing tokens to experts and balancing them](docs/media/moe-routing.gif) |                                                                |
+
+- **Chapter 2, RoPE as phasors**: a head's 64 rotating pairs as dials,
+  the query's and the key's phasors turning at ω_i = θ^(−2i/d) per token,
+  and the score as the mean of cos(Δφ): move the query and it changes, move
+  both and it does not.
+- **Chapter 1, head sharing to scale**: 32 query heads joined to the K/V
+  units they read, and one token's KV cache as an area (the cost model's
+  bytes).
+- **Chapter 4, MoE routing**: 64 tokens a step to their top 2 of 8 experts
+  by sigmoid affinity, with DeepSeek-V3's auxiliary-loss-free bias
+  balancing the load (switch it off and the hot experts stay hot). The
+  token features are a seeded toy, labelled so in the chapter.
+
+The landing page draws every model with dimensions by release month and its
+KV cache per token at 32K (`src/lib/arch/landscape.ts`), and states the
+site's own CED result, read from the recorded capacity search
+(`src/lib/disagg/cedGains.ts`, checked against results.md's cells).
+
 ## Screenshots
 
 |                                                                                   |                                                                               |
@@ -206,15 +240,16 @@ the simulator runs in a Web Worker.
 Copied from [llm-inference-explained](https://github.com/BrendanJamesLynskey/llm-inference-explained)
 at commit `ff7d3bd`, which copied it from the explainer:
 
-| Here                                                                                                                                               | From                                                          |
-| -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| `tailwind.config.ts`, `src/app/globals.css`, `src/app/layout.tsx`                                                                                  | identical apart from titles                                   |
-| `src/components/ui/SiteHeader.tsx`                                                                                                                 | the same header; new navigation links                         |
-| `src/components/ui/SiteSwitch.tsx`                                                                                                                 | the same component on all three sites; only `current` differs |
-| `src/app/learn/`, `src/lib/mdx/`, `Layer.tsx`, `LayerToggle.tsx`, `MdxTable.tsx`, `scripts/vendor-sim-engine.ts`                                   | copied from llm-inference-explained (`ff7d3bd`)               |
-| `src/components/ui/Controls.tsx`, `WidgetFrame.tsx`, `Callout.tsx`                                                                                 | unchanged                                                     |
-| `.eslintrc.json`, `.prettierrc.json`, `tsconfig.json`, `vitest.config.ts`, `playwright.config.ts`, `lighthouserc.json`, `.github/workflows/ci.yml` | adapted (data job, new pages)                                 |
-| `scripts/smoke-check.ts`, `scripts/capture-screenshots.ts`, `RUNBOOK.md`                                                                           | adapted                                                       |
+| Here                                                                                                                                               | From                                                                                            |
+| -------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `tailwind.config.ts`, `src/app/globals.css`, `src/app/layout.tsx`                                                                                  | identical apart from titles                                                                     |
+| `src/components/ui/SiteHeader.tsx`                                                                                                                 | the same header; new navigation links                                                           |
+| `src/components/ui/SiteSwitch.tsx`                                                                                                                 | the same component on all three sites; only `current` differs                                   |
+| `src/app/learn/`, `src/lib/mdx/`, `Layer.tsx`, `LayerToggle.tsx`, `MdxTable.tsx`, `scripts/vendor-sim-engine.ts`                                   | copied from llm-inference-explained (`ff7d3bd`)                                                 |
+| `src/components/ui/WidgetFrame.tsx`, `Callout.tsx`                                                                                                 | unchanged                                                                                       |
+| `src/components/anim/`, `src/lib/anim/clock.ts`, `src/lib/viz/palette.ts`, `src/components/mdx/Eq.tsx`, `src/components/ui/Controls.tsx`           | inference-tradeoffs-explained `239d29b`, byte for byte (brief 41; `src/lib/anim/VENDORED.json`) |
+| `.eslintrc.json`, `.prettierrc.json`, `tsconfig.json`, `vitest.config.ts`, `playwright.config.ts`, `lighthouserc.json`, `.github/workflows/ci.yml` | adapted (data job, new pages)                                                                   |
+| `scripts/smoke-check.ts`, `scripts/capture-screenshots.ts`, `RUNBOOK.md`                                                                           | adapted                                                                                         |
 
 A shared npm package for the design system would be cleaner in principle;
 for three small sites, copying and recording the origin stays simpler.

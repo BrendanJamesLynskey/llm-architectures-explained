@@ -7,6 +7,12 @@ chapters.
 
 </Callout>
 
+Rotary position embedding as a bank of phasors: every pair of a head's dimensions is a clock, all running at once at different speeds.
+
+<RopePhasors />
+
+The animation's query and key are equal in every pair (unit vectors, the best case), so the score is the plain sum of cosines; real queries and keys add a length and a phase per pair, and the score still depends only on the distance.
+
 <Layer kind="concept">
 
 Attention on its own is blind to order: shuffle the cached keys and values
