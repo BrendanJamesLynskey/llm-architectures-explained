@@ -43,8 +43,8 @@ ones turn so slowly that they barely move across the whole context. A pair
 that turns less than once across the context still carries information,
 but only in its slow drift, and those are the dimensions that misbehave
 when a model reads past its training length. Raising θ stretches every
-wavelength. Mistral 7B's θ = 10,000 leaves 4 of its 64 pairs slower than a
-32K context; Qwen3 8B's θ = 1,000,000 leaves 24.
+wavelength. Mistral 7B v0.1's θ = 10,000 leaves 4 of its 64 pairs slower
+than a 32K context (v0.2 and later raised θ to 1,000,000); Qwen3 8B's θ = 1,000,000 leaves 24.
 
 </Layer>
 

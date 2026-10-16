@@ -30,7 +30,9 @@ models:
   keep its 1M-token cache to 80.4 GiB.
 - **Compress the cache.** DeepSeek-V3's MLA latent holds 68.6 GiB at 1M, but
   every token still reads all of it: 5.31 TFLOP per token, 98.6% attention
-  in this cost model's expanded form.
+  in this cost model's expanded form ([chapter 1](/learn/01-attention):
+  the absorbed form real decode kernels use does more attention arithmetic
+  still, so this is a lower bound).
 - **Read less of it.** DeepSeek-V3.2 adds an indexer that picks 2,048 cached
   tokens per query; at 1M tokens its decode drops to 1.13 TFLOP.
 - **Replace most layers with a fixed state.** Qwen3-Next (Gated DeltaNet,

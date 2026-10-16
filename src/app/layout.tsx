@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: "%s · LLM Architectures Explained",
   },
   description:
-    "How LLM architectures differ: attention, positions, normalisation, mixture-of-experts, depth and width, and more, across 160 models with every fact sourced and a tested cost model.",
+    "How LLM architectures differ: attention, positions, normalisation, mixture-of-experts, depth and width, long context, multi-token prediction, looped and parallel blocks, and encoder–decoder designs, across 160 models with every fact sourced and a tested cost model.",
 };
 
 export default function RootLayout({

@@ -61,8 +61,13 @@ Mamba-2 hybrid 2.06 GiB, almost all of it in its four global layers.
 - _Compare decode FLOPs at 128K._ The attention term is proportional to
   the tokens each query reads, so the sliding-window mix needs 26.2 GFLOP
   per token against GQA's 83.7. MLA needs more (101 GFLOP) in this cost
-  model, which counts its attention in the expanded form: MLA saves memory,
-  not arithmetic.
+  model, which counts its attention in the expanded form, as if every cached
+  latent had already been turned back into per-head keys and values (that
+  up-projection is not counted). Real decode kernels use the absorbed form,
+  which scores and sums over the 512-wide latent directly and does more
+  arithmetic per cached token: about 3.4 times the expanded count for
+  DeepSeek-V3's dimensions, $(2 \cdot 512 + 64)/(128 + 64 + 128)$. Either way,
+  MLA saves memory, not arithmetic.
 - _Switch the cache to FP8._ Every cache halves; the recurrent state is
   counted at its own precision.
 
