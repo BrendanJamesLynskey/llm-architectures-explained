@@ -5,12 +5,13 @@
 import Link from "next/link";
 
 import { CompareTool } from "@/components/interactive/lazy";
+import { withShare } from "@/lib/share";
 
-export const metadata = {
+export const metadata = withShare("/compare", {
   title: "Compare",
   description:
     "Compare up to four LLM architectures: diagrams, KV cache against context, and prefill and decode cost.",
-};
+});
 
 const A =
   "focus-ring rounded text-accent underline underline-offset-2 dark:text-indigo-300";
