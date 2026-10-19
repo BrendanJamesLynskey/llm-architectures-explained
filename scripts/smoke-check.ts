@@ -29,6 +29,12 @@ const CREDIT = [
   'href="https://brendanjameslynskey.github.io/">Brendan Lynskey</a>',
 ];
 
+/** The shared definitions link on /about (brief 44D). */
+const DEFINITIONS = [
+  "data-definitions-link",
+  'href="https://agent-harnesses-explained.vercel.app/definitions"',
+];
+
 type Result = { path: string; ok: boolean; detail: string };
 
 const headers: Record<string, string> = process.env.VERCEL_BYPASS
@@ -132,7 +138,11 @@ async function main(): Promise<void> {
     checkPage(base, "/models", ['data-testid="model-table"', "DeepSeek-V3"]),
     checkPage(base, "/compare", ["Compare and calculate"]),
     checkPage(base, "/timeline", ["How the variations spread"]),
-    checkPage(base, "/about", [...CREDIT, "Where every value comes from"]),
+    checkPage(base, "/about", [
+      ...CREDIT,
+      ...DEFINITIONS,
+      "Where every value comes from",
+    ]),
     checkSpecs(base),
     checkPage(
       base,
