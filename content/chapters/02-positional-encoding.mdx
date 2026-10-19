@@ -15,6 +15,8 @@ The animation's query and key are equal in every pair (unit vectors, the best ca
 
 <Layer kind="concept">
 
+<span id="h-order" />
+
 Attention on its own is blind to order: shuffle the cached keys and values
 and each query's output is unchanged. Position has to be put in somewhere,
 and the choices have changed more than once.
@@ -40,6 +42,8 @@ and the choices have changed more than once.
 - **NoPE layers** use no positional encoding at all; the causal mask alone
   lets a decoder infer order (Kazemnejad et al., 2023). Some recent models
   interleave NoPE layers with RoPE layers.
+
+<span id="h-theta" />
 
 RoPE has one knob that matters for long context: its **base θ**. Pair _i_
 of a head with _d_ rotated dimensions turns through an angle of
@@ -135,3 +139,70 @@ counts exactly.
   Peng et al., [YaRN](https://arxiv.org/abs/2309.00071) (wavelength rule, p. 5, arXiv:2309.00071)
 
 </Callout>
+
+<CheckYourself>
+
+<Check
+  id="h02-q1"
+  n={1}
+  input="number"
+  v="ch02.mistral32k"
+  fmt="int"
+  tol={0}
+  q="Mistral 7B v0.1 (θ = 10,000, 128-dimension heads): how many of its 64 RoPE pairs turn less than once across a 32K context?"
+  href="#h-theta"
+  more="The base θ"
+>
+  <V v="ch02.mistral32k" fmt="int" />: pair $i$'s wavelength is
+  $2\pi\theta^{2i/d}$ tokens, and only the slowest few exceed 32K.
+</Check>
+
+<Check
+  id="h02-q2"
+  n={2}
+  input="number"
+  v="ch02.qwen32k"
+  fmt="int"
+  tol={0}
+  q="And Qwen3 8B, with θ = 1,000,000?"
+  href="#h-theta"
+  more="The base θ"
+>
+  <V v="ch02.qwen32k" fmt="int" />: raising θ stretches every wavelength, a
+  hundred times at the slow end. Those slow pairs carry information only in
+  their drift.
+</Check>
+
+<Check
+  id="h02-q3"
+  n={3}
+  choices={[
+    "Their absolute positions",
+    "Only how far apart they are",
+    "Nothing: RoPE is applied after attention",
+  ]}
+  answer={1}
+  q="RoPE rotates each query and key by an angle proportional to its position. What does their dot product then depend on?"
+  href="#h-order"
+  more="Putting position in"
+>
+  Only the distance between them: rotating both by their positions leaves the
+  angle between them set by the difference, so each pair is a clock and the
+  score sums their phase differences.
+</Check>
+
+</CheckYourself>
+
+<Remember>
+
+- Attention alone is blind to order; position must be put in somewhere.
+- Learned and sinusoidal embeddings add a position vector; ALiBi and T5 bias the scores.
+- RoPE rotates query-key pairs so the score depends only on distance; almost every open model uses it.
+- The base θ sets the wavelengths: pairs slower than the context misbehave past the training length.
+
+<Keep>
+  RoPE pair $i$: $\theta^{-2i/d}$ radians per token, wavelength
+  $2\pi\theta^{2i/d}$ tokens.
+</Keep>
+
+</Remember>

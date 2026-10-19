@@ -14,6 +14,8 @@ Four ways to share keys and values across attention heads, drawn to scale: the s
 
 <Layer kind="concept">
 
+<span id="h-mixers" />
+
 The token mixer is the part of a block that lets a position read earlier
 positions. Since 2017 it has been the place where architectures differ
 most, and nearly every change has the same target: the **cache** a model
@@ -41,6 +43,8 @@ against it.
   are almost always mixed with some full-attention layers: Qwen3-Next uses
   three Gated DeltaNet layers per attention layer, Jamba seven Mamba layers
   per attention layer.
+
+<span id="h-one-body" />
 
 The interactive puts all eight on **one body**: Llama 3 8B's width, depth,
 feed-forward blocks and vocabulary, with only the token mixer swapped.
@@ -160,3 +164,68 @@ Qwen3-Next's. Parameter counts differ because the mixers' weights differ.
 - How attention runs on a GPU: GPU Kernels Explained, [Softmax and FlashAttention](https://gpu-kernels-explained.vercel.app/learn/09-softmax-and-flashattention) (the score matrix never reaches HBM) and [the roofline](https://gpu-kernels-explained.vercel.app/learn/02-roofline)
 
 </Callout>
+
+<CheckYourself>
+
+<Check
+  id="h01-q1"
+  n={1}
+  input="number"
+  v="ch01.gqa128k"
+  fmt="gib"
+  q="Llama 3 8B's body with grouped-query attention, a 128K-token context, BF16: how many GiB of KV cache per sequence?"
+  href="#h-one-body"
+  more="Eight mixers, one body"
+>
+  <V v="ch01.gqa128k" fmt="gib" />. Multi-head attention, with a key and value
+  head for every query head, would need <V v="ch01.mha128k" fmt="gib" />.
+</Check>
+
+<Check
+  id="h01-q2"
+  n={2}
+  input="number"
+  v="ch01.mhaOverGqa"
+  tol={0}
+  q="How many times larger is MHA's cache than GQA's on that body?"
+  href="#h-one-body"
+  more="Eight mixers, one body"
+>
+  Exactly <V v="ch01.mhaOverGqa" fmt="int" />: 32 query heads against 8
+  key/value heads.
+</Check>
+
+<Check
+  id="h01-q3"
+  n={3}
+  choices={[
+    "Both memory and arithmetic",
+    "Memory, not arithmetic",
+    "Arithmetic, not memory",
+  ]}
+  answer={1}
+  q="What does multi-head latent attention (MLA) save?"
+  href="#h-mixers"
+  more="The token mixers"
+>
+  Memory: one compressed latent per token per layer. Decode does more
+  arithmetic, not less: <V v="ch01.mlaFlops" fmt="gflop" /> per token at 128K in
+  this cost model against GQA's <V v="ch01.gqaFlops" fmt="gflop" />, and more
+  still in the absorbed form real kernels use.
+</Check>
+
+</CheckYourself>
+
+<Remember>
+
+- Almost every change to the token mixer targets the cache a model keeps per sequence.
+- MQA and GQA share key/value heads; MLA caches one compressed latent per token per layer.
+- Windows, sparse indexers and linear or state-space layers make most layers read or keep less.
+- Hybrids still keep some full-attention layers, so their cache still grows, from a lower level.
+
+<Keep>
+  KV cache per token per layer $= 2 \cdot h_{\text{KV}} \cdot d_{\text{head}}$
+  values for GQA; MHA has $h_{\text{KV}} = h$.
+</Keep>
+
+</Remember>

@@ -20,7 +20,7 @@ export const GITHUB_URL =
 /** The author, credited in one quiet line at the foot of the About page. */
 export const AUTHOR = {
   name: "Brendan Lynskey",
-  url: "https://github.com/BrendanJamesLynskey",
+  url: "https://brendanjameslynskey.github.io/",
 } as const;
 
 /** Used as a checklist of model names only, and cited as related reading. */

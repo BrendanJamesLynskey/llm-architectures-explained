@@ -8,6 +8,8 @@ chapter.
 
 <Layer kind="concept">
 
+<span id="h-stream" />
+
 Every block adds its sub-blocks' outputs (attention, then the feed-forward
 block) to a **residual stream** that runs from the embedding to the output
 head. Normalisation layers keep the numbers on that stream in range. They
@@ -39,6 +41,8 @@ sit decides whether a deep model trains at all.
   2's logit soft-capping with it.
 - **Parallel blocks** (chapter 8) feed one norm's output to attention and
   the feed-forward block side by side.
+
+<span id="h-variance" />
 
 The interactive runs the textbook variance argument behind those
 statements: a unit-size embedding, and every sub-block adding an output
@@ -114,3 +118,66 @@ shows the direction of each effect, not its size in any particular model.
   Gemma Team, [Gemma 3](https://arxiv.org/abs/2503.19786) (QK-norm replaces soft-capping, p. 2, arXiv:2503.19786)
 
 </Callout>
+
+<CheckYourself>
+
+<Check
+  id="h03-q1"
+  n={1}
+  input="number"
+  v="ch03.preRms"
+  fmt="d2"
+  q="Pre-norm, 32 layers, gain 1: how many times the embedding's size does the residual stream end?"
+  href="#h-variance"
+  more="The variance argument"
+>
+  <V v="ch03.preRms" fmt="d2" /> times: every sub-block adds an output
+  independent of the stream, and nothing normalises the stream itself.
+</Check>
+
+<Check
+  id="h03-q2"
+  n={2}
+  choices={[
+    "About an eighth, as in pre-norm",
+    "Practically nothing: 2^-32",
+    "All of it",
+  ]}
+  answer={1}
+  q="Post-LN keeps the stream's size at 1. How much of it is still the embedding at the top?"
+  href="#h-stream"
+  more="Where the norm sits"
+>
+  $2^{-32}$: every one of the dozens of norms rescales the whole stream, so
+  whatever the embedding put there is shrunk again at each.
+</Check>
+
+<Check
+  id="h03-q3"
+  n={3}
+  choices={["It doubles, like pre-norm's", "It does not move", "It halves"]}
+  answer={1}
+  q="Raise the sub-blocks' gain to 2. What happens to the stream with a norm on each sub-block's output?"
+  href="#h-variance"
+  more="The variance argument"
+>
+  It does not move: the output norm caps each sub-block's contribution, so the
+  stream stays at <V v="ch03.outRms2" fmt="d2" /> while pre-norm's grows to
+  <V v="ch03.preRms2" fmt="d2" />.
+</Check>
+
+</CheckYourself>
+
+<Remember>
+
+- Norms weigh almost nothing; where they sit decides whether a deep model trains.
+- Post-LN normalises after each residual add and needs a warm-up.
+- Pre-norm normalises each sub-block's input; the stream grows with depth and nothing caps a growing sub-block.
+- Sandwich, reordered and QK-norm cap what each sub-block adds.
+
+<Keep>
+  Pre-norm: $x \leftarrow x + f(\mathrm{LN}(x))$; output norm: $x \leftarrow x +
+  \mathrm{LN}(f(x))$.
+</Keep>
+
+</Remember>

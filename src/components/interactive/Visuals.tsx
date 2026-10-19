@@ -28,7 +28,7 @@ export function RopePhasors(): JSX.Element {
       equation={
         <Eq
           label="Pair i of the query at position m is rotated by m times omega i, with omega i equal to theta to the minus 2 i over d. The dot product of a rotated query and key is a sum over pairs of the product of their lengths times the cosine of (m minus n) omega i plus their phase difference: it depends only on m minus n."
-          tex={String.raw`\htmlClass{hl-a}{q^{(i)}_m = R(m\,\omega_i)\,q^{(i)}}, \quad \omega_i = \theta^{-2i/d}, \qquad \htmlClass{hl-p}{q_m \cdot k_n = \textstyle\sum_i \lvert q^{(i)} \rvert\, \lvert k^{(i)} \rvert \cos\!\big((m-n)\,\omega_i + \phi_i\big)}`}
+          tex={String.raw`\begin{gathered} \htmlClass{hl-a}{q^{(i)}_m = R(m\,\omega_i)\,q^{(i)}}, \quad \omega_i = \theta^{-2i/d} \\ \htmlClass{hl-p}{q_m \cdot k_n = \textstyle\sum_i \lvert q^{(i)} \rvert\, \lvert k^{(i)} \rvert \cos\!\big((m-n)\,\omega_i + \phi_i\big)} \end{gathered}`}
         />
       }
     />
