@@ -11,12 +11,16 @@ chapters.
 
 <Layer kind="concept">
 
+<span id="h-two-problems" />
+
 Reading a million tokens poses two separate problems.
 
 **Can the model use positions it never trained on?** That is a positional
 encoding question. Raising RoPE's base, interpolating positions, YaRN's
 per-wavelength rescaling (chapter 2) and NoPE layers all answer it, and
 none of them changes what a token costs.
+
+<span id="h-afford" />
 
 **Can anyone afford to run it?** That is an attention question. With
 full attention in every layer, the cache grows by the same amount for every
@@ -114,3 +118,73 @@ state = state + stateElems(spec, run);
   Grattafiori et al., [The Llama 3 Herd of Models](https://arxiv.org/abs/2407.21783) (arXiv:2407.21783)
 
 </Callout>
+
+<CheckYourself>
+
+<Check
+  id="h06-q1"
+  n={1}
+  input="number"
+  v="ch06.l405b1m"
+  fmt="gib"
+  q="Llama 3.1 405B (GQA in all 126 layers), BF16: how many GiB of cache for one 1M-token sequence?"
+  href="#h-afford"
+  more="Can anyone afford it?"
+>
+  <V v="ch06.l405b1m" fmt="gib" />, against <V v="ch06.l405b128k" fmt="gib" />{" "}
+  at 128K: full attention's cache grows by the same amount for every token.
+</Check>
+
+<Check
+  id="h06-q2"
+  n={2}
+  input="slider"
+  min={0}
+  max={100}
+  step={1}
+  v="ch06.l405bAttn1m"
+  fmt="pct1"
+  abs={4}
+  q="And at 1M tokens, what share of its decode FLOPs per token is attention?"
+  href="#h-afford"
+  more="Can anyone afford it?"
+>
+  <V v="ch06.l405bAttn1m" fmt="pct1" />: every new token reads the whole cache,
+  so at long context token mixing, not the weights, sets the cost.
+</Check>
+
+<Check
+  id="h06-q3"
+  n={3}
+  choices={[
+    "Raising RoPE's base",
+    "Windows, compressed caches, sparse reading or fixed-size states",
+    "A bigger vocabulary",
+  ]}
+  answer={1}
+  q="Which changes cut what a long-context token costs to run?"
+  href="#h-two-problems"
+  more="Two problems"
+>
+  The attention changes: windows, compressing the cache, reading less of it, or
+  replacing most layers with a fixed state. Positional fixes such as a larger
+  RoPE base let a model use positions; they change no cost. DeepSeek V4-Flash,
+  combining compression and sparsity, holds
+  <V v="ch06.v4flash1m" fmt="gib" /> at 1M.
+</Check>
+
+</CheckYourself>
+
+<Remember>
+
+- Long context is two problems: using unseen positions (positional encoding) and paying for them (attention).
+- With full attention every token adds the same cache and reads all of it.
+- Windows, compressed caches, sparse indexers and hybrid states are the answers to cost.
+- At 1M tokens even the most frugal models spend most of a decode step on token mixing.
+
+<Keep>
+  Full-attention decode at context $T$: cache $\propto T$, attention FLOPs per
+  token $\propto T$.
+</Keep>
+
+</Remember>

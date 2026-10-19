@@ -11,6 +11,8 @@ chapters.
 
 <Layer kind="concept">
 
+<span id="h-encdec" />
+
 **Encoder-decoder** was the original Transformer's shape, and T5's (Raffel
 et al., 2019): an **encoder** reads the whole input with bidirectional
 attention, and a **decoder** generates the output, attending causally to
@@ -19,6 +21,8 @@ encoder's output. Decoder-only models dropped the split: one causal stack
 reads the prompt and writes the answer. In this data set the original
 Transformer, T5 11B and Switch-C are encoder-decoders and BERT an encoder;
 every other model is a decoder, except one.
+
+<span id="h-ced" />
 
 DeepSeek-V4.1-Flash brings a split back, in a different form, for a
 different reason. Its **causal encoder-decoder (CED)** divides its 40 layers
@@ -34,6 +38,8 @@ replayed through the decoder, an approximation the paper simulates during
 post-training (section 3.2.2, p. 20). The idea, the paper says, was
 inspired by YOCO (Sun et al., 2024), whose "self-decoder" builds a cache
 that a "cross-decoder" reuses.
+
+<span id="h-saves" />
 
 First, what the split saves on the real model, by this site's cost model.
 At an 8K-token prompt, CED's prefill is 0.458 of the same stack run as a
@@ -66,6 +72,8 @@ with the replay on the prefill instance and 283.5 ms encoder-only, against
 564.3 ms. An encoder-only prefill instance also holds half the weights: on
 two H100s it has room for 220,048 tokens of cache, against 8,835 for the
 whole model.
+
+<span id="h-capacity" />
 
 The capacity search finds, for each split of six 4×H100 instances into
 prefill and decode pools, the highest load at which 90% of requests meet
@@ -163,3 +171,67 @@ for bit.
   SGLang, [RFC: Asymmetric P/D deployment for DeepSeek-V4.1 Flash](https://github.com/sgl-project/sglang/issues/39963)
 
 </Callout>
+
+<CheckYourself>
+
+<Check
+  id="h09-q1"
+  n={1}
+  input="number"
+  v="ch09.prefill8k"
+  fmt="d3"
+  tol={0.05}
+  q="On the real model at an 8K-token prompt, what fraction of the decoder-only stack's prefill FLOPs does CED's prefill need?"
+  href="#h-saves"
+  more="What the split saves"
+>
+  <V v="ch09.prefill8k" fmt="d3" />, and <V v="ch09.prefill1m" fmt="d3" /> at
+  1M: below one half, because the half that prefill skips is the more expensive
+  one in this model's layout.
+</Check>
+
+<Check
+  id="h09-q2"
+  n={2}
+  input="number"
+  v="ch09.gainPrefill"
+  fmt="x2"
+  tol={0.05}
+  q="In the simulator's capacity search at 2,048 : 512, how many times the decoder-only model's load does CED sustain, with the replay on prefill?"
+  href="#h-capacity"
+  more="The capacity search"
+>
+  <V v="ch09.gainPrefill" fmt="x2" />, and <V v="ch09.gainLong" fmt="x2" /> at
+  4,096 : 256: freed prefill GPUs become decode GPUs.
+</Check>
+
+<Check
+  id="h09-q3"
+  n={3}
+  choices={[
+    "A bug in the simulator",
+    "Queueing: with a fixed TTFT SLO, halving prefill service time cuts the queueing delay by more than half",
+    "CED skips decode",
+  ]}
+  answer={1}
+  q="Why can the capacity gain exceed 2× when CED only halves prefill?"
+  href="#h-capacity"
+  more="The capacity search"
+>
+  Queueing, not FLOPs: delay grows faster than linearly as a pool nears
+  saturation, so halving each prefill buys more than twice the sustainable load
+  under the same SLO.
+</Check>
+
+</CheckYourself>
+
+<Remember>
+
+- Encoder-decoders read with a bidirectional encoder and write with a decoder that cross-attends to it.
+- DeepSeek's causal encoder-decoder splits the layers so a prompt token needs only the encoder.
+- That nearly halves prefill; decode still runs the whole model.
+- In disaggregated serving, cheaper prefill frees GPUs for decode.
+
+<Keep>CED: prefill ≈ half the stack; decode = the whole stack.</Keep>
+
+</Remember>

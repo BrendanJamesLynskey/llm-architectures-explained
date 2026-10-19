@@ -10,6 +10,8 @@ chapter; the depth trade-offs of [chapter 5](/learn/05-depth-and-width).
 
 Two less common changes rearrange the blocks themselves.
 
+<span id="h-looped" />
+
 **Looped (recurrent-depth) models** run the same stack of layers more than
 once per token. The idea goes back to the Universal Transformer (Dehghani
 et al., 2018), "a parallel-in-time self-attentive recurrent sequence
@@ -20,12 +22,16 @@ interactive shows what it costs instead. Ouro 2.6B's 2.67B parameters stay
 put as the loops go from 1 to 4, while its decode FLOPs per token at an 8K
 context go from 8.36 to 32.8 GFLOP.
 
+<span id="h-loop-cache" />
+
 The cache depends on a choice. Each pass through the stack computes its own
 keys and values, so naively a four-pass model keeps four caches: 12 GiB
 instead of 3 GiB for one 8K-token sequence. Ouro's paper found that prefill
 needs all four, but that during decoding keeping only the last pass's cache
 (or an average of the four) loses little on its benchmarks, for a quarter
 of the memory (section 5.4.2, Table 14, p. 18).
+
+<span id="h-parallel" />
 
 **Parallel blocks** run attention and the feed-forward block side by side
 on the same normalised input and add both to the stream, instead of one
@@ -94,3 +100,67 @@ if (loops > 1) {
   Chowdhery et al., [PaLM](https://arxiv.org/abs/2204.02311) (parallel layers, p. 5, arXiv:2204.02311)
 
 </Callout>
+
+<CheckYourself>
+
+<Check
+  id="h08-q1"
+  n={1}
+  input="number"
+  v="ch08.flops4"
+  fmt="gflop"
+  q="Ouro 2.6B run four times through its stack, at an 8K context: how many GFLOP per decoded token?"
+  href="#h-looped"
+  more="Looped models"
+>
+  <V v="ch08.flops4" fmt="gflop" />, against <V v="ch08.flops1" fmt="gflop" />{" "}
+  with one pass. The parameters stay put: looping buys depth with compute, not
+  weights.
+</Check>
+
+<Check
+  id="h08-q2"
+  n={2}
+  input="number"
+  v="ch08.kvAll4"
+  fmt="gib"
+  q="Kept naively, every pass has its own cache. How many GiB for one 8K-token sequence with four passes?"
+  href="#h-loop-cache"
+  more="The cache"
+>
+  <V v="ch08.kvAll4" fmt="gib" />, against <V v="ch08.kvLast4" fmt="gib" /> if
+  decoding keeps only the last pass's cache, which Ouro's paper found loses
+  little.
+</Check>
+
+<Check
+  id="h08-q3"
+  n={3}
+  choices={[
+    "It halves the FLOPs",
+    "Nothing in parameters or FLOPs: the gain is in how the hardware runs it",
+    "It doubles the parameters",
+  ]}
+  answer={1}
+  q="What do parallel blocks (attention and FFN side by side) change in the cost model?"
+  href="#h-parallel"
+  more="Parallel blocks"
+>
+  Nothing: the parameters and FLOPs are those of a sequential block. PaLM's gain
+  came from fusing the two input matrix multiplies on the hardware.
+</Check>
+
+</CheckYourself>
+
+<Remember>
+
+- Looped models reuse the same layers several times per token: depth without parameters.
+- Each loop costs compute, and naively a cache per pass.
+- Parallel blocks run attention and the FFN on the same input; the gain is in the kernels.
+- Both rearrange blocks rather than change what a block computes.
+
+<Keep>
+  Looping $k$ times: parameters ×1, decode FLOPs ×$k$, naive cache ×$k$.
+</Keep>
+
+</Remember>

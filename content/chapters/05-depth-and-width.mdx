@@ -8,6 +8,8 @@ chapter.
 
 <Layer kind="concept">
 
+<span id="h-shape" />
+
 Two numbers set a decoder's size: its **depth** (layers) and its **width**
 (the model dimension $d$). A layer's weights grow as $d^2$, so a fixed
 parameter budget can be spent on a few wide layers or many narrow ones. The
@@ -20,6 +22,8 @@ Kaplan et al. (2020) found that "architectural details such as network
 width or depth have minimal effects within a wide range"; below a billion
 parameters, MobileLLM (Liu et al., 2024) argued that architecture matters
 more, and built its models deep and thin.
+
+<span id="h-cost" />
 
 For **cost**, the shape matters in ways the parameter count hides. The
 interactive builds Llama-style decoders of any shape and costs them:
@@ -93,3 +97,70 @@ statements are the cited papers'.
 - Where these FLOPs are executed: GPU Kernels Explained, [GEMM, step by step](https://gpu-kernels-explained.vercel.app/learn/07-gemm) and [the roofline](https://gpu-kernels-explained.vercel.app/learn/02-roofline)
 
 </Callout>
+
+<CheckYourself>
+
+<Check
+  id="h05-q1"
+  n={1}
+  input="number"
+  v="ch05.deepKv"
+  fmt="kib"
+  q="An 80-layer, 2,048-wide decoder (8 KV heads of 128): how many KiB of BF16 cache per token?"
+  href="#h-cost"
+  more="What the shape costs"
+>
+  <V v="ch05.deepKv" fmt="kib" />. The 12-layer, 8,192-wide one caches
+  <V v="ch05.wideKv" fmt="kib" />, though it has more than twice the parameters.
+</Check>
+
+<Check
+  id="h05-q2"
+  n={2}
+  choices={[
+    "With width",
+    "With depth: each layer caches its own keys and values",
+    "With the vocabulary",
+  ]}
+  answer={1}
+  q="With the KV heads fixed, what does the KV cache grow with?"
+  href="#h-cost"
+  more="What the shape costs"
+>
+  Depth: a layer's cache per token depends on its KV heads, not on the model
+  width, so deep, thin models cache more.
+</Check>
+
+<Check
+  id="h05-q3"
+  n={3}
+  input="slider"
+  min={0}
+  max={100}
+  step={1}
+  v="ch05.deepAttn"
+  fmt="pct1"
+  abs={4}
+  q="At a 32K context, what share of the deep, thin model's decode FLOPs is attention?"
+  href="#h-cost"
+  more="What the shape costs"
+>
+  <V v="ch05.deepAttn" fmt="pct1" />, against <V v="ch05.wideAttn" fmt="pct1" />{" "}
+  for the shallow, wide model: attention's share grows with depth too.
+</Check>
+
+</CheckYourself>
+
+<Remember>
+
+- Depth and width set the size; a layer's weights grow as $d^2$.
+- Within limits, shape matters little for quality and a lot for cost.
+- The KV cache and attention's share of decode grow with depth; the embeddings grow with width.
+- Depth costs latency: layers run in sequence for every token.
+
+<Keep>
+  Cache per token $= 2 L h_{\text{KV}} d_{\text{head}}$ values: depth, not
+  width.
+</Keep>
+
+</Remember>

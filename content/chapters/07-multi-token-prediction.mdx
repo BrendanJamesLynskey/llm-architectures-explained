@@ -9,6 +9,8 @@ chapter; and why decode is memory-bound, from its
 
 <Layer kind="concept">
 
+<span id="h-mtp" />
+
 A language model is trained to predict the next token. **Multi-token
 prediction (MTP)** trains it to predict the next few as well. Gloeckle et
 al. (2024) did it with $n$ independent output heads on a shared trunk, as
@@ -30,6 +32,8 @@ The architecture choice shows up twice:
   that its second-token prediction is accepted 85% to 90% of the time,
   giving 1.8 times the tokens per second (section 5.4.3, p. 35).
 
+<span id="h-numbers" />
+
 The interactive puts numbers on both sides for any model in the data set
 that ships MTP layers. DeepSeek-V3's single module touches 688M weights per
 token, under 2% of the 37.6B the main model activates (both counted by
@@ -45,6 +49,8 @@ same neighbourhood as the 1.8× DeepSeek reports.
 <MtpWidget />
 
 <Layer kind="concept">
+
+<span id="h-depth" />
 
 **Things to try.** Raise the depth: with $a = 0.85$, the third and fourth
 drafted tokens are worth less and less ($a^3$, $a^4$), while every module
@@ -107,3 +113,66 @@ The 85–90% and 1.8× are DeepSeek's measurements, not this site's.
 - Inference Trade-offs Explained: [speculative decoding with an MTP head](https://inference-tradeoffs-explained.vercel.app/learn/10-speculative-decoding), where it helps (low batch) and hurts (high batch), measured on five workloads
 
 </Callout>
+
+<CheckYourself>
+
+<Check
+  id="h07-q1"
+  n={1}
+  input="number"
+  v="ch07.tokens085"
+  fmt="d2"
+  tol={0.02}
+  q="One MTP module whose drafted token is accepted 85% of the time: how many tokens does a step emit on average?"
+  href="#h-numbers"
+  more="The numbers"
+>
+  <V v="ch07.tokens085" fmt="d2" />: $1 + a$, the main model's token plus the
+  draft whenever it is accepted.
+</Check>
+
+<Check
+  id="h07-q2"
+  n={2}
+  input="number"
+  v="ch07.speedup085"
+  fmt="d2"
+  tol={0.05}
+  q="With decode memory-bound at batch 1, what is DeepSeek-V3's idealised speed-up at a = 0.85?"
+  href="#h-numbers"
+  more="The numbers"
+>
+  <V v="ch07.speedup085" fmt="x2" />, a little under 1.85 because every step
+  also reads the module's weights: the same neighbourhood as the 1.8× DeepSeek
+  reports.
+</Check>
+
+<Check
+  id="h07-q3"
+  n={3}
+  choices={[
+    "Each adds as much as the first",
+    "Each is worth less (a³, a⁴) while every module adds its weights to every step",
+    "They cost nothing",
+  ]}
+  answer={1}
+  q="Add a third and a fourth MTP module. What are they worth?"
+  href="#h-depth"
+  more="Raising the depth"
+>
+  Less and less: the $k$-th draft counts only if all before it were accepted,
+  probability $a^k$, while each module's weights are read on every step.
+</Check>
+
+</CheckYourself>
+
+<Remember>
+
+- MTP trains a model to predict the next few tokens, a denser training signal.
+- DeepSeek-V3's modules are sequential, keeping the causal chain.
+- At inference they are a built-in draft model for speculative decoding.
+- Deeper drafts are worth less; every module adds weights to every step.
+
+<Keep>One module accepted with probability $a$: $1 + a$ tokens per step.</Keep>
+
+</Remember>

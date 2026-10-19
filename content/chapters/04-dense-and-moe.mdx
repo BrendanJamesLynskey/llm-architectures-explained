@@ -16,6 +16,8 @@ The routing above is a seeded toy, labelled as such: 8 experts and 64 tokens of 
 
 <Layer kind="concept">
 
+<span id="h-moe" />
+
 In a **dense** model every token runs every weight. In a **mixture of
 experts (MoE)** the feed-forward block is replaced by many smaller
 feed-forward blocks, the **experts**, and a small **router** picks a few of
@@ -41,6 +43,8 @@ The design space has four knobs, and the interactive has a slider for each:
 - **Dense first layers.** DeepSeek-V3 keeps a dense FFN in its first three
   layers.
 
+<span id="h-counts" />
+
 On the interactive's Llama 3 8B body (8.03B parameters dense), Mixtral's
 counts give 47.5B total and 13.7B active. DeepSeekMoE 16B's counts (64
 experts an eighth of the width, 6 routed plus 2 shared) give 47.6B total but
@@ -54,6 +58,8 @@ times the weights. DeepSeek-V3's counts (256 experts, 8 routed, 1 shared,
 <MoeWidget />
 
 <Layer kind="concept">
+
+<span id="h-not-save" />
 
 **What MoE does not save.** At batch 1, a decode step reads only the
 active experts, so an MoE model decodes about as fast as a dense model of
@@ -120,3 +126,68 @@ granularity, not theirs.
   DeepSeek-AI, [DeepSeek-V3 Technical Report](https://arxiv.org/abs/2412.19437) (arXiv:2412.19437)
 
 </Callout>
+
+<CheckYourself>
+
+<Check
+  id="h04-q1"
+  n={1}
+  input="number"
+  v="ch04.dsmActive"
+  fmt="bn"
+  q="DeepSeekMoE's counts on the 8B body (64 experts an eighth wide, 6 routed plus 2 shared): how many billion parameters are active per token?"
+  href="#h-counts"
+  more="The counts"
+>
+  <V v="ch04.dsmActive" fmt="bn" />, about the dense model's
+  <V v="ch04.dense" fmt="bn" />, with <V v="ch04.dsmTotal" fmt="bn" /> in all:
+  the same per-token work with six times the weights.
+</Check>
+
+<Check
+  id="h04-q2"
+  n={2}
+  input="number"
+  v="ch04.mixtralTotal"
+  fmt="bn"
+  q="Mixtral's counts on the same body (8 experts, 2 per token): how many billion parameters in total?"
+  href="#h-counts"
+  more="The counts"
+>
+  <V v="ch04.mixtralTotal" fmt="bn" />, of which
+  <V v="ch04.mixtralActive" fmt="bn" /> are active: each expert is as wide as
+  the dense FFN, and two run per token.
+</Check>
+
+<Check
+  id="h04-q3"
+  n={3}
+  choices={[
+    "Memory: only the active experts are stored",
+    "Compute per token: all the experts must still sit in memory",
+    "Communication",
+  ]}
+  answer={1}
+  q="What does a mixture of experts save, and what does it not?"
+  href="#h-not-save"
+  more="What MoE does not save"
+>
+  It saves compute per token; it does not save memory, because every expert must
+  be resident, and a busy server's batch routes to many of them, so each step
+  reads far more than the active set.
+</Check>
+
+</CheckYourself>
+
+<Remember>
+
+- An MoE replaces the FFN with many experts and a router; total and active parameters come apart.
+- Four knobs: number of experts and per token, expert width, shared experts, dense first layers.
+- At batch 1 an MoE decodes about as fast as a dense model of its active size.
+- It trades memory and communication for compute.
+
+<Keep>
+  Total parameters set the memory; active parameters set the work per token.
+</Keep>
+
+</Remember>
