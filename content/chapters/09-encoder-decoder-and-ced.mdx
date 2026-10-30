@@ -81,8 +81,8 @@ both SLOs. Press **Re-measure live** and your browser reruns every
 bisection, checking each rate against `results.md`. With prompts four times
 the outputs (2,048 : 512) the best decoder-only split is 4P2D at 25.72
 req/s, and CED's moves to 3P3D, at 39.20 req/s with the replay on prefill
-and 41.07 on decode: 1.52× and 1.60×. At 4,096 : 256 the gains are 2.06×
-and 2.13×. Gains above 2× are queueing, not FLOPs: with a fixed TTFT SLO,
+and 41.07 on decode: 1.52× and 1.60×. At 4,096 : 256 the gains are 2.03×
+and 2.09×. Gains above 2× are queueing, not FLOPs: with a fixed TTFT SLO,
 halving the prefill service time cuts the queueing delay by more than half.
 
 </Layer>
@@ -96,10 +96,9 @@ half, with the simulator's roofline and H100 coefficients: a proxy, not
 DeepSeek's model (a 552B mixture of experts with compressed sparse
 attention, FP4 keys and values and a prefix cache). The prompt:output
 ratios stand in for agent loops. The section 18 table (two-GPU prefill
-instances) shows only the CED rows: results.md explains that its
-decoder-only row is limited by the simulator's prefill router, not by
-compute. The same router slightly favours the model with the shorter prefill
-steps in section 17.
+instances) compares capacity, not feasibility: a whole Llama-3-70B shape
+only just fits on two H100s, and the roofline charges nothing for a tight
+fit.
 
 </Callout>
 
