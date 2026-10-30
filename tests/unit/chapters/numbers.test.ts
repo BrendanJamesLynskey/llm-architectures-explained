@@ -254,10 +254,10 @@ describe("chapter 9: encoder-decoder and CED", () => {
       "| 1.60x |",
     );
     expect(w("4096:256").rows["CED, replay on prefill"]!.line).toContain(
-      "| 2.06x |",
+      "| 2.03x |",
     );
     expect(w("4096:256").rows["CED, replay on decode"]!.line).toContain(
-      "| 2.13x |",
+      "| 2.09x |",
     );
     expect(s16.params.ced_kv_proj!.text).toBe("0.67B");
     expect(results.quotes.s17_intro).toContain(

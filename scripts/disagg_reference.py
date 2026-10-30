@@ -49,7 +49,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SIM = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT.parent / "Disaggregated_Inference_Sim"
 sys.path.insert(0, str(SIM / "src"))
 
-from disagg_sim.hardware import A100_SXM, H100_SXM, KV_PRESETS, LINKS, MODELS, CostModel, KVTransit  # noqa: E402
+from disagg_sim.hardware import A100_SXM, H100_SXM, KV_PRESETS, LINKS, MODELS, CostModel  # noqa: E402
 from disagg_sim.metrics import summarise  # noqa: E402
 from disagg_sim.search import Workload, analytic_capacity  # noqa: E402
 from disagg_sim.sim import SimConfig, simulate  # noqa: E402
@@ -80,15 +80,13 @@ def py_config(c: dict) -> SimConfig:
                                     ("cedReplayOn", "ced_replay_on"), ("lmHead", "prefill_lm_head")) if k1 in c}
     if kw:
         model = replace(model, **kw)
-    tr = None
-    if "kvCompress" in c:
-        tr = KVTransit(KV_PRESETS[c["kvCompress"]], where=c.get("kvCompressAt", "transit"))
     dev = {"h100": H100_SXM, "a100": A100_SXM}
     return SimConfig(model=model, device=H100_SXM, devices_per_instance=c.get("devicesPerInstance", 4),
                      mode=c.get("mode", "disagg"), n_prefill=c.get("nPrefill", 1), n_decode=c.get("nDecode", 1),
                      n_colocated=2, link=LINKS[c.get("link", "ib-ndr")], power_cap_w=c.get("powerCap"),
                      dvfs=c.get("dvfs", False), prefill_devices_per_instance=c.get("prefillDevicesPerInstance"),
-                     decode_device=dev.get(c.get("decodeDevice")), kv_transit=tr,
+                     decode_device=dev.get(c.get("decodeDevice")),
+                     kv_compression=KV_PRESETS[c["kvCompress"]] if "kvCompress" in c else None,
                      ttft_slo=c.get("ttftSlo", 1.0), tpot_slo=c.get("tpotSlo", 0.025))
 
 
@@ -112,8 +110,8 @@ PARITY = {
                                                                decodeDevice="a100"),
     "colocated, replay on prefill": dict(model="llama3-70b-ced", mode="colocated"),
     "replay on decode, fp8 at the GPU, 25 GbE": dict(model="llama3-70b-ced", cedReplayOn="decode", link="eth-25g",
-                                                     kvCompress="fp8", kvCompressAt="endpoint"),
-    "replay on decode, fp4 in transit": dict(model="llama3-70b-ced", cedReplayOn="decode", link="eth-25g",
+                                                     kvCompress="fp8"),
+    "replay on decode, fp4 at the GPU": dict(model="llama3-70b-ced", cedReplayOn="decode", link="eth-25g",
                                              kvCompress="fp4-block"),
     "replay on decode, power cap + DVFS": dict(model="llama3-70b-ced", cedReplayOn="decode", powerCap=350.0, dvfs=True),
     "decoder-only baseline (unchanged path)": dict(model="llama3-70b"),
@@ -134,7 +132,7 @@ def parity() -> list[dict]:
             "stamps": [[r.prefill_start, r.first_token, r.prefill_done, r.kv_start, r.kv_ready, r.decode_start,
                         r.finish] for r in reqs],
             "inst": [[i.compute_j, i.memory_j, i.busy, i.peak_power, i.steps, i.batch_sum] for i in res.instances],
-            "link": [res.link.energy, res.link.bytes, res.link.wait, res.link.transit_j],
+            "link": [res.link.energy, res.link.bytes, res.link.wait, res.link.handoff_bytes],
             "total": m["energy"]["total_J"],
             "slo": m["throughput"]["slo_attainment"],
             "capped": any(i.power_bound_time > 0 for i in res.instances),

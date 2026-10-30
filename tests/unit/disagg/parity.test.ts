@@ -77,7 +77,7 @@ describe("vendored engine = Python package on the CED option", () => {
         ];
         js.forEach((x, k) => expect(close(c.inst[i]![k]!, x, tol)).toBe(true));
       });
-      const l = [r.link.energy, r.link.bytes, r.link.wait, r.link.transitJ];
+      const l = [r.link.energy, r.link.bytes, r.link.wait, r.link.handoff];
       l.forEach((x, k) => expect(close(c.link[k]!, x, tol)).toBe(true));
       expect(close(c.total, s.energy.totalJ, tol)).toBe(true);
       expect(s.sloAttain).toBe(c.slo);

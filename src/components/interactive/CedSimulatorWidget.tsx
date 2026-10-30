@@ -3,7 +3,7 @@
 /**
  * Chapter 9: the causal encoder-decoder (CED) in Disaggregated_Inference_Sim,
  * live. The simulator's own JavaScript engine, vendored byte for byte at
- * brief 11's commit, (a) costs one prefill step for the decoder-only proxy
+ * a pinned commit, (a) costs one prefill step for the decoder-only proxy
  * and both CED variants, and (b) re-runs the capacity search of results.md
  * sections 17 and 18 for every prefill/decode pool split, in a Web Worker,
  * checking each rate against the recorded one (a ✓ when they are equal to
@@ -164,9 +164,7 @@ export default function CedSimulatorWidget(): JSX.Element {
         np: i + 1,
         nd: CLUSTER - 1 - i,
       }));
-  // Section 18's decoder-only row is limited by the simulator's prefill
-  // router, not by compute (results.md says so), so it is not shown.
-  const variants = VARIANTS.filter((v) => !(small && v.key === "decoder-only"));
+  const variants = VARIANTS;
   const rows = small ? rec.s18.rows : w!.rows;
   const cells: { key: string; cfg: SimConfig }[] = variants.flatMap((v) =>
     splits.map((s) => ({
@@ -234,7 +232,7 @@ export default function CedSimulatorWidget(): JSX.Element {
     const r = rows[v]!.cells;
     return Math.max(...Object.values(r).map((x) => x.rate));
   };
-  const baseBest = small ? null : bestOf("decoder-only");
+  const baseBest = bestOf("decoder-only");
 
   return (
     <WidgetFrame
@@ -361,11 +359,9 @@ export default function CedSimulatorWidget(): JSX.Element {
                   {s.label}
                 </th>
               ))}
-              {!small && (
-                <th scope="col" className="p-2 text-right">
-                  Best vs decoder-only
-                </th>
-              )}
+              <th scope="col" className="p-2 text-right">
+                Best vs decoder-only
+              </th>
             </tr>
           </thead>
           <tbody className="font-mono text-xs">
@@ -400,11 +396,9 @@ export default function CedSimulatorWidget(): JSX.Element {
                       </td>
                     );
                   })}
-                  {!small && (
-                    <td className="p-2 text-right">
-                      {(best / baseBest!).toFixed(2)}×
-                    </td>
-                  )}
+                  <td className="p-2 text-right">
+                    {(best / baseBest).toFixed(2)}×
+                  </td>
                 </tr>
               );
             })}
@@ -415,8 +409,6 @@ export default function CedSimulatorWidget(): JSX.Element {
         Bold: the best split for each model. Before you re-measure, the cells
         show results.md (simulator commit {rec.commit.slice(0, 7)}); after, the
         rates this page found, with ✓ where they equal the recorded ones.
-        {small &&
-          " The decoder-only row of this table is left out: results.md notes it is limited by the simulator's prefill router, not by compute."}
       </p>
     </WidgetFrame>
   );

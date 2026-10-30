@@ -15,6 +15,6 @@ describe("CED gains", () => {
       ]!.line;
       expect(line).toContain(`| ${x.gain.toFixed(2)}x |`);
     }
-    expect(cedRange()).toEqual({ lo: "1.52", hi: "2.14" });
+    expect(cedRange()).toEqual({ lo: "1.52", hi: "2.18" });
   });
 });

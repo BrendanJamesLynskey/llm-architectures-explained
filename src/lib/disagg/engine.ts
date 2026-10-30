@@ -47,7 +47,6 @@ export type SimConfig = {
   prefillDevicesPerInstance?: number;
   lmHead?: "all" | "last";
   kvCompress?: string;
-  kvCompressAt?: "transit" | "endpoint";
   cedEncoderLayers?: number;
   cedReplay?: number;
   cedReplayOn?: "prefill" | "decode";
@@ -78,7 +77,7 @@ export type SimInstance = {
 export type SimResult = {
   reqs: SimRequest[];
   insts: SimInstance[];
-  link: { energy: number; bytes: number; wait: number; transitJ: number };
+  link: { energy: number; bytes: number; wait: number; handoff: number };
 };
 
 type Dist = { mean: number; p50: number; p90: number; p99: number };

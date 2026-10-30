@@ -198,8 +198,10 @@ Code shown in a chapter must be cut from the file it names
 
 The encoder-decoder chapter runs
 [Disaggregated_Inference_Sim](https://github.com/BrendanJamesLynskey/Disaggregated_Inference_Sim)'s
-own JavaScript engine, vendored byte for byte at commit `e674e18` (the
-one that added the causal encoder-decoder option) by
+own JavaScript engine, vendored byte for byte at commit `ac1846a` (main
+after the simulator was kept to serving; the causal encoder-decoder option
+came in at `e674e18`, and the prefill-router fix at `a2c14e2` moved some
+section 17 and 18 rates, which the chapter quotes from the new results) by
 `pnpm vendor:sim <commit>`, which records the repository, commit and
 SHA-256 in [`src/lib/disagg/vendor/VENDORED.json`](src/lib/disagg/vendor/VENDORED.json).
 [`scripts/disagg_reference.py`](scripts/disagg_reference.py), run with the

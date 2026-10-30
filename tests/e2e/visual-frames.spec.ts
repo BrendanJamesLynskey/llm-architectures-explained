@@ -101,6 +101,6 @@ test("landing: the KV landscape and the CED result", async ({ page }) => {
   await expect(fig).toBeVisible();
   expect(await fig.locator("circle[data-family]").count()).toBeGreaterThan(130);
   await expect(page.locator("[data-ced-result]")).toContainText(
-    "1.52× to 2.14×",
+    "1.52× to 2.18×",
   );
 });

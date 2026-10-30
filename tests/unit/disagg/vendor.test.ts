@@ -1,6 +1,6 @@
 /**
- * The vendored engine is the file at the pinned commit (brief 11's CED
- * commit), byte for byte, and every fixture and workload was generated at
+ * The vendored engine is the file at the pinned commit (the simulator's
+ * main after it was kept to serving, which still has brief 11's CED option), byte for byte, and every fixture and workload was generated at
  * that same commit.
  */
 import { createHash } from "node:crypto";
@@ -28,8 +28,8 @@ describe("vendored sim_engine.js", () => {
     expect(vendored.path).toBe("web/sim_engine.js");
   });
 
-  it("is pinned at brief 11's commit, which added the CED option", () => {
-    expect(vendored.commit).toBe("e674e189c50d45aa5d87bfd774687398120c724c");
+  it("is pinned at ac1846a, which still has brief 11's CED option", () => {
+    expect(vendored.commit).toBe("ac1846a44df93ea18145b6031867a78ba15aa7c9");
     expect(engine.MODELS["llama3-70b-ced"]).toBeDefined();
     expect(engine.MODELS["llama3-8b-ced"]).toBeDefined();
   });
